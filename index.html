@@ -281,6 +281,58 @@ html[dir=rtl] .comp .en{text-align:right}
 @media(max-width:980px){.comps{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:620px){.comps{grid-template-columns:1fr}}
 
+/* ---------- المسابقات والتقويم (الرئيسية) ---------- */
+.cc-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:26px;margin-top:42px;align-items:start}
+.cc-list{display:grid;gap:14px}
+.cc{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;padding:16px 18px;border-radius:24px;transition:transform .25s,box-shadow .25s,border-color .25s}
+.cc:hover{transform:translateY(-4px);box-shadow:0 26px 46px -26px var(--c);border-color:color-mix(in srgb,var(--c) 45%,#fff)}
+.cc::before{content:"";position:absolute;inset-block:14px;inset-inline-start:0;width:5px;border-radius:0 6px 6px 0;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 45%,#fff),var(--c))}
+html[dir=rtl] .cc::before{border-radius:6px 0 0 6px}
+.cc .gorb{--sz:54px}
+.cc h3{font-family:var(--display);font-weight:900;font-size:16.5px;line-height:1.5}
+.cc .meta{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px}
+.cc-tag{display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-weight:600;font-size:11.5px;padding:2px 10px;border-radius:999px;
+  color:color-mix(in srgb,var(--c) 75%,#1A1640);background:color-mix(in srgb,var(--c) 12%,#fff);border:1px solid color-mix(in srgb,var(--c) 28%,#fff)}
+.cc-tag .dot{width:7px;height:7px;border-radius:50%;background:var(--c)}
+.cc-tag.st-open{--c:#0E9F76}.cc-tag.st-open .dot{animation:blink 1.6s infinite}
+.cc-tag.st-soon{--c:#E8A50A}.cc-tag.st-closed{--c:#8A8AA3}
+@keyframes blink{50%{opacity:.25}}
+.cc .nx{font-size:13.5px;color:var(--muted);line-height:1.7}
+.cc .nx b{font-family:var(--display);font-weight:600;color:var(--ink)}
+.cc .go{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 12%,#fff);border:1px solid color-mix(in srgb,var(--c) 26%,#fff)}
+.cc .go svg{width:18px;height:18px;stroke:var(--c);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transform:scaleX(var(--flip));transition:transform .25s}
+.cc:hover .go svg{transform:translateX(calc(var(--fx) * 4px)) scaleX(var(--flip))}
+.cd-mini{display:inline-block;direction:ltr;unicode-bidi:isolate;font-family:'Sora',sans-serif;font-weight:600;font-size:12.5px;color:color-mix(in srgb,var(--c,#E8A50A) 80%,#1A1640);
+  padding:1px 10px;border-radius:999px;background:color-mix(in srgb,var(--c,#E8A50A) 10%,#fff);border:1px solid color-mix(in srgb,var(--c,#E8A50A) 24%,#fff);margin-top:4px}
+html[dir=rtl] .cd-mini{direction:rtl}
+.cal{padding:22px;border-radius:30px}
+.cal-feat{padding:20px;border-radius:22px;color:#fff;margin-bottom:14px;position:relative;overflow:hidden;
+  background:linear-gradient(140deg,color-mix(in srgb,var(--c) 70%,#fff) -10%,var(--c) 45%,color-mix(in srgb,var(--c) 65%,#1A1640));box-shadow:0 22px 40px -22px var(--c)}
+.cal-feat::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 0%,rgba(255,255,255,.35),transparent 50%);pointer-events:none}
+.cal-feat small{display:block;font-family:var(--display);font-weight:600;font-size:12.5px;opacity:.9}
+.cal-feat h4{font-family:var(--display);font-weight:900;font-size:18px;line-height:1.5;margin:2px 0}
+.cal-feat p{font-size:13.5px;opacity:.92}
+.cd{margin-top:14px}
+.cd-lbl{font-family:var(--display);font-weight:600;font-size:12.5px;opacity:.92;margin-bottom:6px}
+.cd-boxes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;direction:ltr}
+html[dir=rtl] .cd-boxes{direction:rtl}
+.cd-box{text-align:center;padding:8px 2px;border-radius:14px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);backdrop-filter:blur(6px)}
+.cd-box b{display:block;font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(20px,2.2vw,26px);line-height:1.15}
+.cd-box span{font-size:11.5px;opacity:.9}
+.cal-row{display:grid;grid-template-columns:62px 1fr;gap:14px;align-items:center;padding:10px;border-radius:16px;transition:background .2s}
+.cal-row:hover{background:rgba(255,255,255,.75)}
+.cal-row .dbox{text-align:center;border-radius:14px;padding:6px 2px;color:#fff;background:linear-gradient(150deg,color-mix(in srgb,var(--c) 60%,#fff),var(--c));box-shadow:0 10px 18px -10px var(--c)}
+.cal-row .dbox b{display:block;font-family:'Sora',sans-serif;font-weight:800;font-size:20px;line-height:1.15}
+.cal-row .dbox span{font-size:11px;font-weight:600}
+.cal-row h4{font-family:var(--display);font-weight:900;font-size:14.5px;line-height:1.5}
+.cal-row p{font-size:12.5px;color:var(--muted)}
+.cal-row .cd-mini{margin-top:2px}
+.cal-empty{padding:24px 10px;text-align:center;color:var(--muted);font-size:14.5px}
+.cc-foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;margin-top:22px}
+.cc-note{font-size:13px;color:var(--muted);max-width:46em}
+@media(max-width:960px){.cc-grid{grid-template-columns:1fr}}
+@media(max-width:520px){.cc{grid-template-columns:auto 1fr}.cc .go{display:none}.cc .gorb{--sz:46px}.cal{padding:14px}}
+
 /* ---------- المستويات وآلية العمل ---------- */
 .levels-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:40px;align-items:center;margin-top:46px}
 .pyr-wrap{filter:drop-shadow(0 22px 30px rgba(120,70,10,.22))}
@@ -419,6 +471,9 @@ html.js .reveal.in{opacity:1;transform:none}
 </style>
 <script>document.documentElement.classList.add('js')</script>
 <script src="js/config.js"></script>
+<script>window.TP_HOST_PAGE = true;</script>
+<script src="js/competitions-data.js"></script>
+<script src="js/platform.js"></script>
 </head>
 <body>
 <div class="aurora" aria-hidden="true"></div>
@@ -694,6 +749,29 @@ html.js .reveal.in{opacity:1;transform:none}
   </div>
 </section>
 
+<!-- المسابقات والتقويم
+     البيانات من js/competitions-data.js ومن جدول بيانات المنصة (تبويبا «المسابقات» و«المواعيد») -->
+<section id="competitions">
+  <div class="wrap">
+    <div class="center reveal">
+      <div class="kicker" data-i18n="cc.kicker">المسابقات والتقويم</div>
+      <h2 class="sec-title"><span data-i18n="cc.t1">مسابقاتنا…</span> <em data-i18n="cc.t2">ومواعيدها القادمة</em></h2>
+      <p class="sec-sub" data-i18n="cc.sub">المسابقات العلمية والأكاديمية التي يشارك فيها طلابنا، مع حالة التسجيل وأقرب موعد لكل مسابقة وعدّاد تنازلي للوقت المتبقي.</p>
+    </div>
+    <div class="cc-grid">
+      <div class="cc-list" id="ccList"></div>
+      <aside class="cal glass reveal" style="--c:#E2386F">
+        <div id="calFeat"></div>
+        <div id="calList"></div>
+      </aside>
+    </div>
+    <div class="cc-foot reveal">
+      <p class="cc-note" data-i18n="cc.note">المواعيد مأخوذة من المصادر الرسمية للمسابقات، ومن جدول بيانات المنصة عند تحديثه، وكلها بتوقيت الرياض.</p>
+      <a class="btn primary" href="competitions.html"><span data-i18n="cc.all">كل المسابقات والتقويم الكامل</span><svg class="arr" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></a>
+    </div>
+  </div>
+</section>
+
 <!-- المنصة الشقيقة -->
 <section style="padding-top:10px">
   <div class="wrap">
@@ -758,6 +836,7 @@ const I18N = {
   'res.4':'كان لبرامج الإثراء العام والأنشطة الموجهة والإثراء المتخصص والمشاريع الهادفة أثرٌ إيجابي على أداء الطلاب.',
   'res.5':'أثّرت البيئة الداعمة للموهبة بصورة دالة على الطلاب والمعلمين.',
   'res.src':'نُشرت دراسة فاعلية النموذج أيضاً في مجلة Gifted and Talented International الصادرة عن المجلس العالمي للأطفال الموهوبين (2010).',
+  'cc.kicker':'المسابقات والتقويم','cc.t1':'مسابقاتنا…','cc.t2':'ومواعيدها القادمة','cc.sub':'المسابقات العلمية والأكاديمية التي يشارك فيها طلابنا، مع حالة التسجيل وأقرب موعد لكل مسابقة وعدّاد تنازلي للوقت المتبقي.','cc.next':'أقرب موعد','cc.tba':'تُعلن المواعيد قريباً','cc.nearest':'الموعد القادم','cc.now':'جارٍ الآن','cc.none':'لا توجد مواعيد قادمة معلنة حالياً — تُضاف فور إعلانها.','cc.note':'المواعيد مأخوذة من المصادر الرسمية للمسابقات، ومن جدول بيانات المنصة عند تحديثه، وكلها بتوقيت الرياض.','cc.all':'كل المسابقات والتقويم الكامل',
   'au.name':'د. عادل عبدالجليل بترجي','au.role':'مؤلف النموذج · مؤسس مدارس دار الذكر',
   'au.bio':'<p>يترأس الدكتور عادل عبدالجليل بترجي المجلس الاستشاري لمدارس دار الذكر الأهلية بجدة، وبهذه الصفة يشرف على جميع أعمال التطوير التربوي والتعليمي للمدارس، والتي منها الكشف عن الموهبة وتطويرها. كما يرأس مجلس التأسيس لجامعة الثريا للعلوم والتقنية.</p><p>حاصل على شهادة البكالوريوس في الرياضيات من جامعة كانساس بالولايات المتحدة، والدكتوراه في علم النفس من الجامعة الأمريكية في بريطانيا، وكانت رسالته في تصميم نموذج للكشف عن الموهبة وتطويرها.</p><p>يقدّم العديد من الدورات التدريبية وورش العمل في مجال الكشف عن الموهبة وتطويرها، والتعلم باستخدام استراتيجيات التفكير التحليلي والإبداعي، والتربية القيادية.</p><p>صمّم النموذج التام لتطوير الموهبة وطبّقه ميدانياً في مدارس دار الذكر، وأهداه «إلى أصحاب القدرات العقلية العالية، والسمات الشخصية المتميزة، والنظرات المستقبلية الطموحة».</p>',
   'cmp.kicker':'مكونات النموذج','cmp.t1':'تسعة مكوّنات…','cmp.t2':'منظومة واحدة',
@@ -824,6 +903,7 @@ const I18N = {
   'res.4':'General enrichment, enrichment clusters, specialty enrichment and targeted projects programs all had a positive effect on performance.',
   'res.5':'The environment supportive of giftedness had a significant effect on students and teachers.',
   'res.src':'A study of the model’s efficacy was also published in Gifted and Talented International, journal of the World Council for Gifted and Talented Children (2010).',
+  'cc.kicker':'Competitions & Calendar','cc.t1':'Our competitions…','cc.t2':'and upcoming dates','cc.sub':'The scientific and academic competitions our students take part in, with registration status, the next date for each and a live countdown.','cc.next':'Next date','cc.tba':'Dates to be announced','cc.nearest':'Next up','cc.now':'Ongoing now','cc.none':'No upcoming dates announced yet — they will be added once announced.','cc.note':'Dates come from the official competition sources and from the platform data sheet when updated; all times are Riyadh time.','cc.all':'All competitions & full calendar',
   'au.name':'Dr. Adel A. Batterjee','au.role':'Author of the model · Founder of Dar Al-Thikr Schools',
   'au.bio':'<p>Dr. Adel Abduljalil Batterjee chairs the Advisory Board of Dar Al-Thikr Private Schools in Jeddah, and in this capacity oversees all educational and instructional development work at the schools, including the identification and development of giftedness. He also chairs the Founding Board of Al-Thuraya University for Science and Technology.</p><p>He holds a BSc in Mathematics from the University of Kansas, USA, and a PhD in Psychology from the American University in Britain; his dissertation designed a model for identifying and developing giftedness.</p><p>He delivers many training courses and workshops on identifying and developing giftedness, learning through analytical and creative thinking strategies, and leadership education.</p><p>He designed the Total Giftedness Development Model, implemented it at Dar Al-Thikr Schools, and dedicated it "to those with high mental abilities, distinguished personal traits and ambitious visions of the future".</p>',
   'cmp.kicker':'Model components','cmp.t1':'Nine components…','cmp.t2':'one system',
@@ -1030,6 +1110,42 @@ function maybeAnimateStats(){
   if (r.top < innerHeight - 60 && r.bottom > 0) { statsAnimated = true; renderStats(true); }
 }
 
+/* ==========================================================
+   المسابقات والتقويم — يستخدم أدوات js/platform.js
+   ========================================================== */
+function renderCompCal(){
+  if (!window.TP || !window.TP_COMPETITIONS) return;
+  TP.setLang(lang);
+  const COMPS = window.TP_COMPETITIONS, FIELDS = window.TP_FIELDS || {};
+  const SD = (DATA && DATA.competitions) ? DATA : null;
+  const now = Date.now(), up = [];
+  document.getElementById('ccList').innerHTML = COMPS.map(c => {
+    const st = TP.compState(SD, c.id), items = TP.compDates(c, SD).items, nx = TP.nextDate(items);
+    items.forEach(i => { const ph = TP.phase(i, now); if (ph === 'cur' || ph === 'future') up.push(Object.assign({ comp: c, ph }, i)); });
+    const f = FIELDS[c.field];
+    return `<a class="cc glass reveal in" style="--c:${c.color}" href="competition.html?c=${c.id}">
+      <span class="gorb">${TP.icon(c.icon)}</span>
+      <div><h3>${TP.esc(TP.tx(c.name))}</h3>
+        <div class="meta">${f ? `<span class="cc-tag" style="--c:${f.c}">${TP.esc(TP.tx(f))}</span>` : ''}${st.status ? `<span class="cc-tag st-${st.status}"><span class="dot"></span>${TP.t('st.' + st.status)}</span>` : ''}</div>
+        <div class="nx">${nx ? `<b>${t('cc.next')}:</b> ${TP.esc(TP.tx(nx))} — ${TP.esc(TP.dateText(nx))}<br>${TP.countdown(nx, { compact: true })}` : t('cc.tba')}</div></div>
+      <span class="go">${TP.icon('arrow')}</span></a>`;
+  }).join('');
+  up.sort((a, b) => (a.ph === 'cur' ? TP.endOf(a) : a.d) - (b.ph === 'cur' ? TP.endOf(b) : b.d));
+  const feat = up[0];
+  document.getElementById('calFeat').innerHTML = feat ? `<div class="cal-feat" style="--c:${feat.comp.color}">
+      <small>${t(feat.ph === 'cur' ? 'cc.now' : 'cc.nearest')} · ${TP.esc(TP.tx(feat.comp.short))}</small>
+      <h4>${TP.esc(TP.tx(feat))}</h4><p>${TP.esc(TP.dateText(feat))}</p>${TP.countdown(feat)}</div>` : '';
+  const rest = up.slice(1, 7);
+  document.getElementById('calList').innerHTML = !up.length ? `<div class="cal-empty">${t('cc.none')}</div>` : rest.map(i => {
+    const p = TP.ymd(i.d);
+    return `<a class="cal-row" style="--c:${i.comp.color}" href="competition.html?c=${i.comp.id}#timeline">
+      <div class="dbox"><b>${i.approx ? '~' : ''}${p.d}</b><span>${TP.fmtMonth(i.d)}</span></div>
+      <div><h4>${TP.esc(TP.tx(i))}</h4><p>${TP.esc(TP.tx(i.comp.short))} · ${TP.esc(TP.dateText(i))}</p>${TP.countdown(i, { compact: true })}</div></a>`;
+  }).join('');
+  TP.tick();
+}
+if (window.TP) TP.onCountdownEnd(renderCompCal); // عند انتهاء موعد ينتقل العرض تلقائياً للموعد التالي
+
 function applyLang(){
   const h = document.documentElement;
   h.lang = lang; h.dir = lang === 'ar' ? 'rtl' : 'ltr';
@@ -1037,7 +1153,7 @@ function applyLang(){
   document.querySelectorAll('[data-i18n]').forEach(el => { const v = t(el.dataset.i18n); if (typeof v === 'string' && v) el.textContent = v; });
   document.querySelectorAll('[data-i18n-html]').forEach(el => { const v = t(el.dataset.i18nHtml); if (v) el.innerHTML = v; });
   renderOrbit(); renderComps();
-  renderBand(); renderCards(); renderStats(false);
+  renderBand(); renderCards(); renderStats(false); renderCompCal();
 }
 
 /* ---------- البيانات (JSONP) ---------- */
@@ -1128,7 +1244,7 @@ addEventListener('scroll', maybeAnimateStats, { passive: true });
 
 applyLang();
 loadData((d, state) => {
-  DATA = d; DATA_STATE = state; renderStats(false);
+  DATA = d; DATA_STATE = state; renderStats(false); renderCompCal();
   if (state === 'live') { statsAnimated = false; maybeAnimateStats(); }
 });
 </script>
