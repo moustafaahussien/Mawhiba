@@ -54,6 +54,7 @@ button{cursor:pointer}
   display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--glass-strong);
   backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);border:1px solid var(--glass-edge);border-radius:22px;box-shadow:0 14px 40px -16px rgba(120,70,10,.38)}
 .brand{display:flex;align-items:center;gap:12px}
+.brand-logo{width:48px;height:48px;object-fit:contain;flex:none;display:block;filter:drop-shadow(0 6px 10px rgba(0,120,70,.22))}
 .brand-mark{position:relative;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex:none;
   background:radial-gradient(circle at 32% 26%,#FFE9A8 0%,#E8A50A 50%,#8F5A05 100%);
   box-shadow:0 10px 20px -8px rgba(217,154,6,.8),inset -4px -6px 10px rgba(60,30,0,.28),inset 3px 4px 8px rgba(255,255,255,.6)}

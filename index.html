@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>منصة الموهبة – مدارس دار الذكر</title>
-<meta name="description" content="منصة الموهبة بمدارس دار الذكر: اكتشاف الطلاب الموهوبين ورعايتهم وتدريبهم والاحتفاء بإنجازاتهم وفق النموذج التام لتطوير الموهبة.">
+<meta name="description" content="منصة الموهبة بمدارس دار الذكر: تطبيق النموذج التام لتطوير الموهبة للدكتور عادل عبدالجليل بترجي — الكشف الشامل، والمكونات التسعة، ومستويات الموهبة.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Noto+Kufi+Arabic:wght@300;600;900&family=Sora:wght@400;600;800&display=swap" rel="stylesheet">
@@ -56,6 +56,7 @@ button{font:inherit;color:inherit;cursor:pointer}
   background:var(--glass-strong);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);
   border:1px solid var(--glass-edge);border-radius:22px;box-shadow:0 14px 40px -16px rgba(120,70,10,.38)}
 .brand{display:flex;align-items:center;gap:12px}
+.brand-logo{width:48px;height:48px;object-fit:contain;flex:none;display:block;filter:drop-shadow(0 6px 10px rgba(0,120,70,.22))}
 .brand-mark{position:relative;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;flex:none;
   background:radial-gradient(circle at 32% 26%,#FFE9A8 0%,#E8A50A 50%,#8F5A05 100%);
   box-shadow:0 10px 20px -8px rgba(217,154,6,.8),inset -4px -6px 10px rgba(60,30,0,.28),inset 3px 4px 8px rgba(255,255,255,.6)}
@@ -117,7 +118,7 @@ html[dir=rtl] .chip{padding:6px 8px 6px 16px}
 .btn.ghost:hover{background:#fff;transform:translateY(-3px)}
 
 /* ---------- المدار ---------- */
-.orrery{--R:31cqw;--ob:15cqw;container-type:inline-size;position:relative;z-index:2;width:100%;max-width:640px;aspect-ratio:1/1;margin-inline:auto}
+.orrery{--R:33cqw;--ob:12.6cqw;container-type:inline-size;position:relative;z-index:2;width:100%;max-width:640px;aspect-ratio:1/1;margin-inline:auto}
 .scene{position:absolute;inset:0;transform:perspective(1100px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .25s ease-out}
 .orbit-ring{position:absolute;left:50%;top:50%;translate:-50% -50%;border-radius:50%;pointer-events:none}
 .orbit-ring.r0{width:calc(var(--R)*2.42);height:calc(var(--R)*2.42);background:radial-gradient(circle,rgba(255,255,255,.55),rgba(255,255,255,.12) 60%,transparent 70%);border:1px solid rgba(255,255,255,.7);backdrop-filter:blur(2px)}
@@ -132,6 +133,7 @@ html[dir=rtl] .chip{padding:6px 8px 6px 16px}
 .core-gloss{position:absolute;inset:0;background:radial-gradient(circle at 30% 22%,rgba(255,255,255,.65),transparent 42%),radial-gradient(circle at 70% 92%,rgba(60,20,0,.35),transparent 55%)}
 .core svg{position:relative;width:9cqw;height:9cqw;stroke:#fff;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 .4cqw .8cqw rgba(60,20,0,.35))}
 .core b{position:relative;font-family:'Sora',sans-serif;font-weight:800;font-size:3.4cqw;letter-spacing:.06em;margin-top:.4cqw;text-shadow:0 .4cqw 1cqw rgba(60,20,0,.35)}
+.core .core-sub{position:relative;font-style:normal;font-family:var(--display);font-weight:600;font-size:clamp(9px,2.1cqw,14px);text-shadow:0 1px 6px rgba(60,20,0,.35)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .ring{position:absolute;inset:0;animation:spin 90s linear infinite}
 .slot{position:absolute;left:50%;top:50%;width:0;height:0;transform:rotate(var(--a)) translateX(var(--R))}
@@ -147,8 +149,8 @@ html[dir=rtl] .chip{padding:6px 8px 6px 16px}
 .ball svg{position:relative;z-index:1;width:46%;height:46%;stroke:#fff;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 .3cqw .5cqw rgba(0,0,0,.28))}
 @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
 .orb:hover .ball{transform:scale(1.12)}
-.pill{position:absolute;top:calc(100% + .9cqw);left:50%;transform:translateX(-50%);width:max-content;max-width:27cqw;padding:3px 10px;
-  font-family:var(--display);font-weight:600;font-size:clamp(10.5px,2.3cqw,15px);line-height:1.5;color:var(--ink);
+.pill{position:absolute;top:calc(100% + .7cqw);left:50%;transform:translateX(-50%);width:max-content;max-width:24cqw;padding:2px 9px;
+  font-family:var(--display);font-weight:600;font-size:clamp(9.5px,1.95cqw,13.5px);line-height:1.45;color:var(--ink);
   background:rgba(255,255,255,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--glass-edge);border-radius:12px;box-shadow:0 6px 16px -8px rgba(120,70,10,.45);transition:background .2s,color .2s}
 .orb:hover .pill{background:var(--c);color:#fff;border-color:transparent}
 
@@ -203,6 +205,9 @@ html[dir=rtl] .stat .num{direction:ltr;text-align:right}
 
 /* ---------- عن المنصة ---------- */
 .about-head{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end}
+#model{padding-bottom:30px}
+#model + section#leadership{padding-top:70px}
+.about-pillars{padding-top:0}
 .about .duo{font-size:clamp(22px,2.8vw,36px)}
 .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:46px}
 .pillar{display:flex;flex-direction:column;gap:14px;padding:30px 28px;border-radius:28px;transition:transform .25s,box-shadow .25s}
@@ -211,6 +216,95 @@ html[dir=rtl] .stat .num{direction:ltr;text-align:right}
 .pillar p{color:var(--muted);font-size:15.5px;line-height:1.8}
 .pillar .big{position:absolute;inset-inline-end:-24px;bottom:-34px;width:170px;height:170px;stroke:var(--c);fill:none;stroke-width:.7;opacity:.16;z-index:-1}
 @media(max-width:980px){.about-head{grid-template-columns:1fr;gap:16px}.pillars{grid-template-columns:1fr}}
+
+
+/* ---------- تعريف النموذج ---------- */
+.def-card{position:relative;margin-top:44px;padding:34px 38px 30px;border-radius:32px}
+.def-card .q{position:absolute;inset-inline-start:22px;top:-8px;font-family:'Sora',serif;font-size:120px;line-height:1;background:var(--gold-foil);-webkit-background-clip:text;background-clip:text;color:transparent;opacity:.55}
+.def-card blockquote{position:relative;font-family:var(--display);font-weight:600;font-size:clamp(17px,1.7vw,21px);line-height:2;color:var(--ink)}
+.def-card blockquote b{font-weight:900;background:var(--foil);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:foil 10s linear infinite}
+.def-card cite{display:block;margin-top:12px;font-style:normal;font-size:14px;color:var(--muted)}
+@media(max-width:620px){.def-card{padding:28px 22px 22px}}
+
+/* ---------- الكتاب والمؤلف ---------- */
+.book-grid{display:grid;grid-template-columns:320px 1fr;gap:44px;align-items:start;margin-top:46px}
+.cover-wrap{position:sticky;top:110px;perspective:1200px}
+.cover{position:relative;display:block;border-radius:6px 16px 16px 6px;overflow:hidden;transform:rotateY(-14deg) rotateX(4deg);transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.8,.2,1);
+  box-shadow:-18px 26px 50px -18px rgba(60,30,0,.55),0 0 0 1px rgba(0,0,0,.05)}
+html[dir=ltr] .cover{transform:rotateY(14deg) rotateX(4deg)}
+.cover:hover{transform:none}
+.cover img{display:block;width:100%;height:auto}
+.cover::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,rgba(255,255,255,.35),transparent 30%,transparent 70%,rgba(0,0,0,.12))}
+.cover-wrap .spine-glow{position:absolute;inset:auto 10% -26px;height:40px;border-radius:50%;background:radial-gradient(ellipse,rgba(217,154,6,.45),transparent 70%);filter:blur(6px);z-index:-1}
+.book-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+.book-meta div{padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.65);border:1px solid var(--glass-edge);font-size:13.5px;line-height:1.6}
+.book-meta span{display:block;font-family:var(--display);font-weight:600;font-size:11.5px;color:#9A5E04}
+.book-meta .full{grid-column:1/-1}
+.book-body > * + *{margin-top:20px}
+.book-title{font-family:var(--display);font-weight:900;font-size:clamp(26px,3vw,38px);line-height:1.4}
+.book-sub{font-family:var(--display);font-weight:600;color:#B5390F;font-size:16px}
+.book-body p.txt{color:var(--muted);font-size:16.5px;line-height:2}
+.author{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center;padding:22px 24px;border-radius:26px}
+.author .org-photo{--sz:96px;--c:#D99A06}
+.author h3{font-family:var(--display);font-weight:900;font-size:19px;line-height:1.5}
+.author .role{display:inline-block;margin:4px 0 8px;font-family:var(--display);font-weight:600;font-size:12.5px;padding:2px 12px;border-radius:999px;color:#8F5A05;background:#FFF1CF;border:1px solid #F6DC9A}
+.author p{color:var(--muted);font-size:15px;line-height:1.85}
+.author .bio p + p{margin-top:8px}
+.evidence{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.ev{padding:16px 12px;border-radius:20px;text-align:center}
+.ev b{display:block;font-family:'Sora',sans-serif;font-weight:800;font-size:30px;line-height:1.1;background:linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 45%,#7B4DFF));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.ev span{display:block;margin-top:4px;font-family:var(--display);font-weight:600;font-size:12.5px;color:var(--muted);line-height:1.5}
+.results{padding:22px 24px;border-radius:26px}
+.results h3{font-family:var(--display);font-weight:900;font-size:17px;margin-bottom:10px}
+.results ul{list-style:none;display:grid;gap:8px}
+.results li{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.8}
+.results li::before{content:"";flex:none;width:9px;height:9px;margin-top:9px;border-radius:50%;background:var(--foil);background-size:300% 100%}
+.results small{display:block;margin-top:10px;color:var(--muted);font-size:12.5px}
+@media(max-width:900px){.book-grid{grid-template-columns:1fr}.cover-wrap{position:relative;top:0;max-width:280px;margin:auto}.evidence{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.author{grid-template-columns:1fr;text-align:center;justify-items:center}}
+
+/* ---------- المكونات التسعة ---------- */
+.comps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:46px}
+.comp{display:flex;flex-direction:column;gap:10px;padding:24px 24px 22px;border-radius:28px;transition:transform .25s,box-shadow .25s,border-color .25s}
+.comp:hover{transform:translateY(-6px);box-shadow:0 28px 48px -26px var(--c);border-color:color-mix(in srgb,var(--c) 45%,#fff)}
+.comp .c-top{display:flex;justify-content:space-between;align-items:flex-start}
+.comp .no{font-family:'Sora',sans-serif;font-weight:800;font-size:46px;line-height:1;color:transparent;-webkit-text-stroke:1.5px color-mix(in srgb,var(--c) 55%,transparent)}
+.comp h3{font-family:var(--display);font-weight:900;font-size:19px;line-height:1.5}
+.comp .en{font-family:'Sora',sans-serif;font-size:12.5px;color:color-mix(in srgb,var(--c) 70%,#1A1640);direction:ltr;text-align:start;margin-top:-6px}
+html[dir=rtl] .comp .en{text-align:right}
+.comp p{color:var(--muted);font-size:14.5px;line-height:1.85;flex:1}
+.comp .who{align-self:flex-start;display:inline-flex;gap:6px;align-items:center;font-family:var(--display);font-weight:600;font-size:12.5px;padding:3px 12px;border-radius:999px;color:color-mix(in srgb,var(--c) 75%,#1A1640);background:color-mix(in srgb,var(--c) 13%,#fff);border:1px solid color-mix(in srgb,var(--c) 30%,#fff)}
+.comp .who svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.comp .subs{display:flex;flex-wrap:wrap;gap:6px}
+.comp .subs span{font-size:12.5px;font-weight:600;padding:2px 10px;border-radius:9px;background:rgba(26,22,64,.06)}
+.comps-note{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
+@media(max-width:980px){.comps{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.comps{grid-template-columns:1fr}}
+
+/* ---------- المستويات وآلية العمل ---------- */
+.levels-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:40px;align-items:center;margin-top:46px}
+.pyr-wrap{filter:drop-shadow(0 22px 30px rgba(120,70,10,.22))}
+.pyramid{position:relative;width:100%;aspect-ratio:1.12/1;display:grid;grid-template-rows:42fr 29fr 29fr;gap:7px;clip-path:polygon(50% 0,100% 100%,0 100%)}
+.tier{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;padding:6px 10px;overflow:hidden;
+  background:linear-gradient(160deg,color-mix(in srgb,var(--c) 70%,#fff) -10%,var(--c) 50%,color-mix(in srgb,var(--c) 70%,#1A1640));}
+.tier::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.3),transparent 50%);pointer-events:none}
+.tier b{display:block;direction:ltr;unicode-bidi:isolate;font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(19px,2.2vw,26px);line-height:1.1;text-shadow:0 2px 8px rgba(0,0,0,.2)}
+.tier span{display:block;font-family:var(--display);font-weight:900;font-size:clamp(12.5px,1.25vw,15px);line-height:1.5;text-shadow:0 1px 6px rgba(0,0,0,.18)}
+.tier.t3{--c:#E2386F;justify-content:flex-end;padding-bottom:14%}
+.tier.t2{--c:#7B4DFF}
+.tier.t1{--c:#E8A50A}
+.lv-list{display:grid;gap:14px}
+.lv{display:grid;grid-template-columns:auto 1fr;gap:16px;padding:18px 20px;border-radius:24px}
+.lv .gorb{--sz:52px}
+.lv h3{font-family:var(--display);font-weight:900;font-size:17px;line-height:1.5}
+.lv p{color:var(--muted);font-size:14.5px;line-height:1.8}
+.lv .progs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.lv .progs span{font-family:var(--display);font-size:12px;font-weight:600;padding:2px 10px;border-radius:999px;color:color-mix(in srgb,var(--c) 75%,#1A1640);background:color-mix(in srgb,var(--c) 13%,#fff);border:1px solid color-mix(in srgb,var(--c) 30%,#fff)}
+.flow{margin-top:56px}
+.flow h3.flow-t{text-align:center;font-family:var(--display);font-weight:900;font-size:clamp(20px,2.2vw,26px);margin-bottom:6px}
+@media(min-width:901px){#journeyList::before{inset-inline:12.5%}}
+@media(max-width:900px){.levels-grid{grid-template-columns:1fr}.pyr-wrap{max-width:440px;margin:auto;width:100%}}
+
 
 /* ---------- الهيكل القيادي ---------- */
 .org-wrap{display:flex;flex-direction:column;align-items:center;margin-top:46px}
@@ -333,15 +427,15 @@ html.js .reveal.in{opacity:1;transform:none}
 <!-- الشريط العلوي -->
 <header class="nav">
   <a href="#top" class="brand">
-    <span class="brand-mark"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9z"/></svg></span>
+    <img class="brand-logo" src="assets/school-emblem.png" alt="شعار مدارس دار الذكر" width="48" height="48">
     <span><b data-i18n="brand">منصة الموهبة</b><small data-i18n="school">مدارس دار الذكر</small></span>
   </a>
   <div class="nav-right">
     <nav class="nav-links" id="navLinks">
       <a href="#top" data-i18n="nav.home">الرئيسية</a>
-      <a href="#stats" data-i18n="nav.stats">الأرقام</a>
-      <a href="#journey" data-i18n="nav.journey">رحلة الموهبة</a>
-      <a href="#sections" data-i18n="nav.sections">أقسام المنصة</a>
+      <a href="#model" data-i18n="nav.model">النموذج</a>
+      <a href="#book" data-i18n="nav.book">الكتاب والمؤلف</a>
+      <a href="#components" data-i18n="nav.components">المكونات التسعة</a>
       <a href="competitions.html" data-i18n="nav.comps">المسابقات</a>
       <a href="kpis.html" data-i18n="nav.kpis">المؤشرات والتقارير</a>
     </nav>
@@ -358,14 +452,14 @@ html.js .reveal.in{opacity:1;transform:none}
       <span class="chip"><i>✦</i><span data-i18n="hero.chip">النموذج التام لتطوير الموهبة TGDM</span></span>
       <h1 data-i18n="brand">منصة الموهبة</h1>
       <div class="hero-sub">
-        <img class="logo-school" src="assets/school-logo.png" alt="" onerror="this.remove()">
+        <img class="logo-school" src="assets/school-emblem.png" alt="" onerror="this.remove()">
         <span data-i18n="school">مدارس دار الذكر</span><span class="vbar"></span><span data-i18n="hero.sub">Talent Platform</span>
       </div>
-      <div class="duo"><span class="a" data-i18n="hero.a">نكتشف الموهبة… ونرعاها</span><span class="b"><span data-i18n="hero.b1">ونصنع</span> <em data-i18n="hero.b2">الإنجاز</em></span></div>
-      <p class="lead" data-i18n="hero.lead">منظومة متكاملة تتابع الطالب الموهوب من لحظة اكتشافه حتى منصات التتويج: قياس منهجي، ورعاية مستمرة، وتدريب منظم، ومشاركة نوعية في المسابقات المحلية والدولية.</p>
+      <div class="duo"><span class="a" data-i18n="hero.a">نموذج تطبيقي للكشف عن الموهبة</span><span class="b"><span data-i18n="hero.b1">وتطويرها في</span> <em data-i18n="hero.b2">المدرسة</em></span></div>
+      <p class="lead" data-i18n="hero.lead">المنصة الرسمية لتطبيق «النموذج التام لتطوير الموهبة» الذي صمّمه د. عادل عبدالجليل بترجي في مدارس دار الذكر: كشفٌ شامل بمعايير متعددة، وتسعة مكوّنات تحقق عنصري التمييز والتسريع، وسجلٌّ تام يتابع تطور موهبة كل طالب.</p>
       <div class="btns">
-        <a class="btn primary" href="kpis.html"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span data-i18n="cta.kpis">المؤشرات والتقارير</span></a>
-        <a class="btn ghost" href="#journey"><span data-i18n="cta.journey">رحلة الموهبة</span><svg class="arr" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></a>
+        <a class="btn primary" href="#model"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zM4 19V5M8 7h7"/></svg><span data-i18n="cta.about">تعرّف على النموذج</span></a>
+        <a class="btn ghost" href="#components"><span data-i18n="cta.model">المكونات التسعة</span><svg class="arr" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></a>
       </div>
     </div>
 
@@ -378,51 +472,29 @@ html.js .reveal.in{opacity:1;transform:none}
         <div class="core">
           <div class="core-foil"></div><div class="core-gloss"></div>
           <svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0zM17 6h3v2a3 3 0 01-3 3M7 6H4v2a3 3 0 003 3"/></svg>
-          <b>TGDM</b>
+          <b>TGDM</b><i class="core-sub" data-i18n="hero.core">9 مكونات</i>
         </div>
-        <div class="ring">
-          <div class="slot" style="--a:-90deg"><div class="up1"><div class="up2"><span class="orb" style="--c:#7B4DFF;--d:.1s"><span class="ball"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="pill" data-i18n="j1">الاكتشاف</span></span></div></div></div>
-          <div class="slot" style="--a:-30deg"><div class="up1"><div class="up2"><span class="orb" style="--c:#0EA5D6;--d:.2s"><span class="ball"><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg></span><span class="pill" data-i18n="j2">التصنيف</span></span></div></div></div>
-          <div class="slot" style="--a:30deg"><div class="up1"><div class="up2"><span class="orb" style="--c:#0E9F76;--d:.3s"><span class="ball"><svg viewBox="0 0 24 24"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 018-2.8A4.5 4.5 0 0120 10c0 4.5-4 8-8 11z"/></svg></span><span class="pill" data-i18n="j3">الرعاية</span></span></div></div></div>
-          <div class="slot" style="--a:90deg"><div class="up1"><div class="up2"><span class="orb" style="--c:#F07B0F;--d:.4s"><span class="ball"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></span><span class="pill" data-i18n="j4">التدريب</span></span></div></div></div>
-          <div class="slot" style="--a:150deg"><div class="up1"><div class="up2"><span class="orb" style="--c:#E2386F;--d:.5s"><span class="ball"><svg viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg></span><span class="pill" data-i18n="j5">المنافسة</span></span></div></div></div>
-          <div class="slot" style="--a:210deg"><div class="up1"><div class="up2"><span class="orb" style="--c:#D99A06;--d:.6s"><span class="ball"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M8.5 14l-1.5 7 5-3 5 3-1.5-7"/></svg></span><span class="pill" data-i18n="j6">التكريم</span></span></div></div></div>
-        </div>
+        <div class="ring" id="ring"></div>
       </div>
     </div>
   </div>
   <div class="band" aria-hidden="true"><div class="track" id="track"></div></div>
 </section>
 
-<!-- عن المنصة -->
-<section class="about" id="about">
+<!-- عن النموذج -->
+<section class="about" id="model">
   <div class="wrap">
     <div class="about-head reveal">
       <div>
-        <div class="kicker" data-i18n="about.kicker">عن المنصة</div>
-        <h2 class="sec-title"><span data-i18n="about.t1">من أنشطة متفرقة…</span><br><em data-i18n="about.t2">إلى منظومة متكاملة</em></h2>
+        <div class="kicker" data-i18n="about.kicker">النموذج التام لتطوير الموهبة</div>
+        <h2 class="sec-title"><span data-i18n="about.t1">نموذجٌ وُلد في دار الذكر…</span><br><em data-i18n="about.t2">لكل الفئات الطلابية</em></h2>
       </div>
-      <p class="sec-sub" data-i18n="about.desc">تجمع المنصة جهود الإدارات والمشرفين والمعلمين حول هدف واحد: ألّا تُكتشف الموهبة صدفةً عند إعلان مسابقة، بل تُرعى في مسار مستدام عبر السنوات.</p>
+      <p class="sec-sub" data-i18n="about.desc">يهدف النموذج إلى تلبية احتياجات تطوير الموهبة لجميع الفئات الطلابية التي تتكون منها البيئة المدرسية على اختلاف أعمارها ومستوياتها الأكاديمية وقدراتها العقلية، من خلال برامج ومناشط تحقق عنصري التمييز والتسريع في بيئة تعليمية ملائمة.</p>
     </div>
-    <div class="pillars">
-      <div class="pillar glass reveal" style="--c:#7B4DFF">
-        <span class="gorb"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M11 8v6M8 11h6"/></svg></span>
-        <h3 data-i18n="p1.t">اكتشاف منهجي</h3>
-        <p data-i18n="p1.d">تحديد الطلاب الموهوبين والمتميزين أكاديمياً عبر مقياس موهبة للقدرات العقلية المتعددة ومعايير ترشيح واضحة، وتصنيف اهتماماتهم ومجالات تميزهم.</p>
-        <svg class="big" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-      </div>
-      <div class="pillar glass reveal" style="--c:#E8A50A">
-        <span class="gorb"><svg viewBox="0 0 24 24"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 018-2.8A4.5 4.5 0 0120 10c0 4.5-4 8-8 11z"/></svg></span>
-        <h3 data-i18n="p2.t">رعاية متكاملة</h3>
-        <p data-i18n="p2.d">فصول موهبة ومنحة دروب والبرامج الإثرائية الداخلية والخارجية في نظام رعاية واحد، يتابع رحلة كل طالب عبر السنوات لا مشاركاته المنفصلة فقط.</p>
-        <svg class="big" viewBox="0 0 24 24"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 018-2.8A4.5 4.5 0 0120 10c0 4.5-4 8-8 11z"/></svg>
-      </div>
-      <div class="pillar glass reveal" style="--c:#E2386F">
-        <span class="gorb"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0zM17 6h3v2a3 3 0 01-3 3M7 6H4v2a3 3 0 003 3"/></svg></span>
-        <h3 data-i18n="p3.t">إنجاز مستدام</h3>
-        <p data-i18n="p3.d">مشاركة نوعية لا شكلية في المسابقات ذات الأولوية، ومجمع دائم من الطلاب عالي الإمكانات، ومؤشرات أداء تقيس الأثر وتقارنه بالأعوام السابقة.</p>
-        <svg class="big" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0z"/></svg>
-      </div>
+    <div class="def-card glass reveal" style="--c:#E8A50A">
+      <span class="q">”</span>
+      <blockquote data-i18n-html="about.def">يقدّم النموذج مفهوماً للموهبة يتمثل في كونها <b>مزيجاً متجانساً</b> من القدرة العقلية العالية، والتميّز في مجال أو أكثر من مجالات العلوم أو الفنون أو المعرفة، والسمات الشخصية المتمثلة في الدافعية الشخصية والابتكار، والأساليب المتعددة التي تُستقى من خلالها المعلومات وتُطرح في توظيف هادف لخدمة الإنسان والمجتمع، مع الاستعداد الوجداني لتحمّل تبعات التفرد.</blockquote>
+      <cite data-i18n="about.cite">— النموذج التام لتطوير الموهبة، د. عادل عبدالجليل بترجي</cite>
     </div>
   </div>
 </section>
@@ -462,6 +534,143 @@ html.js .reveal.in{opacity:1;transform:none}
   </div>
 </section>
 
+<!-- ركائز النموذج -->
+<section class="about about-pillars" id="pillars">
+  <div class="wrap">
+    <div class="pillars">
+      <div class="pillar glass reveal" style="--c:#7B4DFF">
+        <span class="gorb"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M11 8v6M8 11h6"/></svg></span>
+        <h3 data-i18n="p1.t">الأسلوب الشامل للكشف</h3>
+        <p data-i18n="p1.d">لا يعتمد على معيار واحد، بل يستخدم عدة معايير في آنٍ واحد: التحصيل الأكاديمي، والقدرات المتعددة، والقدرات العقلية، والقدرات الابتكارية، والسمات السلوكية.</p>
+        <svg class="big" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      </div>
+      <div class="pillar glass reveal" style="--c:#E8A50A">
+        <span class="gorb"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/><path d="M4 6v12"/></svg></span>
+        <h3 data-i18n="p2.t">عنصرا التمييز والتسريع</h3>
+        <p data-i18n="p2.d">يتكون النموذج من تسعة أجزاء رئيسة تحقق في مجموعها التنويع والتمييز، وتلبّي الاحتياجات العقلية المختلفة لجميع الطلاب من خلال البرامج والمناشط المتعددة.</p>
+        <svg class="big" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </div>
+      <div class="pillar glass reveal" style="--c:#E2386F">
+        <span class="gorb"><svg viewBox="0 0 24 24"><path d="M4 12c4-8 12-8 16 0-4 8-12 8-16 0z"/><circle cx="12" cy="12" r="2.5"/></svg></span>
+        <h3 data-i18n="p3.t">المرونة الفنية</h3>
+        <p data-i18n="p3.d">لا يشتمل النموذج على برامج وأنشطة محددة، بل على أُطر يمكن من خلالها تصميم البرامج التي تلائم الأهداف المرحلية والفروق العمرية والقدرات العقلية المتفاوتة للطلاب.</p>
+        <svg class="big" viewBox="0 0 24 24"><path d="M4 12c4-8 12-8 16 0-4 8-12 8-16 0z"/></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- الكتاب والمؤلف -->
+<section id="book">
+  <div class="wrap">
+    <div class="center reveal">
+      <div class="kicker" data-i18n="book.kicker">الكتاب والمؤلف</div>
+      <h2 class="sec-title"><span data-i18n="book.t1">من البحث العلمي…</span> <em data-i18n="book.t2">إلى التطبيق في المدرسة</em></h2>
+    </div>
+    <div class="book-grid">
+      <div class="cover-wrap reveal">
+        <span class="cover"><img src="assets/book/tgdm-cover.jpg" alt="غلاف كتاب النموذج التام لتطوير الموهبة" loading="lazy"></span>
+        <span class="spine-glow"></span>
+        <div class="book-meta">
+          <div class="full"><span data-i18n="bm.author.k">المؤلف</span><b data-i18n="bm.author">عادل بن عبدالجليل بن إبراهيم بترجي</b></div>
+          <div><span data-i18n="bm.pub.k">الناشر</span><b data-i18n="bm.pub">ديبونو للطباعة والنشر والتوزيع – عمّان</b></div>
+          <div><span data-i18n="bm.ed.k">الطبعة</span><b data-i18n="bm.ed">الأولى 2011م</b></div>
+        </div>
+      </div>
+      <div class="book-body">
+        <div class="reveal">
+          <div class="book-sub" data-i18n="book.sub">نموذج تطبيقي للكشف عن الموهبة وتطويرها في المدرسة</div>
+          <h3 class="book-title" data-i18n="book.title">النموذج التام لتطوير الموهبة في مدارس دار الذكر الأهلية للبنين بمحافظة جدة</h3>
+        </div>
+        <p class="txt reveal" data-i18n="book.p1">يقدّم الكتاب دراسة علمية هدفت إلى تصميم نموذج متكامل يُعنى بالموهوبين في مدارس دار الذكر، يربط بين الأهداف التعليمية لجميع الطلاب، ويتوافق مع البيئة التعليمية والتربوية والاجتماعية والديموغرافية للمدارس. استخدم فيه المؤلف منهجاً متعدداً يجمع المنهج الوصفي والتجريبي ودراسة الحالة، مع حصر شامل لطلاب المراحل الابتدائية والمتوسطة والثانوية.</p>
+        <p class="txt reveal" data-i18n="book.p2">انطلق المؤلف من نموذج الإثراء الثلاثي عبر المدرسة لرنزولي، وأجرى تعديلات على مكوناته بما يلائم البيئة المحلية، ليخرج بنموذج جديد أسماه «النموذج التام لتطوير الموهبة»؛ يتسع فيه مفهوم الموهبة من «تقاطع» السمات إلى «مزيج متجانس» منها، وتتوسع برامجه لتشمل الإثراء، والرعاية الخاصة، والتسريع الأكاديمي، والإرشاد النفسي، وتثقيف أولياء الأمور، وتدريب المعلمين.</p>
+        <div class="evidence">
+          <div class="ev glass reveal" style="--c:#E8A50A"><b>9</b><span data-i18n="ev.1">مكوّنات رئيسة</span></div>
+          <div class="ev glass reveal" style="--c:#7B4DFF"><b>830</b><span data-i18n="ev.2">طالباً شملهم الحصر الشامل</span></div>
+          <div class="ev glass reveal" style="--c:#0EA5D6"><b>89</b><span data-i18n="ev.3">معلماً تدرّبوا على مكونات النموذج</span></div>
+          <div class="ev glass reveal" style="--c:#E2386F"><b>2008</b><span data-i18n="ev.4">عام التطبيق الميداني</span></div>
+        </div>
+        <div class="results glass reveal" style="--c:#0E9F76">
+          <h3 data-i18n="res.t">ماذا أظهرت الدراسة؟</h3>
+          <ul>
+            <li data-i18n="res.1">أثّر النموذج بصورة دالة إحصائياً في زيادة القدرات العقلية للطلاب المشاركين في برامجه.</li>
+            <li data-i18n="res.2">زادت القدرات الإبداعية للطلاب في اختبار الدوائر لتورانس.</li>
+            <li data-i18n="res.3">تحسّن التحصيل الدراسي للطلاب المشاركين، وزاد تجانسهم أكاديمياً.</li>
+            <li data-i18n="res.4">كان لبرامج الإثراء العام والأنشطة الموجهة والإثراء المتخصص والمشاريع الهادفة أثرٌ إيجابي على أداء الطلاب.</li>
+            <li data-i18n="res.5">أثّرت البيئة الداعمة للموهبة بصورة دالة على الطلاب والمعلمين.</li>
+          </ul>
+          <small data-i18n="res.src">نُشرت دراسة فاعلية النموذج أيضاً في مجلة Gifted and Talented International الصادرة عن المجلس العالمي للأطفال الموهوبين (2010).</small>
+        </div>
+        <div class="author glass reveal">
+          <span class="org-photo"><img src="assets/leadership/adel-batterjee.jpg" alt="" loading="lazy" onerror="this.parentNode.classList.add('missing')"><span class="ph-ic"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></span></span>
+          <div>
+            <h3 data-i18n="au.name">د. عادل عبدالجليل بترجي</h3>
+            <span class="role" data-i18n="au.role">مؤلف النموذج · مؤسس مدارس دار الذكر</span>
+            <div class="bio" data-i18n-html="au.bio"><p>يترأس الدكتور عادل عبدالجليل بترجي المجلس الاستشاري لمدارس دار الذكر الأهلية بجدة، وبهذه الصفة يشرف على جميع أعمال التطوير التربوي والتعليمي للمدارس، والتي منها الكشف عن الموهبة وتطويرها. كما يرأس مجلس التأسيس لجامعة الثريا للعلوم والتقنية.</p><p>حاصل على شهادة البكالوريوس في الرياضيات من جامعة كانساس بالولايات المتحدة، والدكتوراه في علم النفس من الجامعة الأمريكية في بريطانيا، وكانت رسالته في تصميم نموذج للكشف عن الموهبة وتطويرها.</p><p>يقدّم العديد من الدورات التدريبية وورش العمل في مجال الكشف عن الموهبة وتطويرها، والتعلم باستخدام استراتيجيات التفكير التحليلي والإبداعي، والتربية القيادية.</p><p>صمّم النموذج التام لتطوير الموهبة وطبّقه ميدانياً في مدارس دار الذكر، وأهداه «إلى أصحاب القدرات العقلية العالية، والسمات الشخصية المتميزة، والنظرات المستقبلية الطموحة».</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- المكونات التسعة -->
+<section id="components">
+  <div class="wrap">
+    <div class="center reveal">
+      <div class="kicker" data-i18n="cmp.kicker">مكونات النموذج</div>
+      <h2 class="sec-title"><span data-i18n="cmp.t1">تسعة مكوّنات…</span> <em data-i18n="cmp.t2">منظومة واحدة</em></h2>
+      <p class="sec-sub" data-i18n="cmp.sub">يتكون النموذج التام لتطوير الموهبة من تسعة أجزاء رئيسة تحقق في مجموعها التنويع والتمييز، لتلبية الاحتياجات العقلية المختلفة لجميع الطلاب.</p>
+    </div>
+    <div class="comps" id="comps"></div>
+    <p class="comps-note reveal" data-i18n="cmp.note">الأسماء والتعريفات كما وردت في كتاب «النموذج التام لتطوير الموهبة».</p>
+  </div>
+</section>
+
+<!-- المستويات وآلية العمل -->
+<section id="levels">
+  <div class="wrap">
+    <div class="center reveal">
+      <div class="kicker" data-i18n="lv.kicker">كيف يعمل النموذج</div>
+      <h2 class="sec-title"><span data-i18n="lv.t1">ثلاثة مستويات…</span> <em data-i18n="lv.t2">لكل طالب مكان</em></h2>
+      <p class="sec-sub" data-i18n="lv.sub">يوزّع النموذج الطلاب على ثلاثة مستويات للموهبة، ويقدّم لكل مستوى برامجه، دون أن يُحرم أحد من الإثراء.</p>
+    </div>
+    <div class="levels-grid">
+      <div class="pyr-wrap reveal" aria-hidden="true"><div class="pyramid">
+        <div class="tier t3"><b>2–3%</b><span data-i18n="lv.3.n">النوع III</span></div>
+        <div class="tier t2"><b>15–20%</b><span data-i18n="lv.2.n">النوع II · الوعاء الإثرائي</span></div>
+        <div class="tier t1"><b>100%</b><span data-i18n="lv.1.n">النوع I · جميع الطلاب</span></div>
+      </div></div>
+      <div class="lv-list">
+        <div class="lv glass reveal" style="--c:#E8A50A"><span class="gorb"><b>I</b></span><div>
+          <h3 data-i18n="lv.1.t">النوع الأول: جميع الطلاب</h3>
+          <p data-i18n="lv.1.d">يُعرَّض جميع الطلاب لبرامج الإثراء العام، ويتدربون على المهارات، ويشاركون في الأنشطة الموجهة حسب اهتماماتهم.</p>
+          <div class="progs"><span data-i18n="c2.s">الإثراء العام</span><span data-i18n="c3.s">تنمية المهارات</span><span data-i18n="c4.s">الأنشطة الموجهة</span></div></div></div>
+        <div class="lv glass reveal" style="--c:#7B4DFF"><span class="gorb"><b>II</b></span><div>
+          <h3 data-i18n="lv.2.t">النوع الثاني: الوعاء الإثرائي</h3>
+          <p data-i18n="lv.2.d">الطلاب الذين تحققت فيهم معايير وعاء الموهبة، ويمثلون ما بين 15% و20% من الطلاب، تُقدَّم لهم برامج تدريب متقدمة وإثراء متخصص ورعاية خاصة.</p>
+          <div class="progs"><span data-i18n="c5.s">الإثراء المتخصص</span><span data-i18n="c7.s">التسريع الأكاديمي</span><span data-i18n="c8.s">الرعاية الخاصة</span></div></div></div>
+        <div class="lv glass reveal" style="--c:#E2386F"><span class="gorb"><b>III</b></span><div>
+          <h3 data-i18n="lv.3.t">النوع الثالث: فئة المبدعين</h3>
+          <p data-i18n="lv.3.d">طلاب أبدوا رغبة واهتماماً بمواضيع أو قضايا معينة، وأظهروا استعداداً للعمل الجاد في متابعتها على مستوى علمي متقدم، ويمثلون 2% – 3% من عموم الطلاب.</p>
+          <div class="progs"><span data-i18n="c6.s">المشاريع الهادفة</span></div></div></div>
+      </div>
+    </div>
+
+    <div class="flow">
+      <h3 class="flow-t reveal" data-i18n="flow.t">رحلة الطالب في النموذج</h3>
+      <div class="j-panel glass reveal" style="--c:#7B4DFF">
+      <ol class="journey" id="journeyList" style="grid-template-columns:repeat(4,1fr)">
+        <li class="step" style="--i:0"><span class="gorb" style="--c:#7B4DFF"><b>1</b></span><div class="s-txt"><h3 data-i18n="f1">الكشف الشامل</h3><p data-i18n="f1.d">معايير متعددة: التحصيل، والقدرات المتعددة، والقدرات العقلية والابتكارية، والسمات السلوكية</p></div></li>
+        <li class="step" style="--i:1"><span class="gorb" style="--c:#0EA5D6"><b>2</b></span><div class="s-txt"><h3 data-i18n="f2">السجل التام</h3><p data-i18n="f2.d">معلومات الوضع الراهن، وخطة التطوير، ومعلومات التطور</p></div></li>
+        <li class="step" style="--i:2"><span class="gorb" style="--c:#0E9F76"><b>3</b></span><div class="s-txt"><h3 data-i18n="f3">البرامج حسب المستوى</h3><p data-i18n="f3.d">الإثراء العام للجميع، والتمييز والتسريع للوعاء الإثرائي، والمشاريع الهادفة للمبدعين</p></div></li>
+        <li class="step" style="--i:3"><span class="gorb" style="--c:#D99A06"><b>4</b></span><div class="s-txt"><h3 data-i18n="f4">التقييم والمتابعة</h3><p data-i18n="f4.d">تقييم أداء المشاركين ومستويات المخرجات، وتطوير الموهبة الكامنة بتقييم إمكاناتها دورياً</p></div></li>
+      </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- الأرقام -->
 <section id="stats">
   <div class="wrap">
@@ -471,27 +680,6 @@ html.js .reveal.in{opacity:1;transform:none}
     </div>
     <div class="stats" id="statsGrid"></div>
     <div class="data-note" id="dataNote"><span class="dot"></span><span class="txt" data-i18n="data.pending">تُعرض الأرقام تلقائياً فور إدخالها في سجل بيانات المنصة</span></div>
-  </div>
-</section>
-
-<!-- رحلة الموهبة -->
-<section id="journey">
-  <div class="wrap">
-    <div class="center reveal">
-      <div class="kicker" data-i18n="journey.kicker">رحلة الموهبة</div>
-      <h2 class="sec-title"><span data-i18n="journey.t1">ست محطات…</span> <em data-i18n="journey.t2">من الاكتشاف إلى التتويج</em></h2>
-      <p class="sec-sub" data-i18n="journey.desc">مسار واحد يمر به كل طالب موهوب في مدارس دار الذكر، تُنسَّق فيه الأدوار بين المراحل الدراسية والمشرفين المتخصصين والمعلمين.</p>
-    </div>
-    <div class="j-panel glass reveal" style="--c:#7B4DFF">
-    <ol class="journey" id="journeyList">
-      <li class="step" style="--i:0"><span class="gorb" style="--c:#7B4DFF"><b>1</b></span><div class="s-txt"><h3 data-i18n="j1">الاكتشاف</h3><p data-i18n="j1.d">القياس والترشيح ونتائج مقياس موهبة</p></div></li>
-      <li class="step" style="--i:1"><span class="gorb" style="--c:#0EA5D6"><b>2</b></span><div class="s-txt"><h3 data-i18n="j2">التصنيف</h3><p data-i18n="j2.d">تحديد الاهتمامات ومجالات التميز لكل طالب</p></div></li>
-      <li class="step" style="--i:2"><span class="gorb" style="--c:#0E9F76"><b>3</b></span><div class="s-txt"><h3 data-i18n="j3">الرعاية</h3><p data-i18n="j3.d">فصول موهبة ومنحة دروب والبرامج الإثرائية</p></div></li>
-      <li class="step" style="--i:3"><span class="gorb" style="--c:#F07B0F"><b>4</b></span><div class="s-txt"><h3 data-i18n="j4">التدريب</h3><p data-i18n="j4.d">خطط تدريب منتظمة لكل مجال مع متابعة التقدم</p></div></li>
-      <li class="step" style="--i:4"><span class="gorb" style="--c:#E2386F"><b>5</b></span><div class="s-txt"><h3 data-i18n="j5">المنافسة</h3><p data-i18n="j5.d">مشاركات نوعية في المسابقات المحلية والدولية</p></div></li>
-      <li class="step" style="--i:5"><span class="gorb" style="--c:#D99A06"><b>6</b></span><div class="s-txt"><h3 data-i18n="j6">التكريم</h3><p data-i18n="j6.d">توثيق الإنجاز والاحتفاء بالمتميزين</p></div></li>
-    </ol>
-    </div>
   </div>
 </section>
 
@@ -537,20 +725,55 @@ const I18N = {
   'brand':'منصة الموهبة','school':'مدارس دار الذكر',
   'nav.home':'الرئيسية','nav.stats':'الأرقام','nav.journey':'رحلة الموهبة','nav.sections':'أقسام المنصة','nav.comps':'المسابقات','nav.kpis':'المؤشرات والتقارير',
   'hero.chip':'النموذج التام لتطوير الموهبة TGDM','hero.sub':'Talent Platform',
-  'hero.a':'نكتشف الموهبة… ونرعاها','hero.b1':'ونصنع','hero.b2':'الإنجاز',
-  'hero.lead':'منظومة متكاملة تتابع الطالب الموهوب من لحظة اكتشافه حتى منصات التتويج: قياس منهجي، ورعاية مستمرة، وتدريب منظم، ومشاركة نوعية في المسابقات المحلية والدولية.',
+  'hero.a':'نموذج تطبيقي للكشف عن الموهبة','hero.b1':'وتطويرها في','hero.b2':'المدرسة',
+  'hero.lead':'المنصة الرسمية لتطبيق «النموذج التام لتطوير الموهبة» الذي صمّمه د. عادل عبدالجليل بترجي في مدارس دار الذكر: كشفٌ شامل بمعايير متعددة، وتسعة مكوّنات تحقق عنصري التمييز والتسريع، وسجلٌّ تام يتابع تطور موهبة كل طالب.',
   'cta.kpis':'المؤشرات والتقارير','cta.journey':'رحلة الموهبة',
   'j1':'الاكتشاف','j2':'التصنيف','j3':'الرعاية','j4':'التدريب','j5':'المنافسة','j6':'التكريم',
   'j1.d':'القياس والترشيح ونتائج مقياس موهبة','j2.d':'تحديد الاهتمامات ومجالات التميز لكل طالب','j3.d':'فصول موهبة ومنحة دروب والبرامج الإثرائية',
   'j4.d':'خطط تدريب منتظمة لكل مجال مع متابعة التقدم','j5.d':'مشاركات نوعية في المسابقات المحلية والدولية','j6.d':'توثيق الإنجاز والاحتفاء بالمتميزين',
-  'band':['اكتشاف','رعاية','تدريب','منافسة','تتويج','تميّز','ابتكار','إنجاز'],
+  'band':['الكشف الشامل','التمييز','التسريع','الإثراء','الوعاء الإثرائي','الرعاية الخاصة','المشاريع الهادفة','المرونة الفنية'],
   'stats.kicker':'أثرنا بالأرقام','stats.t1':'الموهبة في','stats.t2':'دار الذكر',
   'data.pending':'تُعرض الأرقام تلقائياً فور إدخالها في سجل بيانات المنصة','data.live':'بيانات محدثة من سجل المنصة','data.error':'تعذر تحميل البيانات حالياً — حاول التحديث لاحقاً',
-  'about.kicker':'عن المنصة','about.t1':'من أنشطة متفرقة…','about.t2':'إلى منظومة متكاملة',
-  'about.desc':'تجمع المنصة جهود الإدارات والمشرفين والمعلمين حول هدف واحد: ألّا تُكتشف الموهبة صدفةً عند إعلان مسابقة، بل تُرعى في مسار مستدام عبر السنوات.',
-  'p1.t':'اكتشاف منهجي','p1.d':'تحديد الطلاب الموهوبين والمتميزين أكاديمياً عبر مقياس موهبة للقدرات العقلية المتعددة ومعايير ترشيح واضحة، وتصنيف اهتماماتهم ومجالات تميزهم.',
-  'p2.t':'رعاية متكاملة','p2.d':'فصول موهبة ومنحة دروب والبرامج الإثرائية الداخلية والخارجية في نظام رعاية واحد، يتابع رحلة كل طالب عبر السنوات لا مشاركاته المنفصلة فقط.',
-  'p3.t':'إنجاز مستدام','p3.d':'مشاركة نوعية لا شكلية في المسابقات ذات الأولوية، ومجمع دائم من الطلاب عالي الإمكانات، ومؤشرات أداء تقيس الأثر وتقارنه بالأعوام السابقة.',
+  'about.kicker':'النموذج التام لتطوير الموهبة','about.t1':'نموذجٌ وُلد في دار الذكر…','about.t2':'لكل الفئات الطلابية',
+  'about.desc':'يهدف النموذج إلى تلبية احتياجات تطوير الموهبة لجميع الفئات الطلابية التي تتكون منها البيئة المدرسية على اختلاف أعمارها ومستوياتها الأكاديمية وقدراتها العقلية، من خلال برامج ومناشط تحقق عنصري التمييز والتسريع في بيئة تعليمية ملائمة.',
+  'p1.t':'الأسلوب الشامل للكشف','p1.d':'لا يعتمد على معيار واحد، بل يستخدم عدة معايير في آنٍ واحد: التحصيل الأكاديمي، والقدرات المتعددة، والقدرات العقلية، والقدرات الابتكارية، والسمات السلوكية.',
+  'p2.t':'عنصرا التمييز والتسريع','p2.d':'يتكون النموذج من تسعة أجزاء رئيسة تحقق في مجموعها التنويع والتمييز، وتلبّي الاحتياجات العقلية المختلفة لجميع الطلاب من خلال البرامج والمناشط المتعددة.',
+  'p3.t':'المرونة الفنية','p3.d':'لا يشتمل النموذج على برامج وأنشطة محددة، بل على أُطر يمكن من خلالها تصميم البرامج التي تلائم الأهداف المرحلية والفروق العمرية والقدرات العقلية المتفاوتة للطلاب.',
+
+  'nav.model':'النموذج','nav.book':'الكتاب والمؤلف','nav.components':'المكونات التسعة',
+  'cta.about':'تعرّف على النموذج','cta.model':'المكونات التسعة','hero.core':'9 مكونات',
+  'about.def':'يقدّم النموذج مفهوماً للموهبة يتمثل في كونها <b>مزيجاً متجانساً</b> من القدرة العقلية العالية، والتميّز في مجال أو أكثر من مجالات العلوم أو الفنون أو المعرفة، والسمات الشخصية المتمثلة في الدافعية الشخصية والابتكار، والأساليب المتعددة التي تُستقى من خلالها المعلومات وتُطرح في توظيف هادف لخدمة الإنسان والمجتمع، مع الاستعداد الوجداني لتحمّل تبعات التفرد.',
+  'about.cite':'— النموذج التام لتطوير الموهبة، د. عادل عبدالجليل بترجي',
+  'book.kicker':'الكتاب والمؤلف','book.t1':'من البحث العلمي…','book.t2':'إلى التطبيق في المدرسة',
+  'book.sub':'نموذج تطبيقي للكشف عن الموهبة وتطويرها في المدرسة',
+  'book.title':'النموذج التام لتطوير الموهبة في مدارس دار الذكر الأهلية للبنين بمحافظة جدة',
+  'book.p1':'يقدّم الكتاب دراسة علمية هدفت إلى تصميم نموذج متكامل يُعنى بالموهوبين في مدارس دار الذكر، يربط بين الأهداف التعليمية لجميع الطلاب، ويتوافق مع البيئة التعليمية والتربوية والاجتماعية والديموغرافية للمدارس. استخدم فيه المؤلف منهجاً متعدداً يجمع المنهج الوصفي والتجريبي ودراسة الحالة، مع حصر شامل لطلاب المراحل الابتدائية والمتوسطة والثانوية.',
+  'book.p2':'انطلق المؤلف من نموذج الإثراء الثلاثي عبر المدرسة لرنزولي، وأجرى تعديلات على مكوناته بما يلائم البيئة المحلية، ليخرج بنموذج جديد أسماه «النموذج التام لتطوير الموهبة»؛ يتسع فيه مفهوم الموهبة من «تقاطع» السمات إلى «مزيج متجانس» منها، وتتوسع برامجه لتشمل الإثراء، والرعاية الخاصة، والتسريع الأكاديمي، والإرشاد النفسي، وتثقيف أولياء الأمور، وتدريب المعلمين.',
+  'bm.author.k':'المؤلف','bm.author':'عادل بن عبدالجليل بن إبراهيم بترجي','bm.pub.k':'الناشر','bm.pub':'ديبونو للطباعة والنشر والتوزيع – عمّان','bm.ed.k':'الطبعة','bm.ed':'الأولى 2011م',
+  'ev.1':'مكوّنات رئيسة','ev.2':'طالباً شملهم الحصر الشامل','ev.3':'معلماً تدرّبوا على مكونات النموذج','ev.4':'عام التطبيق الميداني',
+  'res.t':'ماذا أظهرت الدراسة؟',
+  'res.1':'أثّر النموذج بصورة دالة إحصائياً في زيادة القدرات العقلية للطلاب المشاركين في برامجه.',
+  'res.2':'زادت القدرات الإبداعية للطلاب في اختبار الدوائر لتورانس.',
+  'res.3':'تحسّن التحصيل الدراسي للطلاب المشاركين، وزاد تجانسهم أكاديمياً.',
+  'res.4':'كان لبرامج الإثراء العام والأنشطة الموجهة والإثراء المتخصص والمشاريع الهادفة أثرٌ إيجابي على أداء الطلاب.',
+  'res.5':'أثّرت البيئة الداعمة للموهبة بصورة دالة على الطلاب والمعلمين.',
+  'res.src':'نُشرت دراسة فاعلية النموذج أيضاً في مجلة Gifted and Talented International الصادرة عن المجلس العالمي للأطفال الموهوبين (2010).',
+  'au.name':'د. عادل عبدالجليل بترجي','au.role':'مؤلف النموذج · مؤسس مدارس دار الذكر',
+  'au.bio':'<p>يترأس الدكتور عادل عبدالجليل بترجي المجلس الاستشاري لمدارس دار الذكر الأهلية بجدة، وبهذه الصفة يشرف على جميع أعمال التطوير التربوي والتعليمي للمدارس، والتي منها الكشف عن الموهبة وتطويرها. كما يرأس مجلس التأسيس لجامعة الثريا للعلوم والتقنية.</p><p>حاصل على شهادة البكالوريوس في الرياضيات من جامعة كانساس بالولايات المتحدة، والدكتوراه في علم النفس من الجامعة الأمريكية في بريطانيا، وكانت رسالته في تصميم نموذج للكشف عن الموهبة وتطويرها.</p><p>يقدّم العديد من الدورات التدريبية وورش العمل في مجال الكشف عن الموهبة وتطويرها، والتعلم باستخدام استراتيجيات التفكير التحليلي والإبداعي، والتربية القيادية.</p><p>صمّم النموذج التام لتطوير الموهبة وطبّقه ميدانياً في مدارس دار الذكر، وأهداه «إلى أصحاب القدرات العقلية العالية، والسمات الشخصية المتميزة، والنظرات المستقبلية الطموحة».</p>',
+  'cmp.kicker':'مكونات النموذج','cmp.t1':'تسعة مكوّنات…','cmp.t2':'منظومة واحدة',
+  'cmp.sub':'يتكون النموذج التام لتطوير الموهبة من تسعة أجزاء رئيسة تحقق في مجموعها التنويع والتمييز، لتلبية الاحتياجات العقلية المختلفة لجميع الطلاب.',
+  'cmp.note':'الأسماء والتعريفات كما وردت في كتاب «النموذج التام لتطوير الموهبة».','cmp.who':'الفئة المستهدفة',
+  'lv.kicker':'كيف يعمل النموذج','lv.t1':'ثلاثة مستويات…','lv.t2':'لكل طالب مكان',
+  'lv.sub':'يوزّع النموذج الطلاب على ثلاثة مستويات للموهبة، ويقدّم لكل مستوى برامجه، دون أن يُحرم أحد من الإثراء.',
+  'lv.1.n':'النوع I · جميع الطلاب','lv.2.n':'النوع II · الوعاء الإثرائي','lv.3.n':'النوع III',
+  'lv.1.t':'النوع الأول: جميع الطلاب','lv.1.d':'يُعرَّض جميع الطلاب لبرامج الإثراء العام، ويتدربون على المهارات، ويشاركون في الأنشطة الموجهة حسب اهتماماتهم.',
+  'lv.2.t':'النوع الثاني: الوعاء الإثرائي','lv.2.d':'الطلاب الذين تحققت فيهم معايير وعاء الموهبة، ويمثلون ما بين 15% و20% من الطلاب، تُقدَّم لهم برامج تدريب متقدمة وإثراء متخصص ورعاية خاصة.',
+  'lv.3.t':'النوع الثالث: فئة المبدعين','lv.3.d':'طلاب أبدوا رغبة واهتماماً بمواضيع أو قضايا معينة، وأظهروا استعداداً للعمل الجاد في متابعتها على مستوى علمي متقدم، ويمثلون 2% – 3% من عموم الطلاب.',
+  'flow.t':'رحلة الطالب في النموذج',
+  'f1':'الكشف الشامل','f1.d':'معايير متعددة: التحصيل، والقدرات المتعددة، والقدرات العقلية والابتكارية، والسمات السلوكية',
+  'f2':'السجل التام','f2.d':'معلومات الوضع الراهن، وخطة التطوير، ومعلومات التطور',
+  'f3':'البرامج حسب المستوى','f3.d':'الإثراء العام للجميع، والتمييز والتسريع للوعاء الإثرائي، والمشاريع الهادفة للمبدعين',
+  'f4':'التقييم والمتابعة','f4.d':'تقييم أداء المشاركين ومستويات المخرجات، وتطوير الموهبة الكامنة بتقييم إمكاناتها دورياً',
   'lead.kicker':'الهيكل القيادي','lead.t1':'قيادة تحتضن','lead.t2':'الموهبة',
   'lead.sub':'تعمل منظومة الموهبة في مدارس دار الذكر بدعم مباشر من قيادة المدارس، من التأسيس إلى التنفيذ.',
   'lead.p1.name':'د. عادل عبد الجليل بترجي','lead.p1.role':'المؤسس',
@@ -567,21 +790,56 @@ const I18N = {
  en:{
   'brand':'Talent Platform','school':'Dar Al-Thikr Schools',
   'nav.home':'Home','nav.stats':'Numbers','nav.journey':'Journey','nav.sections':'Sections','nav.comps':'Competitions','nav.kpis':'KPIs & Reports',
-  'hero.chip':'Total Talent Development Model (TGDM)','hero.sub':'منصة الموهبة',
-  'hero.a':'We discover talent and nurture it','hero.b1':'and turn it into','hero.b2':'achievement',
-  'hero.lead':'An integrated system that follows each gifted student from identification to the podium: systematic assessment, continuous care, structured training, and meaningful participation in national and international competitions.',
+  'hero.chip':'Total Giftedness Development Model (TGDM)','hero.sub':'منصة الموهبة',
+  'hero.a':'An applied model for identifying giftedness','hero.b1':'and developing it in','hero.b2':'school',
+  'hero.lead':'The official platform for implementing the "Total Giftedness Development Model" designed by Dr. Adel A. Batterjee at Dar Al-Thikr Schools: comprehensive multi-criteria identification, nine components delivering differentiation and acceleration, and a Total Record that follows each student’s growth.',
   'cta.kpis':'KPIs & Reports','cta.journey':'Talent Journey',
   'j1':'Identify','j2':'Classify','j3':'Nurture','j4':'Train','j5':'Compete','j6':'Celebrate',
   'j1.d':'Assessment, nomination and Mawhiba test results','j2.d':'Mapping each student’s interests and strengths','j3.d':'Mawhiba classes, Duroob grant and enrichment programs',
   'j4.d':'Regular training plans per field with progress tracking','j5.d':'Meaningful entries in national and international competitions','j6.d':'Documenting achievements and honoring achievers',
-  'band':['Discover','Nurture','Train','Compete','Win','Excel','Innovate','Achieve'],
+  'band':['Comprehensive identification','Differentiation','Acceleration','Enrichment','Enrichment pool','Mentorship','Targeted projects','Technical flexibility'],
   'stats.kicker':'Our impact in numbers','stats.t1':'Talent at','stats.t2':'Dar Al-Thikr',
   'data.pending':'Figures appear automatically once entered in the platform’s data sheet','data.live':'Live figures from the platform data sheet','data.error':'Data could not be loaded right now — please refresh later',
-  'about.kicker':'About the platform','about.t1':'From scattered activities…','about.t2':'to one integrated system',
-  'about.desc':'The platform brings administrators, supervisors and teachers together around one goal: talent should never be found by chance when a competition is announced, but nurtured along a sustainable path over the years.',
-  'p1.t':'Systematic identification','p1.d':'Identifying gifted and academically excellent students through the Mawhiba Multiple Mental Abilities test and clear nomination criteria, then mapping their interests and strengths.',
-  'p2.t':'Integrated care','p2.d':'Mawhiba classes, the Duroob grant and internal and external enrichment programs in one care system that follows each student’s journey across years, not isolated entries.',
-  'p3.t':'Sustainable achievement','p3.d':'Meaningful — not token — participation in priority competitions, a standing pool of high-potential students, and KPIs that measure impact against previous years.',
+  'about.kicker':'The Total Giftedness Development Model','about.t1':'A model born at Dar Al-Thikr…','about.t2':'for every group of students',
+  'about.desc':'The model aims to meet the giftedness-development needs of all student groups in the school — whatever their ages, academic levels and mental abilities — through programs and activities that achieve differentiation and acceleration in a suitable learning environment.',
+  'p1.t':'Comprehensive identification','p1.d':'Not one criterion but several at once: academic achievement, multiple abilities, mental abilities, creative abilities and behavioral traits.',
+  'p2.t':'Differentiation & acceleration','p2.d':'Nine main parts that together achieve diversification and differentiation, meeting the different mental needs of all students through multiple programs and activities.',
+  'p3.t':'Technical flexibility','p3.d':'The model contains frameworks rather than fixed programs, so programs can be designed to fit stage goals, age differences and students’ varying mental abilities.',
+
+  'nav.model':'The Model','nav.book':'Book & Author','nav.components':'Nine Components',
+  'cta.about':'Discover the model','cta.model':'Nine components','hero.core':'9 components',
+  'about.def':'The model offers a concept of giftedness as <b>a homogeneous blend</b> of high mental ability; excellence in one or more fields of science, arts or knowledge; personal traits of motivation and innovation; and the multiple ways information is gathered and purposefully employed to serve people and society — together with the emotional readiness to bear the consequences of uniqueness.',
+  'about.cite':'— The Total Giftedness Development Model, Dr. Adel A. Batterjee',
+  'book.kicker':'Book & Author','book.t1':'From scientific research…','book.t2':'to school practice',
+  'book.sub':'An applied model for identifying and developing giftedness in school',
+  'book.title':'The Total Giftedness Development Model at Dar Al-Thikr Schools for Boys, Jeddah',
+  'book.p1':'The book presents a scientific study that designed an integrated model for gifted students at Dar Al-Thikr Schools — linking the learning goals of all students and fitting the schools’ educational, social and demographic environment. The author used multiple methods (descriptive, experimental and case study) with a full census of primary, intermediate and secondary students.',
+  'book.p2':'Starting from Renzulli’s Schoolwide Enrichment Triad Model, the author adapted its components to the local environment and produced a new model he named the "Total Giftedness Development Model" — widening the concept of giftedness from an "intersection" of traits to a "homogeneous blend", and extending its programs to enrichment, mentorship, academic acceleration, psychological counseling, parent education and teacher training.',
+  'bm.author.k':'Author','bm.author':'Adel bin Abduljalil bin Ibrahim Batterjee','bm.pub.k':'Publisher','bm.pub':'Debono Publishing – Amman','bm.ed.k':'Edition','bm.ed':'First, 2011',
+  'ev.1':'core components','ev.2':'students in the full census','ev.3':'teachers trained on the model','ev.4':'year of field implementation',
+  'res.t':'What did the study show?',
+  'res.1':'The model had a statistically significant effect on increasing the mental abilities of participating students.',
+  'res.2':'Students’ creative abilities increased on the Torrance Circles Test.',
+  'res.3':'Participants’ academic achievement improved, with greater academic homogeneity.',
+  'res.4':'General enrichment, enrichment clusters, specialty enrichment and targeted projects programs all had a positive effect on performance.',
+  'res.5':'The environment supportive of giftedness had a significant effect on students and teachers.',
+  'res.src':'A study of the model’s efficacy was also published in Gifted and Talented International, journal of the World Council for Gifted and Talented Children (2010).',
+  'au.name':'Dr. Adel A. Batterjee','au.role':'Author of the model · Founder of Dar Al-Thikr Schools',
+  'au.bio':'<p>Dr. Adel Abduljalil Batterjee chairs the Advisory Board of Dar Al-Thikr Private Schools in Jeddah, and in this capacity oversees all educational and instructional development work at the schools, including the identification and development of giftedness. He also chairs the Founding Board of Al-Thuraya University for Science and Technology.</p><p>He holds a BSc in Mathematics from the University of Kansas, USA, and a PhD in Psychology from the American University in Britain; his dissertation designed a model for identifying and developing giftedness.</p><p>He delivers many training courses and workshops on identifying and developing giftedness, learning through analytical and creative thinking strategies, and leadership education.</p><p>He designed the Total Giftedness Development Model, implemented it at Dar Al-Thikr Schools, and dedicated it "to those with high mental abilities, distinguished personal traits and ambitious visions of the future".</p>',
+  'cmp.kicker':'Model components','cmp.t1':'Nine components…','cmp.t2':'one system',
+  'cmp.sub':'The Total Giftedness Development Model consists of nine main parts that together achieve diversification and differentiation to meet the different mental needs of all students.',
+  'cmp.note':'Names and definitions as stated in the book "The Total Giftedness Development Model".','cmp.who':'Target group',
+  'lv.kicker':'How the model works','lv.t1':'Three levels…','lv.t2':'a place for every student',
+  'lv.sub':'The model places students on three levels of giftedness and offers each level its programs — no one is left without enrichment.',
+  'lv.1.n':'Type I · All students','lv.2.n':'Type II · Enrichment pool','lv.3.n':'Type III',
+  'lv.1.t':'Type I: All students','lv.1.d':'All students are exposed to general enrichment, trained in skills, and take part in enrichment clusters according to their interests.',
+  'lv.2.t':'Type II: The enrichment pool','lv.2.d':'Students who meet the talent-pool criteria — about 15–20% of students — receive advanced training, specialty enrichment and mentorship.',
+  'lv.3.t':'Type III: The creative group','lv.3.d':'Students who show genuine interest in specific topics or issues and readiness to pursue them seriously at an advanced level — about 2–3% of all students.',
+  'flow.t':'The student’s journey in the model',
+  'f1':'Comprehensive identification','f1.d':'Multiple criteria: achievement, multiple abilities, mental and creative abilities, and behavioral traits',
+  'f2':'The Total Record','f2.d':'Current status, development plan, and progress information',
+  'f3':'Programs by level','f3.d':'General enrichment for all, differentiation and acceleration for the enrichment pool, targeted projects for the creative group',
+  'f4':'Evaluation & follow-up','f4.d':'Evaluating participants and output levels, and developing latent giftedness through periodic re-evaluation',
   'lead.kicker':'Leadership','lead.t1':'Leadership that embraces','lead.t2':'talent',
   'lead.sub':'The talent system at Dar Al-Thikr Schools works with direct support from school leadership — from founding to execution.',
   'lead.p1.name':'Dr. Adel Abduljalil Batterjee','lead.p1.role':'Founder',
@@ -612,7 +870,14 @@ const ICONS = {
   flag:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
   trophy:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0zM17 6h3v2a3 3 0 01-3 3M7 6H4v2a3 3 0 003 3"/>',
   book:'<path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zM4 19V5M8 7h7"/>',
-  star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>'
+  star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+  record:'<path d="M14 3H6a1 1 0 00-1 1v16a1 1 0 001 1h12a1 1 0 001-1V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
+  globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/>',
+  brain:'<path d="M9 4a3 3 0 00-3 3 3 3 0 00-2 5 3 3 0 002 5 3 3 0 006 0V4a3 3 0 00-3 0zM15 4a3 3 0 013 3 3 3 0 012 5 3 3 0 01-2 5 3 3 0 01-6 0"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="9" r="2.5"/><path d="M2.5 20a6.5 6.5 0 0113 0M15 14.5a5 5 0 016.5 5"/>',
+  rocket:'<path d="M5 15c-1 1-2 4-2 6 2 0 5-1 6-2M9 15l-3-3c2-6 7-9 14-9 0 7-3 12-9 14z"/><circle cx="15" cy="9" r="1.6"/>',
+  compass:'<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+  shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>'
 };
 const ico = k => `<svg viewBox="0 0 24 24">${ICONS[k]}</svg>`;
 
@@ -620,11 +885,11 @@ const CARDS = [
   {k:'kpis', href:'kpis.html', live:true, c:'#F07B0F', ic:'chart',
    ar:['المؤشرات والتقارير','لوحة مؤشرات الأداء ومقارنة الأعوام ومسار المسابقات والتقارير الدورية والسنوية.'],
    en:['KPIs & Reports','Performance indicators, year-over-year comparison, competition pipeline and periodic and annual reports.']},
-  {k:'model', c:'#7B4DFF', ic:'model', ar:['النموذج والمنظومة','النموذج التام لتطوير الموهبة ومكوناته، والأدوار والمسؤوليات في المدارس.'], en:['Model & System','The Total Talent Development Model, its components, and roles and responsibilities across the schools.']},
-  {k:'identify', c:'#0EA5D6', ic:'search', ar:['الاكتشاف والقياس','مقياس موهبة للقدرات العقلية المتعددة، ومعايير الترشيح ودور ولي الأمر.'], en:['Identification','The Mawhiba Multiple Mental Abilities test, nomination criteria and the parent’s role.']},
-  {k:'care', c:'#0E9F76', ic:'heart', ar:['برامج الرعاية','فصول موهبة، ومنحة دروب، والبرامج الإثرائية مع موهبة والجامعات.'], en:['Care Programs','Mawhiba classes, the Duroob grant, and enrichment programs with Mawhiba and universities.']},
+  {k:'model', href:'#components', live:true, c:'#7B4DFF', ic:'model', ar:['النموذج ومكوناته التسعة','النموذج التام لتطوير الموهبة: تعريفه، والكتاب والمؤلف، ومكوناته التسعة، ومستويات الموهبة، ومصطلحاته.'], en:['The Model & its nine components','The Total Giftedness Development Model: definition, book and author, nine components, levels and terminology.']},
+  {k:'identify', c:'#0EA5D6', ic:'search', ar:['الكشف الشامل والقياس','الأسلوب الشامل للكشف بمعاييره المتعددة، ومقياس موهبة للقدرات العقلية المتعددة، ودور ولي الأمر.'], en:['Identification','The Mawhiba Multiple Mental Abilities test, nomination criteria and the parent’s role.']},
+  {k:'care', c:'#0E9F76', ic:'heart', ar:['الرعاية الخاصة والإثراء','برنامج الرعاية الخاصة والإثراء المتخصص، وفصول موهبة ومنحة دروب، والبرامج الإثرائية مع الجامعات.'], en:['Care Programs','Mawhiba classes, the Duroob grant, and enrichment programs with Mawhiba and universities.']},
   {k:'comp', href:'competitions.html', live:true, c:'#E2386F', ic:'cal', ar:['المسابقات والتقويم','كل المسابقات بملخص لكل منها، وصفحة خاصة بالشروط والتسجيل والمخطط الزمني والمصادر والتدريب والنتائج.'], en:['Competitions & Calendar','Every competition with a summary and its own page: conditions, registration, timeline, resources, training and results.']},
-  {k:'research', c:'#6D4BFF', ic:'flask', ar:['البحث والابتكار','من الاهتمام إلى الفكرة إلى المشروع… وصولاً إلى إبداع وISEF.'], en:['Research & Innovation','From interest to idea to project… all the way to Ibdaa and ISEF.']},
+  {k:'research', c:'#6D4BFF', ic:'flask', ar:['المشاريع الهادفة','برنامج المشاريع الهادفة: من الاهتمام إلى البحث العلمي المتقدم… وصولاً إلى إبداع وISEF.'], en:['Research & Innovation','From interest to idea to project… all the way to Ibdaa and ISEF.']},
   {k:'honor', c:'#D99A06', ic:'medal', ar:['لوحة الشرف','إنجازات طلابنا وميدالياتهم موثقة بالصور حسب العام والمسابقة.'], en:['Honor Board','Our students’ achievements and medals, documented with photos by year and competition.']},
   {k:'parents', c:'#0C93C0', ic:'family', ar:['أولياء الأمور والطلاب','كيف ألتحق؟ وما الفرص المتاحة لابني؟ أسئلة شائعة وقنوات التواصل.'], en:['Parents & Students','How do I join? What opportunities are open to my child? FAQs and contact channels.']},
   {k:'partners', c:'#C2410C', ic:'link', ar:['الشركاء والفرص','موهبة والجامعات والجهات المنظمة، وأحدث الفرص الأكاديمية المتاحة لطلابنا.'], en:['Partners & Opportunities','Mawhiba, universities and organizers, and the latest academic opportunities for our students.']}
@@ -632,9 +897,54 @@ const CARDS = [
 
 CARDS.sort((a, b) => (b.live ? 1 : 0) - (a.live ? 1 : 0)); // الأقسام المتاحة أولاً
 
+
+/* ==========================================================
+   مكونات النموذج التام لتطوير الموهبة — كما وردت في الكتاب
+   ========================================================== */
+const TGDM = [
+  { n:1, c:'#D99A06', ic:'record', ar:'السجل التام لتطور الموهبة', en:'Giftedness Development Total Record', s:{ar:'السجل التام',en:'Total Record'},
+    who:{ar:'كل طالب',en:'Every student'},
+    d:{ar:'وسيلة منهجية إجرائية لجمع المعلومات الدالة على الموهبة وتدوينها وتفعيلها، ومن ثم متابعة تطور الموهبة وتوظيفها. ويتكون من ثلاثة مكونات: معلومات الوضع الراهن، ومعلومات خطة التطوير، ومعلومات التطور.',
+       en:'A systematic, procedural tool to collect, record and activate information indicating giftedness, then follow its development. It has three parts: current-status information, development-plan information and progress information.'} },
+  { n:2, c:'#0EA5D6', ic:'globe', ar:'برنامج الإثراء العام', en:'General Enrichment Program', s:{ar:'الإثراء العام',en:'General Enrichment'},
+    who:{ar:'عموم الطلاب',en:'All students'},
+    d:{ar:'وحدات موجهة نحو شريحة عموم الطلاب، تعرّضهم لمجموعة عريضة ومتنوعة من أفرع المعرفة والمواضيع الإثرائية والمهن والهوايات والأعلام والأماكن والأحداث التي لا تحتويها المناهج الدراسية، عبر المحاضرين والأفلام والمطبوعات والكتب.',
+       en:'Units aimed at all students, exposing them to a broad variety of knowledge, enrichment topics, careers, hobbies, notable figures, places and events not covered by the curriculum — through speakers, films, publications and books.'} },
+  { n:3, c:'#7B4DFF', ic:'brain', ar:'برنامج تنمية المهارات', en:'Skills Development Program', s:{ar:'تنمية المهارات',en:'Skills Development'},
+    who:{ar:'عموم الطلاب والوعاء الإثرائي',en:'All students & enrichment pool'},
+    d:{ar:'وحدات تدريبية نظرية وتطبيقية تغطي حزمة المهارات اللازمة: المهارات المعرفية كحل المشكلات والتفكير الانتقادي واتخاذ القرارات، والمهارات الوجدانية، ومهارات كيفية التعلم، ومهارات البحث العلمي والاتصال وإدارة الذات والتكيف النفسي.',
+       en:'Theoretical and applied training units covering cognitive skills (problem solving, critical thinking, decision making), affective skills, how-to-learn skills, research, communication, self-management and psychological adaptation skills.'} },
+  { n:4, c:'#0E9F76', ic:'users', ar:'برنامج الأنشطة الموجهة', en:'Enrichment Cluster Program', s:{ar:'الأنشطة الموجهة',en:'Enrichment Clusters'},
+    who:{ar:'جميع الطلاب والمعلمين والإداريين وأولياء الأمور الراغبين',en:'All students, teachers, staff & interested parents'},
+    d:{ar:'مجموعات أنشطة لاصفية تتمحور حول أفرع المعرفة والمواضيع المشتركة، يمارس فيها الطلاب اهتماماتهم مع أعضاء هيئة التدريس والإداريين لإنتاج سلعة ذات قيمة أو تقديم خدمة، ويُوزَّع فيها الطلاب حسب اهتماماتهم لا حسب أعمارهم.',
+       en:'Extracurricular activity clusters around fields of knowledge where students pursue shared interests with teachers and staff to produce a valuable product or service — grouped by interest rather than age.'} },
+  { n:5, c:'#E2386F', ic:'book', ar:'برنامج الإثراء المتخصص', en:'Specialty Enrichment Program', s:{ar:'الإثراء المتخصص',en:'Specialty Enrichment'},
+    who:{ar:'الوعاء الإثرائي (من 15 إلى 20%)',en:'Enrichment pool (15–20%)'},
+    d:{ar:'وحدات تعليمية في القرآن الكريم والرياضيات والعلوم الطبيعية واللغتين العربية والإنجليزية بمحتوى ومستوى يفوق ما يُعطى لبقية الطلاب، تستخدم مهارات التفكير العليا في تصنيف بلوم؛ لتحقيق عنصر التمييز.',
+       en:'Units in Qur’an, mathematics, natural sciences, Arabic and English with content and level beyond the regular curriculum, using Bloom’s higher-order thinking — to achieve differentiation.'} },
+  { n:6, c:'#F07B0F', ic:'flask', ar:'برنامج المشاريع الهادفة', en:'Targeted Projects Program', s:{ar:'المشاريع الهادفة',en:'Targeted Projects'},
+    who:{ar:'فئة المبدعين (من 2 إلى 3%)',en:'Creative group (2–3%)'},
+    d:{ar:'الوسيلة التي تُفعَّل بها الخبرات المكتسبة وتظهر في هيئة مُخرَج يقدمه الطالب؛ يمارس فيه دور الباحث الممارس للبحث العلمي المتقدم والإنتاج العملي والفني، ويتحول المعلم من ملقٍ للمعرفة إلى موجّه وراعٍ وشريك.',
+       en:'The means by which acquired experiences are activated and shown as a student product; the student acts as a practising researcher in advanced research and practical or artistic production, while the teacher becomes guide, mentor and partner.'} },
+  { n:7, c:'#C2410C', ic:'rocket', ar:'برنامج التسريع الأكاديمي', en:'Academic Acceleration Program', s:{ar:'التسريع الأكاديمي',en:'Acceleration'},
+    who:{ar:'طلاب الوعاء الإثرائي',en:'Enrichment-pool students'},
+    d:{ar:'إجراءات للتأكد من مطابقة السمات الشخصية والقدرات العقلية للطالب المرشح لمتطلبات البرنامج، ويُعد التسريع في كامل المنهج لسنة دراسية الخيار الأكثر شيوعاً؛ ليتلقى الطالب المادة الدراسية في مستواه العقلي.',
+       en:'Procedures to confirm that a nominated student’s personal traits and mental abilities match the program; whole-grade acceleration by one year is the most common option, so the student learns at their mental level.'} },
+  { n:8, c:'#6D4BFF', ic:'compass', ar:'برنامج الرعاية الخاصة', en:'Mentorship Program', s:{ar:'الرعاية الخاصة',en:'Mentorship'},
+    who:{ar:'الوعاء الإثرائي (من 15 إلى 20%)',en:'Enrichment pool (15–20%)'},
+    d:{ar:'خطط ذات أبعاد استراتيجية وخطوات مرحلية توضع لتناسب قدرات وطموح كل طالب، يشرف على وضعها وتطبيقها مختصون في مجال الموهبة؛ لتعزيز القدرات التطويرية والمهارات الاجتماعية والأهداف العملية والمعارف المتخصصة.',
+       en:'Strategic, staged plans tailored to each student’s abilities and ambitions, designed and supervised by giftedness specialists — strengthening development capacities, social skills, practical goals and specialized knowledge.'} },
+  { n:9, c:'#0C93C0', ic:'shield', ar:'البرامج المساندة', en:'Support Programs', s:{ar:'البرامج المساندة',en:'Support Programs'},
+    who:{ar:'المعلمون والطلاب وأولياء الأمور',en:'Teachers, students & parents'},
+    subs:{ar:['تدريب معلمي الموهبة','الإرشاد النفسي','الإرشاد الأكاديمي','تثقيف أولياء الأمور'],en:['Giftedness teacher training','Psychological counseling','Academic counseling','Parent education']},
+    d:{ar:'أربعة برامج فرعية تقدّم الخدمات المساندة لبرامج المكونات الرئيسة، وتُعد أساساً لنجاح عملية الكشف والتطوير التي يهدف إليها النموذج.',
+       en:'Four sub-programs providing support services to the main components — a foundation for the success of identification and development.'} }
+];
+
+/* مصطلحات النموذج — من الكتاب */
 const STAT_KEYS = [
-  {k:'gifted',       c:'#7B4DFF', ic:'user',   ar:'طالب موهوب ومتميز',       en:'Gifted & excellent students'},
-  {k:'beneficiaries',c:'#0E9F76', ic:'people', ar:'مستفيد من برامج الرعاية', en:'Care program beneficiaries'},
+  {k:'gifted',       c:'#7B4DFF', ic:'user',   ar:'طالب في الوعاء الإثرائي',  en:'Students in the enrichment pool'},
+  {k:'beneficiaries',c:'#0E9F76', ic:'people', ar:'مستفيد من برامج النموذج', en:'Beneficiaries of model programs'},
   {k:'participants', c:'#0EA5D6', ic:'flag',   ar:'مشاركة في المسابقات',      en:'Competition entries'},
   {k:'awards',       c:'#D99A06', ic:'medal',  ar:'جائزة وميدالية',           en:'Awards & medals'},
   {k:'programs',     c:'#F07B0F', ic:'book',   ar:'برنامج إثرائي منفذ',       en:'Enrichment programs'},
@@ -658,6 +968,25 @@ function renderBand(){
   const words = t('band');
   const one = words.map(w => `<span>${w}</span>`).join('');
   document.getElementById('track').innerHTML = one + one + one + one;
+}
+
+function renderOrbit(){
+  const n = TGDM.length, ring = document.getElementById('ring');
+  // عند تغيير اللغة نحدّث الأسماء فقط حتى لا تختل حركة الدوران المتزامنة
+  const pills = ring.querySelectorAll('.pill');
+  if (pills.length === n) { pills.forEach((p, i) => p.textContent = TGDM[i].s[lang]); return; }
+  ring.innerHTML = TGDM.map((c, i) =>
+    `<div class="slot" style="--a:${-90 + i * 360 / n}deg"><div class="up1"><div class="up2"><span class="orb" style="--c:${c.c};--d:${(.08 * i + .1).toFixed(2)}s"><span class="ball">${ico(c.ic)}</span><span class="pill">${c.s[lang]}</span></span></div></div></div>`).join('');
+}
+function renderComps(){
+  document.getElementById('comps').innerHTML = TGDM.map(c => `<article class="comp glass reveal" style="--c:${c.c}">
+    <div class="c-top"><span class="gorb">${ico(c.ic)}</span><span class="no">${String(c.n).padStart(2, '0')}</span></div>
+    <h3>${lang === 'ar' ? c.ar : c.s.en}</h3><div class="en">${c.en}</div>
+    <p>${c.d[lang]}</p>
+    ${c.subs ? `<div class="subs">${c.subs[lang].map(x => `<span>${x}</span>`).join('')}</div>` : ''}
+    <span class="who"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0"/></svg>${c.who[lang]}</span>
+  </article>`).join('');
+  observe(document.querySelectorAll('#comps .reveal'));
 }
 function renderCards(){
   document.getElementById('cards').innerHTML = CARDS.map((c, i) => {
@@ -706,6 +1035,8 @@ function applyLang(){
   h.lang = lang; h.dir = lang === 'ar' ? 'rtl' : 'ltr';
   document.title = t('brand') + ' – ' + t('school');
   document.querySelectorAll('[data-i18n]').forEach(el => { const v = t(el.dataset.i18n); if (typeof v === 'string' && v) el.textContent = v; });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { const v = t(el.dataset.i18nHtml); if (v) el.innerHTML = v; });
+  renderOrbit(); renderComps();
   renderBand(); renderCards(); renderStats(false);
 }
 

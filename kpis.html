@@ -46,6 +46,7 @@ button{font:inherit;color:inherit;cursor:pointer}
   display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--glass-strong);
   backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);border:1px solid var(--glass-edge);border-radius:22px;box-shadow:0 14px 40px -16px rgba(120,70,10,.38)}
 .brand{display:flex;align-items:center;gap:12px}
+.brand-logo{width:48px;height:48px;object-fit:contain;flex:none;display:block;filter:drop-shadow(0 6px 10px rgba(0,120,70,.22))}
 .brand-mark{position:relative;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex:none;
   background:radial-gradient(circle at 32% 26%,#FFE9A8 0%,#E8A50A 50%,#8F5A05 100%);
   box-shadow:0 10px 20px -8px rgba(217,154,6,.8),inset -4px -6px 10px rgba(60,30,0,.28),inset 3px 4px 8px rgba(255,255,255,.6)}
@@ -237,7 +238,7 @@ html.js .reveal.in{opacity:1;transform:none}
 
 <header class="nav">
   <a href="index.html" class="brand">
-    <span class="brand-mark"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9z"/></svg></span>
+    <img class="brand-logo" src="assets/school-emblem.png" alt="شعار مدارس دار الذكر" width="48" height="48">
     <span><b data-i18n="brand">منصة الموهبة</b><small data-i18n="school">مدارس دار الذكر</small></span>
   </a>
   <div class="tools">
@@ -330,7 +331,7 @@ const I18N = {
   brand:'Talent Platform', school:'Dar Al-Thikr Schools', 'nav.home':'Home', 'nav.comps':'Competitions', print:'Print / PDF',
   'print.title':'Talent Platform KPI Report – Dar Al-Thikr Schools',
   eyebrow:'Performance dashboard', title:'KPIs & Reports',
-  lead:'Performance indicators for the Total Talent Development Model, talent programs and competitions, compared with targets and previous years.',
+  lead:'Performance indicators for the Total Giftedness Development Model (TGDM), talent programs and competitions, compared with targets and previous years.',
   year:'School year',
   'n.pending':'Data not connected yet: the structure is ready and values will appear automatically once entered in the platform’s Google Sheet. No placeholder figures are shown here.',
   'n.live':'Live figures from the platform data sheet', 'n.err':'Data could not be loaded right now — showing the structure without values. Please refresh later.',
@@ -371,7 +372,7 @@ const ico = k => `<svg viewBox="0 0 24 24">${ICONS[k]}</svg>`;
 
 const DEFAULT_YEARS = ['2024-2025','2025-2026','2026-2027'];
 const DEFAULT_KPIS = [
-  ['tgdm_activation','نسبة تفعيل مكونات النموذج التام لتطوير الموهبة','TGDM components activation','التخطيط والتفعيل','%'],
+  ['tgdm_activation','نسبة تفعيل مكونات النموذج التام لتطوير الموهبة التسعة','Activation of the nine TGDM components','التخطيط والتفعيل','%'],
   ['plan_ontime','نسبة تنفيذ الخطة التشغيلية في موعدها','Operational plan delivered on time','التخطيط والتفعيل','%'],
   ['programs','عدد البرامج الإثرائية المنفذة','Enrichment programs delivered','الرعاية','عدد'],
   ['beneficiaries','عدد المستفيدين من برامج الموهبة والإثراء','Talent & enrichment beneficiaries','الرعاية','عدد'],

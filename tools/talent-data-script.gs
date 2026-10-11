@@ -142,8 +142,8 @@ function setupSheet() {
   makeSheet_(ss, SHEETS.stats,
     ['المفتاح', 'العنوان', 'Title', 'القيمة', 'اللاحقة'],
     [
-      ['gifted',       'طالب موهوب ومتميز',          'Gifted & excellent students', '', ''],
-      ['beneficiaries','مستفيد من برامج الرعاية',    'Care program beneficiaries',  '', ''],
+      ['gifted',       'طالب في الوعاء الإثرائي',     'Students in the enrichment pool', '', ''],
+      ['beneficiaries','مستفيد من برامج النموذج',     'Beneficiaries of model programs', '', ''],
       ['participants', 'مشاركة في المسابقات',         'Competition entries',         '', ''],
       ['awards',       'جائزة وميدالية',              'Awards & medals',             '', ''],
       ['programs',     'برنامج إثرائي منفذ',          'Enrichment programs',         '', ''],
@@ -153,7 +153,7 @@ function setupSheet() {
   makeSheet_(ss, SHEETS.kpis,
     ['المفتاح', 'المؤشر', 'Indicator', 'المحور', 'الوحدة', 'المستهدف', '2024-2025', '2025-2026', '2026-2027'],
     [
-      ['tgdm_activation', 'نسبة تفعيل مكونات النموذج التام لتطوير الموهبة', 'TGDM components activation', 'التخطيط والتفعيل', '%', '', '', '', ''],
+      ['tgdm_activation', 'نسبة تفعيل مكونات النموذج التام لتطوير الموهبة التسعة', 'Activation of the nine TGDM components', 'التخطيط والتفعيل', '%', '', '', '', ''],
       ['plan_ontime', 'نسبة تنفيذ الخطة التشغيلية في موعدها', 'Operational plan delivered on time', 'التخطيط والتفعيل', '%', '', '', '', ''],
       ['programs', 'عدد البرامج الإثرائية المنفذة', 'Enrichment programs delivered', 'الرعاية', 'عدد', '', '', '', ''],
       ['beneficiaries', 'عدد المستفيدين من برامج الموهبة والإثراء', 'Talent & enrichment beneficiaries', 'الرعاية', 'عدد', '', '', '', ''],
