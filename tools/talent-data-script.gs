@@ -28,7 +28,7 @@
  *  - الإنجازات          : إنجازات المدرسة في كل مسابقة
  *  - خطة الإعداد        : بنود خطة الإعداد لكل مسابقة (تحل محل الخطة المكتوبة في الموقع)
  *
- * معرّفات المسابقات: kangaroo, bebras, nsmo, ibdaa, isef, wro
+ * معرّفات المسابقات: kangaroo, bebras, nsmo, ibdaa, isef
  *
  * مجلد المصادر: أنشئ مجلداً في Google Drive لكل مسابقة وضع فيه الحقائب والملفات
  * (ويمكن تقسيمه لمجلدات فرعية تظهر كمجموعات)، واجعل مشاركته
@@ -50,32 +50,29 @@ const SHEETS = {
 };
 
 /** البنود الأولية لتبويب «خطة الإعداد» (تُكتب مرة واحدة عند إنشاء التبويب، ثم تعدّلها من الجدول) */
-const PLAN_SEED = [["kangaroo","حل نموذج من أسئلة الأعوام السابقة أسبوعياً ومناقشة الحلول جماعياً.","Solve one past paper weekly and discuss solutions as a group."],
+const PLAN_SEED = [["kangaroo","حل نموذج من أسئلة الأعوام السابقة أسبوعياً حسب مستوى الطالب، ومناقشة الحلول الكاملة جماعياً.","Solve one past paper weekly at the student’s level and discuss the full solutions as a group."],
     ["kangaroo","حلقات قصيرة لاستراتيجيات حل المسائل: الرسم، والبحث عن نمط، والحالات الخاصة، والاستبعاد.","Short sessions on problem-solving strategies: drawing, finding patterns, special cases, elimination."],
-    ["kangaroo","تدريب على إدارة الوقت والتعامل مع الأسئلة متدرجة الصعوبة.","Practice time management and handling questions of increasing difficulty."],
-    ["kangaroo","اختبار محاكاة كامل قبل الموعد الرسمي بأسبوعين، ثم أداء الاختبار التجريبي الرسمي.","A full mock test two weeks before the official date, then the official trial test."],
-    ["bebras","حل مجموعات من مسائل بيبراس السابقة حسب الفئة العمرية.","Solve sets of past Bebras tasks by age group."],
-    ["bebras","أنشطة تفكير حاسوبي غير موصولة: الخوارزميات، والترتيب، والبحث، والتمثيل الثنائي.","Unplugged computational-thinking activities: algorithms, sorting, searching, binary."],
-    ["bebras","ألغاز منطقية قصيرة يومياً لبناء سرعة التحليل.","Short daily logic puzzles to build analysis speed."],
-    ["bebras","تدريب على واجهة المسابقة الإلكترونية وإدارة الوقت.","Practice with the online interface and time management."],
+    ["kangaroo","تدريب على إدارة الوقت: 24 سؤالاً في 75 دقيقة للصفين 3–4، و30 سؤالاً في 90 دقيقة لبقية المستويات.","Time management: 24 questions in 75 minutes (Gr. 3–4), 30 questions in 90 minutes (other levels)."],
+    ["kangaroo","اختبار محاكاة كامل على حاسب قبل الموعد الرسمي بأسبوعين، ثم أداء الاختبار التجريبي الرسمي.","A full mock test on a computer two weeks before the official date, then the official trial test."],
+    ["bebras","حل النماذج العربية السابقة التفاعلية (2015–2024) في مكتبة بيبراس، نموذجاً كل أسبوع.","Solve the interactive past Arabic tests (2015–2024) in the Bebras library, one per week."],
+    ["bebras","أنشطة من كتاب «التفكير الحاسوبي» القائم على مهام بيبراس في حصص النشاط.","Activities from the \"Computational Thinking\" Bebras activity book during activity periods."],
+    ["bebras","تدريب على المهارات السبع: التفكيك، والأنماط، والتجريد، والخوارزميات، والاستدلال، والتقييم، والتعميم.","Practise the seven skills: decomposition, patterns, abstraction, algorithms, reasoning, evaluation, generalization."],
+    ["bebras","محاكاة اختبار كامل مدته 60 دقيقة، والتدرّب على مراجعة الإجابات قبل «التسليم» لأن المحاولة واحدة.","A full 60-minute mock test, practising answer review before \"Submit\" since there is only one attempt."],
+    ["bebras","التأكد من أداء كل طالب للاختبار التجريبي قبل 29 نوفمبر.","Make sure every student takes the practice test before 29 November."],
     ["nsmo","حصص تدريب أسبوعية لكل تخصص بإشراف معلمي المواد.","Weekly training per field, led by subject teachers."],
     ["nsmo","إنهاء حقائب المرحلة الأولى الرسمية وحل تمارينها.","Complete the official Phase One packages and their exercises."],
     ["nsmo","اختبارات محاكاة قصيرة بنفس مدة الاختبار (ساعتان).","Short mock tests with the same duration (two hours)."],
     ["nsmo","متابعة الطلاب المتأهلين في التدريب المركزي الذي تنظمه موهبة.","Follow up qualified students during Mawhiba’s central training."],
-    ["ibdaa","ورشة اختيار المشكلة البحثية من اهتمامات الطالب (الاهتمام ← الفكرة ← المشروع).","Workshop on choosing a research problem from student interests (interest → idea → project)."],
-    ["ibdaa","كتابة المقترح البحثي وصياغة السؤال والفرضية وفق المنهج العلمي.","Writing the proposal, research question and hypothesis using the scientific method."],
-    ["ibdaa","تصميم التجربة أو النموذج، وجمع البيانات وتحليلها.","Designing the experiment or prototype, collecting and analyzing data."],
-    ["ibdaa","إعداد لوحة العرض والملخص، والتدرب على مقابلة التحكيم بأسئلة محاكية.","Preparing the display board and abstract, and rehearsing judging interviews."],
-    ["ibdaa","ربط الطلاب ببرنامج البحث العلمي في وحدة مهارات القرن 21 لبناء خط إمداد مستمر للمشاريع.","Linking students with the Scientific Research program of the 21st Century Skills Unit for a steady project pipeline."],
-    ["isef","يتولى برنامج موهبة الإعدادي تدريب منتخب المملكة.","Mawhiba’s preparation program trains the national team."],
+    ["ibdaa","ورشة اختيار المشكلة البحثية من اهتمامات الطالب، والتحقق من أصالتها عبر براءات الاختراع والمجلات العلمية.","Workshop on choosing a research problem from student interests and checking originality via patents and journals."],
+    ["ibdaa","اختيار المجال الصحيح من المجالات الـ22 بالاستعانة بدليل «اختيار المجال الصحيح».","Choose the right field from the 22 using the \"Choosing the right field\" guide."],
+    ["ibdaa","كتابة ملخص قوي وخطة بحث وفق معايير التحكيم الإلكتروني 2027، لأن التحكيم الأول يعتمد عليهما.","Write a strong abstract and research plan per the 2027 online judging criteria, since first-round judging relies on them."],
+    ["ibdaa","استكمال النماذج الإلزامية (1، 1A، 1B، 2A) مبكراً، وتحديد النماذج الإضافية حسب طبيعة المشروع.","Complete the mandatory forms (1, 1A, 1B, 2A) early and identify any extra forms the project needs."],
+    ["ibdaa","إعداد لوحة العرض ودفتر اليوميات، والتدرب على المقابلة بأسئلة محاكية.","Prepare the display board and journal, and rehearse the interview with mock questions."],
+    ["ibdaa","ربط الطلاب ببرنامج البحث العلمي في وحدة مهارات القرن 21 لبناء خط إمداد مستمر للمشاريع.","Link students with the Scientific Research program of the 21st Century Skills Unit for a steady project pipeline."],
+    ["isef","تتولى موهبة تأهيل المتأهلين عبر ورشة المشاركة الدولية.","Mawhiba prepares qualifiers through the international participation workshop."],
     ["isef","دور المدرسة: دعم الطالب وتفريغه للتدريب، وتوفير مساحة للتجريب.","The school’s role: support the student, allow time for training and provide space for experiments."],
     ["isef","التدرب على العرض والمناقشة بالإنجليزية أمام لجنة محاكية من المعلمين.","Rehearse presenting in English before a mock panel of teachers."],
-    ["isef","مراجعة توافق المشروع مع القواعد الدولية ونماذجها مبكراً.","Check compliance with international rules and forms early."],
-    ["wro","تدريب أسبوعي للفرق على بناء الروبوت وبرمجته بإشراف المدرب.","Weekly team training on building and programming, led by the coach."],
-    ["wro","التدرّب على مهام الموسم الرسمية على طاولة مطابقة للمقاسات.","Practice the official season missions on a regulation-size table."],
-    ["wro","استخدام محاكي سبايك في منصة مهارات القرن 21 للتدرب على البرمجة قبل العمل على الروبوت.","Use the SPIKE simulator on the 21st Century Skills platform to practise coding before using the robot."],
-    ["wro","جولات محاكاة بالتوقيت الرسمي، وتوثيق التحسينات في دفتر هندسي.","Timed mock rounds and an engineering notebook of improvements."],
-    ["wro","ربط الفرق ببرنامج الروبوت والطباعة ثلاثية الأبعاد في وحدة مهارات القرن 21.","Link teams with the Robotics & 3D Printing program of the 21st Century Skills Unit."]];
+    ["isef","مراجعة توافق المشروع مع القواعد الدولية ونماذجها مبكراً، ودراسة مشاريع المتأهلين السابقين في نفس المجال.","Check compliance with international rules and forms early, and study past finalist projects in the same category."]];
 
 function doGet(e) {
   const p = (e && e.parameter) || {};
@@ -176,8 +173,7 @@ function setupSheet() {
       ['bebras', 'بيبراس موهبة للمعلوماتية', 'Bebras Mawhiba (Informatics)', 'المعلوماتية', Y, '', '', '', ''],
       ['nsmo', 'أولمبياد الموهبة الوطني – نسمو', 'National Gifted Olympiad – NSMO', 'العلوم', Y, '', '', '', ''],
       ['ibdaa', 'أولمبياد الموهبة الوطني – إبداع', 'National Gifted Olympiad – Ibdaa', 'البحث والابتكار', Y, '', '', '', ''],
-      ['isef', 'معرض ISEF الدولي', 'Regeneron ISEF', 'البحث والابتكار', Y, '', '', '', ''],
-      ['wro', 'الأولمبياد العالمي للروبوت WRO', 'World Robot Olympiad (WRO)', 'الروبوت والبرمجة', Y, '', '', '', '']
+      ['isef', 'معرض ISEF الدولي', 'Regeneron ISEF', 'البحث والابتكار', Y, '', '', '', '']
     ]);
 
   makeSheet_(ss, SHEETS.reports, ['العنوان', 'Title', 'النوع', 'التاريخ', 'الرابط'], []);
@@ -189,8 +185,7 @@ function setupSheet() {
       ['bebras', 'بيبراس موهبة للمعلوماتية', '', '', '', '', ''],
       ['nsmo', 'أولمبياد الموهبة الوطني – نسمو', '', '', '', '', ''],
       ['ibdaa', 'أولمبياد الموهبة الوطني – إبداع', '', '', '', '', ''],
-      ['isef', 'معرض ISEF الدولي', '', '', '', '', ''],
-      ['wro', 'الأولمبياد العالمي للروبوت WRO', '', '', '', '', '']
+      ['isef', 'معرض ISEF الدولي', '', '', '', '', '']
     ]);
 
   makeSheet_(ss, SHEETS.dates,
@@ -214,7 +209,7 @@ function setupSheet() {
   });
 
   // قوائم منسدلة
-  const ids = ['kangaroo', 'bebras', 'nsmo', 'ibdaa', 'isef', 'wro'];
+  const ids = ['kangaroo', 'bebras', 'nsmo', 'ibdaa', 'isef'];
   const idRule = SpreadsheetApp.newDataValidation().requireValueInList(ids, true).setAllowInvalid(true).build();
   [SHEETS.dates, SHEETS.training, SHEETS.achievements, SHEETS.plans].forEach(function (n) {
     ss.getSheetByName(n).getRange('A2:A500').setDataValidation(idRule);
