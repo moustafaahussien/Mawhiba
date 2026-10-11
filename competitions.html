@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المسابقات – منصة الموهبة</title>
+<meta name="description" content="المسابقات العلمية والأكاديمية في منصة الموهبة بمدارس دار الذكر: ملخص كل مسابقة ومواعيدها وصفحتها التفصيلية.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Noto+Kufi+Arabic:wght@300;600;900&family=Sora:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/platform.css">
+<script src="js/config.js"></script>
+<script src="js/competitions-data.js"></script>
+<script src="js/platform.js"></script>
+<style>
+/* ---------- الهيرو ---------- */
+.hero{padding:128px 0 26px;position:relative}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:30px;align-items:center}
+.hero h1{font-size:clamp(44px,7vw,92px);margin-bottom:6px;animation:foil 7s linear infinite,rise .8s both}
+.hero .lead{color:var(--muted);font-size:clamp(16px,1.5vw,18.5px);max-width:36em;animation:rise .8s .1s both}
+.hero-stats{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;animation:rise .8s .2s both}
+.hs{display:flex;align-items:center;gap:12px;padding:10px 18px 10px 12px;border-radius:18px}
+html[dir=rtl] .hs{padding:10px 12px 10px 18px}
+.hs .gorb{--sz:44px}
+.hs b{display:block;font-family:'Sora',sans-serif;font-weight:800;font-size:26px;line-height:1.1}
+.hs span{font-family:var(--display);font-weight:600;font-size:13.5px;color:var(--muted)}
+
+/* كوكبة المسابقات */
+.constellation{position:relative;aspect-ratio:1/1;max-width:420px;width:100%;margin-inline:auto;container-type:inline-size;animation:rise .9s .15s both}
+.constellation .ring{position:absolute;inset:8%;border-radius:50%;border:2px dashed rgba(217,154,6,.4)}
+.constellation .ring.r2{inset:24%;border:1px solid rgba(123,77,255,.2)}
+.constellation .halo{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.6),rgba(255,255,255,.1) 60%,transparent 70%)}
+.c-core{position:absolute;left:50%;top:50%;translate:-50% -50%;width:30cqw;height:30cqw;border-radius:50%;overflow:hidden;display:grid;place-items:center;
+  box-shadow:0 3cqw 6cqw -2cqw rgba(217,120,6,.75),inset -1.4cqw -2cqw 3cqw rgba(70,30,0,.35),inset .8cqw 1cqw 2cqw rgba(255,255,255,.55)}
+.c-core::before{content:"";position:absolute;inset:-25%;background:conic-gradient(from 0deg,#FFE08A,#E8A50A,#F07B0F,#E2386F,#7B4DFF,#E8A50A,#FFE08A);animation:spin 14s linear infinite}
+.c-core::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 22%,rgba(255,255,255,.65),transparent 42%)}
+.c-core svg{position:relative;z-index:1;width:42%;height:42%;stroke:#fff;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.c-pulse{position:absolute;left:50%;top:50%;translate:-50% -50%;width:30cqw;height:30cqw;border-radius:50%;border:2px solid rgba(232,165,10,.55);animation:pulse 4.5s ease-out infinite}
+.c-orbit{position:absolute;inset:0;animation:spin 80s linear infinite}
+.c-slot{position:absolute;left:50%;top:50%;width:0;height:0;transform:rotate(var(--a)) translateX(38cqw)}
+.c-up{position:absolute;transform:rotate(calc(-1 * var(--a)))}
+.c-up2{animation:spin 80s linear infinite reverse}
+.c-orb{position:absolute;left:-8cqw;top:-8cqw;width:16cqw;height:16cqw;border-radius:50%;display:grid;place-items:center;transition:transform .25s;
+  background:radial-gradient(circle at 32% 26%,color-mix(in srgb,var(--c) 40%,#fff) 0%,var(--c) 48%,color-mix(in srgb,var(--c) 70%,#1A1640) 100%);
+  box-shadow:0 2.4cqw 4cqw -1.2cqw color-mix(in srgb,var(--c) 78%,transparent),inset -1cqw -1.4cqw 2.2cqw rgba(26,22,64,.24),inset .6cqw .8cqw 1.4cqw rgba(255,255,255,.55)}
+.c-orb::after{content:"";position:absolute;top:9%;left:16%;width:34%;height:20%;border-radius:50%;background:linear-gradient(180deg,rgba(255,255,255,.88),transparent);transform:rotate(-24deg)}
+.c-orb svg{position:relative;z-index:1;width:46%;height:46%;stroke:#fff;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.c-orb:hover{transform:scale(1.15)}
+.constellation:hover .c-orbit,.constellation:hover .c-up2{animation-play-state:paused}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.constellation{max-width:320px;order:-1}.hero{padding-top:104px}}
+
+/* ---------- أدوات التصفية ---------- */
+.filters{position:sticky;top:88px;z-index:20;display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:12px;border-radius:22px;margin:26px 0 24px}
+.filters .grp{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.filters .lbl{font-family:var(--display);font-weight:600;font-size:13.5px;color:var(--muted)}
+.filters .seg{box-shadow:none;background:rgba(255,255,255,.55)}
+.filters .seg button[data-c]{--c:#E8A50A}
+.filters .seg button.on[data-c]{background:linear-gradient(135deg,color-mix(in srgb,var(--c) 65%,#fff),var(--c));box-shadow:0 8px 18px -8px var(--c)}
+.search{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;padding:0 14px;height:44px;border-radius:14px;background:rgba(255,255,255,.75);border:1px solid var(--glass-edge)}
+.search svg{width:18px;height:18px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round}
+.search input{border:0;background:transparent;outline:0;width:100%;font-size:15px}
+@media(max-width:900px){.filters{position:static}}
+
+/* ---------- البطاقات ---------- */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+@media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+.comp{display:flex;flex-direction:column;gap:12px;padding:26px 24px 22px;border-radius:30px;min-height:420px;transition:transform .3s,box-shadow .3s,border-color .3s}
+.comp:hover{transform:translateY(-8px);box-shadow:0 34px 60px -30px var(--c);border-color:color-mix(in srgb,var(--c) 50%,#fff)}
+.comp .band{position:absolute;inset-inline:0;top:0;height:6px;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 50%,#fff),var(--c),color-mix(in srgb,var(--c) 50%,#fff))}
+.comp .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.comp .gorb{--sz:70px}
+.comp .tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.comp h3{font-family:var(--display);font-weight:900;font-size:20px;line-height:1.55}
+.comp .org{font-size:13.5px;color:var(--muted);margin-top:-6px}
+.comp p.sum{color:var(--muted);font-size:15px;line-height:1.8;flex:1}
+.comp .stages{display:flex;gap:6px;flex-wrap:wrap}
+.comp .stages span{font-size:12.5px;font-weight:600;padding:2px 10px;border-radius:9px;background:rgba(26,22,64,.06);color:var(--ink)}
+.comp .next{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--c) 10%,rgba(255,255,255,.7));border:1px solid color-mix(in srgb,var(--c) 22%,#fff);font-size:13.5px}
+.comp .next svg{width:20px;height:20px;flex:none;stroke:var(--c);fill:none;stroke-width:2;stroke-linecap:round}
+.comp .next b{display:block;font-family:var(--display);font-weight:600;font-size:13px;color:color-mix(in srgb,var(--c) 70%,#1A1640)}
+.comp .go{display:flex;justify-content:space-between;align-items:center;font-family:var(--display);font-weight:600;font-size:15px;padding:12px 16px;border-radius:15px;color:#fff;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--c) 70%,#fff),var(--c) 60%,color-mix(in srgb,var(--c) 75%,#1A1640));box-shadow:0 14px 26px -14px var(--c)}
+.comp .go svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transform:scaleX(var(--flip));transition:transform .25s}
+.comp:hover .go svg{transform:translateX(calc(var(--fx) * 5px)) scaleX(var(--flip))}
+.no-match{grid-column:1/-1}
+
+/* ---------- المواعيد القادمة ---------- */
+.upcoming{padding:70px 0 20px}
+.up-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+.up-list{padding:12px;border-radius:30px;display:grid;gap:4px}
+.up{display:grid;grid-template-columns:86px 1fr auto;gap:16px;align-items:center;padding:12px 14px;border-radius:20px;transition:background .2s}
+.up:hover{background:rgba(255,255,255,.7)}
+.up .dbox{text-align:center;border-radius:16px;padding:8px 4px;color:#fff;background:linear-gradient(150deg,color-mix(in srgb,var(--c) 65%,#fff),var(--c));box-shadow:0 10px 20px -10px var(--c)}
+.up .dbox b{display:block;font-family:'Sora',sans-serif;font-weight:800;font-size:24px;line-height:1.1}
+.up .dbox span{font-size:12px;font-weight:600}
+.up h4{font-family:var(--display);font-weight:900;font-size:16px;line-height:1.5}
+.up p{font-size:14px;color:var(--muted)}
+.up .rel{display:flex;flex-direction:column;align-items:flex-end;gap:4px;font-family:var(--display);font-weight:600;font-size:12.5px;white-space:nowrap}
+.up .rel em{font-style:normal;color:var(--green)}
+.nx-cd{margin-top:4px}
+@media(max-width:560px){.up .rel{align-items:flex-start}}
+@media(max-width:560px){.up{grid-template-columns:70px 1fr}.up .rel{grid-column:2}}
+.note{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:13.5px;color:var(--muted)}
+.note svg{width:18px;height:18px;flex:none;stroke:var(--gold);fill:none;stroke-width:2;margin-top:3px}
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav">
+  <a href="index.html" class="brand">
+    <span class="brand-mark"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9z"/></svg></span>
+    <span><b data-i18n="brand">منصة الموهبة</b><small data-i18n="school">مدارس دار الذكر</small></span>
+  </a>
+  <div class="nav-right">
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html" data-i18n="nav.home">الرئيسية</a>
+      <a href="competitions.html" class="cur" data-i18n="nav.comps">المسابقات</a>
+      <a href="kpis.html" data-i18n="nav.kpis">المؤشرات والتقارير</a>
+    </nav>
+    <button class="lang" id="langBtn" type="button" aria-label="Language"><span data-l="ar">ع</span><span data-l="en">EN</span></button>
+    <button class="burger" id="burger" type="button" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <div class="kicker" data-i18n="kicker">المسابقات العلمية والأكاديمية</div>
+        <h1 class="foil-title" data-i18n="title">المسابقات</h1>
+        <p class="lead" data-i18n="lead">كل المسابقات التي يشارك فيها طلاب دار الذكر في مكان واحد: ملخص سريع لكل مسابقة، وأقرب مواعيدها، وصفحة خاصة تضم التعريف والشروط وطريقة التسجيل والمخطط الزمني والمصادر والتدريب والنتائج.</p>
+        <div class="hero-stats" id="heroStats"></div>
+      </div>
+      <div class="constellation" aria-hidden="true" id="constellation"></div>
+    </div>
+  </section>
+
+  <div class="comp-area">
+  <div class="filters glass" id="filters">
+    <div class="grp"><span class="lbl" data-i18n="f.field">المجال</span><div class="seg" id="fieldSeg"></div></div>
+    <div class="grp"><span class="lbl" data-i18n="f.stage">المرحلة</span><div class="seg" id="stageSeg"></div></div>
+    <label class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" type="search" data-i18n-ph="f.search" placeholder="ابحث عن مسابقة"></label>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  </div>
+
+  <section class="upcoming" id="upcoming">
+    <div class="up-head reveal">
+      <div>
+        <div class="kicker" data-i18n="up.kicker">التقويم</div>
+        <h2 class="sec-title"><span data-i18n="up.t1">المواعيد</span> <em data-i18n="up.t2">القادمة</em></h2>
+      </div>
+    </div>
+    <div class="up-list glass reveal" id="upList"></div>
+    <div class="note"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg><span data-i18n="up.note">المواعيد مأخوذة من المصادر الرسمية للمسابقات، ومن جدول بيانات المنصة عند تحديثه. تأكد دائماً من الموقع الرسمي لكل مسابقة.</span></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><b data-i18n="brand">منصة الموهبة</b> — <span data-i18n="school">مدارس دار الذكر</span></div>
+    <div data-i18n="footer.credit">إعداد وإشراف: مصطفى أحمد حسين — المنسق التنفيذي لبرامج الموهبة والمسابقات الأكاديمية</div>
+  </div>
+</footer>
+
+<script>
+TP.addDict({
+  ar:{ kicker:'المسابقات العلمية والأكاديمية', title:'المسابقات',
+       lead:'كل المسابقات التي يشارك فيها طلاب دار الذكر في مكان واحد: ملخص سريع لكل مسابقة، وأقرب مواعيدها، وصفحة خاصة تضم التعريف والشروط وطريقة التسجيل والمخطط الزمني والمصادر والتدريب والنتائج.',
+       'hs.comps':'مسابقة', 'hs.fields':'مجالات', 'hs.open':'تسجيل مفتوح', 'hs.stages':'مراحل دراسية',
+       'f.field':'المجال', 'f.stage':'المرحلة', 'f.all':'الكل', 'f.search':'ابحث عن مسابقة',
+       next:'أقرب موعد', nextNone:'تُعلن المواعيد قريباً', go:'صفحة المسابقة', noMatch:'لا توجد مسابقات تطابق اختيارك.',
+       'up.kicker':'التقويم', 'up.t1':'المواعيد', 'up.t2':'القادمة', 'up.none':'لا توجد مواعيد قادمة معلنة حالياً — تُضاف فور إعلانها.',
+       'up.note':'المواعيد مأخوذة من المصادر الرسمية للمسابقات، ومن جدول بيانات المنصة عند تحديثه. تأكد دائماً من الموقع الرسمي لكل مسابقة.',
+       now:'جارٍ الآن', today:'اليوم', inDays:'بعد {n} يوماً', inDay:'غداً', title2:'المسابقات – منصة الموهبة' },
+  en:{ kicker:'Scientific & academic competitions', title:'Competitions',
+       lead:'Every competition Dar Al-Thikr students take part in, in one place: a quick summary, the nearest dates, and a dedicated page with overview, conditions, registration, timeline, resources, training and results.',
+       'hs.comps':'competitions', 'hs.fields':'fields', 'hs.open':'open now', 'hs.stages':'school stages',
+       'f.field':'Field', 'f.stage':'Stage', 'f.all':'All', 'f.search':'Search competitions',
+       next:'Next date', nextNone:'Dates to be announced', go:'Competition page', noMatch:'No competitions match your selection.',
+       'up.kicker':'Calendar', 'up.t1':'Upcoming', 'up.t2':'dates', 'up.none':'No upcoming dates announced yet — they will be added once announced.',
+       'up.note':'Dates come from the official competition sources and from the platform data sheet when updated. Always confirm on each competition’s official website.',
+       now:'Ongoing', today:'Today', inDays:'In {n} days', inDay:'Tomorrow', title2:'Competitions – Talent Platform' }
+});
+
+const COMPS = window.TP_COMPETITIONS, FIELDS = window.TP_FIELDS, STAGES = window.TP_STAGES;
+let DATA = null, F_FIELD = 'all', F_STAGE = 'all', Q = '';
+
+function renderStatic(){
+  document.title = TP.t('title2');
+  const fieldsUsed = [...new Set(COMPS.map(c => c.field))];
+  const open = DATA ? COMPS.filter(c => TP.compState(DATA, c.id).status === 'open').length : null;
+  const hs = [
+    { n: COMPS.length, k:'hs.comps', c:'#E8A50A', ic:'trophy' },
+    { n: fieldsUsed.length, k:'hs.fields', c:'#7B4DFF', ic:'grid' },
+    { n: 3, k:'hs.stages', c:'#0EA5D6', ic:'users' }
+  ];
+  if (open) hs.splice(1, 0, { n: open, k:'hs.open', c:'#0E9F76', ic:'check' });
+  document.getElementById('heroStats').innerHTML = hs.map(s =>
+    `<div class="hs glass" style="--c:${s.c}"><span class="gorb">${TP.icon(s.ic)}</span><div><b>${TP.fmt(s.n)}</b><span>${TP.t(s.k)}</span></div></div>`).join('');
+
+  const n = COMPS.length;
+  document.getElementById('constellation').innerHTML = `<div class="halo"></div><div class="ring"></div><div class="ring r2"></div><div class="c-pulse"></div>
+    <div class="c-core">${TP.icon('trophy')}</div>
+    <div class="c-orbit">${COMPS.map((c, i) => `<div class="c-slot" style="--a:${-90 + i * 360 / n}deg"><div class="c-up"><div class="c-up2"><a class="c-orb" style="--c:${c.color}" href="competition.html?c=${c.id}" title="${TP.esc(TP.tx(c.short))}">${TP.icon(c.icon)}</a></div></div></div>`).join('')}</div>`;
+
+  document.getElementById('fieldSeg').innerHTML = [['all', TP.t('f.all'), '#E8A50A'], ...fieldsUsed.map(f => [f, TP.tx(FIELDS[f]), FIELDS[f].c])]
+    .map(([k, l, c]) => `<button type="button" class="${k === F_FIELD ? 'on' : ''}" data-field="${k}" data-c style="--c:${c}">${TP.esc(l)}</button>`).join('');
+  document.getElementById('stageSeg').innerHTML = [['all', TP.t('f.all')], ...Object.keys(STAGES).map(s => [s, TP.tx(STAGES[s])])]
+    .map(([k, l]) => `<button type="button" class="${k === F_STAGE ? 'on' : ''}" data-stage="${k}">${TP.esc(l)}</button>`).join('');
+}
+
+function renderGrid(){
+  const q = Q.trim().toLowerCase();
+  const list = COMPS.filter(c => (F_FIELD === 'all' || c.field === F_FIELD) && (F_STAGE === 'all' || c.stages.includes(F_STAGE)) &&
+    (!q || [c.name.ar, c.name.en, c.short.ar, c.short.en, c.summary.ar, c.summary.en].join(' ').toLowerCase().includes(q)));
+  const g = document.getElementById('grid');
+  if (!list.length) { g.innerHTML = `<div class="glass no-match"><div class="empty">${TP.icon('search')}${TP.t('noMatch')}</div></div>`; return; }
+  g.innerHTML = list.map(c => {
+    const st = TP.compState(DATA, c.id), dates = TP.compDates(c, DATA), nx = TP.nextDate(dates.items);
+    return `<a class="comp glass reveal" style="--c:${c.color}" href="competition.html?c=${c.id}">
+      <span class="band"></span>
+      <div class="top"><span class="gorb">${TP.icon(c.icon)}</span>
+        <div class="tags"><span class="tag" style="--c:${FIELDS[c.field].c}">${TP.esc(TP.tx(FIELDS[c.field]))}</span>${TP.statusTag(st.status)}</div></div>
+      <h3>${TP.esc(TP.tx(c.name))}</h3>
+      <div class="org">${TP.esc(TP.tx(c.organizer))}</div>
+      <p class="sum">${TP.esc(TP.tx(c.summary))}</p>
+      <div class="stages">${c.stages.map(s => `<span>${TP.esc(TP.tx(STAGES[s]))}</span>`).join('')}</div>
+      <div class="next">${TP.icon('cal')}<div><b>${TP.t('next')}</b>${nx ? `${TP.esc(TP.tx(nx))} — <span>${TP.esc(TP.dateText(nx))}</span><div class="nx-cd">${TP.countdown(nx, { compact: true })}</div>` : TP.t('nextNone')}</div></div>
+      <span class="go"><span>${TP.t('go')}</span>${TP.icon('arrow')}</span>
+    </a>`;
+  }).join('');
+  TP.observe(g.querySelectorAll('.reveal'));
+}
+
+function renderUpcoming(){
+  const now = Date.now(), items = [];
+  COMPS.forEach(c => TP.compDates(c, DATA).items.forEach(i => { const ph = TP.phase(i, now); if (ph === 'cur' || ph === 'future') items.push(Object.assign({ comp: c, ph }, i)); }));
+  items.sort((a, b) => (a.ph === 'cur' ? TP.endOf(a) : a.d) - (b.ph === 'cur' ? TP.endOf(b) : b.d));
+  const box = document.getElementById('upList');
+  if (!items.length) { box.innerHTML = `<div class="empty">${TP.icon('cal')}${TP.t('up.none')}</div>`; return; }
+  box.innerHTML = items.slice(0, 10).map(i => {
+    const p = TP.ymd(i.d);
+    return `<a class="up" style="--c:${i.comp.color}" href="competition.html?c=${i.comp.id}#timeline">
+      <div class="dbox"><b>${i.approx ? '~' : ''}${p.d}</b><span>${TP.fmtMonth(i.d)} ${p.y}</span></div>
+      <div><h4>${TP.esc(TP.tx(i))}</h4><p>${TP.esc(TP.tx(i.comp.short))} · ${TP.esc(TP.dateText(i))}</p></div>
+      <span class="rel${i.ph === 'cur' ? ' now' : ''}">${i.ph === 'cur' ? `<em>${TP.t('now')}</em>` : ''}${TP.countdown(i, { compact: true })}</span></a>`;
+  }).join('');
+  TP.tick();
+}
+
+function renderAll(){ renderStatic(); renderGrid(); renderUpcoming(); TP.observe(); TP.tick(); }
+TP.onCountdownEnd(renderAll); // عند انتهاء عدّاد ينتقل العرض تلقائياً للموعد التالي
+
+document.addEventListener('click', e => {
+  const f = e.target.closest('[data-field]'); if (f) { F_FIELD = f.dataset.field; renderStatic(); renderGrid(); return; }
+  const s = e.target.closest('[data-stage]'); if (s) { F_STAGE = s.dataset.stage; renderStatic(); renderGrid(); }
+});
+document.getElementById('q').addEventListener('input', e => { Q = e.target.value; renderGrid(); });
+
+TP.onLang(renderAll);
+TP.applyLang();
+TP.loadData((d) => { if (d) { DATA = d; renderAll(); } });
+</script>
+</body>
+</html>
