@@ -11,6 +11,8 @@
   try { lang = localStorage.getItem('tp-lang') || 'ar'; } catch (e) {}
   const handlers = [];
   TP.lang = () => lang;
+  /* تستخدمها الصفحة الرئيسية لمزامنة لغتها مع هذه الأدوات */
+  TP.setLang = l => { lang = l === 'en' ? 'en' : 'ar'; };
   TP.onLang = fn => handlers.push(fn);
   TP.tx = o => o == null ? '' : (typeof o === 'string' ? o : (o[lang] != null ? o[lang] : (o.ar != null ? o.ar : '')));
   TP.dict = {};
@@ -255,11 +257,12 @@
 
   document.documentElement.classList.add('js');
   document.addEventListener('DOMContentLoaded', () => {
+    if (window.TP_HOST_PAGE) return; // الصفحة الرئيسية تدير زر اللغة والقائمة بنفسها
     const lb = document.getElementById('langBtn'); if (lb) lb.addEventListener('click', TP.toggleLang);
     const bg = document.getElementById('burger'), nl = document.getElementById('navLinks');
     if (bg && nl) { bg.addEventListener('click', () => nl.classList.toggle('open')); nl.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nl.classList.remove('open'))); }
   });
-  document.addEventListener('pointermove', e => {
+  if (!window.TP_HOST_PAGE) document.addEventListener('pointermove', e => {
     const g = e.target.closest && e.target.closest('.glass'); if (!g) return;
     const r = g.getBoundingClientRect();
     g.style.setProperty('--mx', (e.clientX - r.left) + 'px'); g.style.setProperty('--my', (e.clientY - r.top) + 'px');
