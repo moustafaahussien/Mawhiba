@@ -20,10 +20,10 @@
   TP.addDict = d => { ['ar', 'en'].forEach(l => { TP.dict[l] = Object.assign(TP.dict[l] || {}, d[l] || {}); }); };
   TP.addDict({
     ar: { brand:'منصة الموهبة', school:'مدارس دار الذكر', 'nav.home':'الرئيسية', 'nav.comps':'المسابقات', 'nav.kpis':'المؤشرات والتقارير',
-          'footer.credit':'إعداد وإشراف: مصطفى أحمد حسين — المنسق التنفيذي لبرامج الموهبة والمسابقات الأكاديمية',
+          'footer.sijil':'للمعلمين: السجل التام', 'footer.credit':'إعداد وإشراف: مصطفى أحمد حسين — المنسق التنفيذي لبرامج الموهبة والمسابقات الأكاديمية',
           'st.open':'التسجيل مفتوح', 'st.soon':'يفتح قريباً', 'st.closed':'التسجيل مغلق' },
     en: { brand:'Talent Platform', school:'Dar Al-Thikr Schools', 'nav.home':'Home', 'nav.comps':'Competitions', 'nav.kpis':'KPIs & Reports',
-          'footer.credit':'Prepared and supervised by Moustafa Ahmed Hussein — Executive Coordinator of Talent Programs and Academic Competitions',
+          'footer.sijil':'For teachers: Talent Record', 'footer.credit':'Prepared and supervised by Moustafa Ahmed Hussein — Executive Coordinator of Talent Programs and Academic Competitions',
           'st.open':'Registration open', 'st.soon':'Opening soon', 'st.closed':'Registration closed' }
   });
   TP.applyLang = function () {

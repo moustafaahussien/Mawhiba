@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>التقارير والتحليل — السجل التام لتطور الموهبة – منصة الموهبة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@300;600;900&family=Sora:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/platform.css">
+<link rel="stylesheet" href="css/sijil.css">
+<meta name="robots" content="noindex">
+</head>
+<body class="sj">
+<div id="hdr"></div>
+<main class="wrap">
+  <div id="demo"></div>
+  <section class="hero glass">
+    <span class="kicker">التقارير والتحليل</span>
+    <h1>نتائج نماذج القياس والحصر</h1>
+    <p>كل ما عبّأه المعلمون: ملخص عام، وتحليل لكل نموذج، وملف لكل طالب يجمع نتائجه في كل النماذج، وسجل كل معلم.</p>
+  </section>
+
+  <section class="filters glass" id="login" hidden>
+    <label class="field">مفتاح المشرف<input id="key" type="password" placeholder="المفتاح المكتوب في Apps Script"></label>
+    <button class="btn" id="loginBtn">عرض التقارير</button>
+  </section>
+
+  <div id="main" hidden>
+    <div class="tabs glass no-print" id="tabs">
+      <button data-t="overview" class="on">نظرة عامة</button>
+      <button data-t="form">تحليل نموذج</button>
+      <button data-t="student">ملف الطالب</button>
+      <button data-t="teacher">سجل المعلم</button>
+    </div>
+    <section class="filters glass no-print">
+      <label class="field">العام الدراسي<select id="fYear"></select></label>
+      <label class="field">المعلم<select id="fTeacher"></select></label>
+      <label class="field">الصف<select id="fGrade"></select></label>
+      <label class="field">الفصل<select id="fCls"></select></label>
+      <button class="btn ghost" id="reload">تحديث</button>
+      <button class="btn ghost" id="csv">تصدير CSV</button>
+      <button class="btn ghost" onclick="window.print()">طباعة</button>
+    </section>
+    <div id="view"></div>
+  </div>
+</main>
+<div class="tip" id="tip"></div>
+<div id="ftr"></div>
+
+<script src="js/config.js"></script>
+<script src="js/sijil/config.js"></script>
+<script src="js/sijil/forms.js"></script>
+<script src="js/sijil/thinking.js"></script>
+<script src="js/sijil/records.js"></script>
+<script src="js/sijil/common.js"></script>
+<script>
+$('#hdr').innerHTML = header('reports');
+$('#demo').innerHTML = demoBanner(); $('#ftr').outerHTML = footerHtml();
+let ALL = [], TAB = 'overview', SEL = { form: FORMS[0].id, student: '', teacher: '' };
+const r2 = x => (Math.round(x * 100) / 100).toFixed(2);
+const sKey = r => r.studentId || r.studentName;
+const uniq = a => [...new Set(a.filter(Boolean))].sort((x, y) => x.localeCompare(y, 'ar'));
+const LV = ['high', 'mid', 'low', 'none'];
+const GROUP_COLS = [['السمات', 'السمات السلوكية'], ['الاهتمامات', 'الاهتمامات'], ['الأساليب', 'التعلم والتعبير'], ['التفكير', 'أساليب التفكير'], ['السجل', 'السجل والخطط']];
+
+/* ---------- تحميل ---------- */
+async function load() {
+  const key = LS.get('tf_admin', '');
+  if (!isDemo() && !key) { $('#login').hidden = false; return; }
+  $('#view').innerHTML = '<div class="panel glass empty">جارٍ تحميل البيانات…</div>'; $('#main').hidden = false;
+  try {
+    const d = await API.report(key);
+    if (!d || !d.ok) throw new Error((d && d.error) || 'تعذر التحميل');
+    ALL = (d.records || []).map(r => ({ ...r, answers: typeof r.answers === 'string' ? JSON.parse(r.answers || '{}') : r.answers, parts: typeof r.parts === 'string' ? JSON.parse(r.parts || '[]') : r.parts }));
+    $('#login').hidden = true; fillFilters(); draw();
+  } catch (e) {
+    $('#main').hidden = true; $('#login').hidden = false;
+    if (/مفتاح/.test(e.message)) LS.set('tf_admin', '');
+    toast(e.message, 'err');
+  }
+}
+$('#loginBtn').onclick = () => { LS.set('tf_admin', $('#key').value.trim()); load(); };
+$('#reload').onclick = load;
+
+function fillFilters() {
+  const opt = (sel, vals, label) => { const cur = sel.value; sel.innerHTML = `<option value="">${label}</option>` + vals.map(v => `<option ${v === cur ? 'selected' : ''}>${esc(v)}</option>`).join(''); };
+  opt($('#fYear'), uniq(ALL.map(r => r.year)), 'كل الأعوام');
+  opt($('#fTeacher'), uniq(ALL.map(r => r.teacher)), 'كل المعلمين');
+  opt($('#fGrade'), uniq(ALL.map(r => r.grade)), 'كل الصفوف');
+  opt($('#fCls'), uniq(ALL.map(r => r.classroom)), 'كل الفصول');
+}
+['#fYear', '#fTeacher', '#fGrade', '#fCls'].forEach(s => $(s).onchange = draw);
+$$('#tabs button').forEach(b => b.onclick = () => { $$('#tabs button').forEach(x => x.classList.toggle('on', x === b)); TAB = b.dataset.t; draw(); });
+
+function rows() {
+  const y = $('#fYear').value, t = $('#fTeacher').value, g = $('#fGrade').value, c = $('#fCls').value;
+  return ALL.filter(r => (!y || r.year === y) && (!t || r.teacher === t) && (!g || r.grade === g) && (!c || r.classroom === c));
+}
+function draw() { ({ overview, form: formView, student: studentView, teacher: teacherView })[TAB](rows()); }
+
+/* ---------- مكوّنات ---------- */
+function bars(list, opt = {}) {
+  if (!list.length) return '<div class="empty">لا توجد بيانات</div>';
+  return `<div class="bars">${list.map(b => {
+    const pct = Math.max(0, Math.min(100, b.value / b.max * 100));
+    const marks = (b.marks || []).map(m => `<span class="mark" style="right:${m / b.max * 100}%"></span>`).join('');
+    return `<div class="brow" data-tip="${esc(b.tip || (b.label + ': ' + b.text))}"><span class="lab" title="${esc(b.label)}">${esc(b.label)}</span>
+      <div class="track">${marks}<div class="fill ${b.level || ''}" style="width:${pct}%"></div></div><span class="v">${esc(b.text)}</span></div>`;
+  }).join('')}</div>`;
+}
+function lvl(p) { return `<span class="lvl ${p.level}">${esc(p.label)}</span>`; }
+function dist(c) {
+  const tot = LV.reduce((a, k) => a + (c[k] || 0), 0) || 1;
+  return `<div class="dist" data-tip="عالٍ: ${c.high || 0} · متوسط: ${c.mid || 0} · منخفض: ${c.low || 0}${c.none ? ' · لا دلالة: ' + c.none : ''}">${LV.map(k => c[k] ? `<i class="${k}" style="width:${c[k] / tot * 100}%"></i>` : '').join('')}</div>`;
+}
+const keyRow = `<div class="keyrow"><span class="lvl high">عالٍ</span><span class="lvl mid">متوسط</span><span class="lvl low">منخفض / مؤشر</span><span class="lvl none">لا دلالة</span></div>`;
+document.addEventListener('mousemove', e => {
+  const el = e.target.closest && e.target.closest('[data-tip]'), tip = $('#tip');
+  if (!el) { tip.style.opacity = 0; return; }
+  tip.textContent = el.dataset.tip; tip.style.opacity = 1;
+  tip.style.left = Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 8) + 'px'; tip.style.top = (e.clientY + 16) + 'px';
+});
+function marksFor(form) {
+  const b = form.scoring.bands; return Array.isArray(b) ? b.filter(x => x.min > 0).map(x => x.min) : [];
+}
+function fmtScore(form, p) { return form.scoring.kind === 'mean' || form.scoring.kind === 'groups' ? r2(p.score) : String(Math.round(p.score * 10) / 10); }
+
+const defOf = id => getForm(id) || getRecord(id);
+function studentThinking(SR) {
+  return FORMS.filter(f => f.group === 'التفكير').map(f => {
+    const r = SR.filter(x => x.formId === f.id).sort((a, b) => a.ts.localeCompare(b.ts)).pop();
+    return r ? { form: f, part: r.parts[0] } : null;
+  }).filter(Boolean);
+}
+
+/* ---------- 1) نظرة عامة ---------- */
+function overview(R) {
+  const teachers = uniq(R.map(r => r.teacher)), students = uniq(R.map(sKey));
+  let h = `<div class="tiles">
+    <div class="tile glass"><b>${R.length}</b><span>نموذج معبّأ</span></div>
+    <div class="tile glass"><b>${students.length}</b><span>طالباً</span></div>
+    <div class="tile glass"><b>${teachers.length}</b><span>معلماً</span></div>
+    <div class="tile glass"><b>${uniq(R.map(r => r.formId)).length} / ${FORMS.length}</b><span>نموذجاً مستخدماً</span></div></div>`;
+  if (!R.length) { $('#view').innerHTML = h + '<div class="panel glass empty">لا توجد نماذج معبّأة بعد ضمن هذا التصفية.</div>'; return; }
+
+  // حسب المعلم
+  h += `<section class="panel glass"><h3>ما عبّأه كل معلم</h3><div class="sub">عدد النماذج لكل معلم حسب نوع النموذج</div><div class="tbl"><table>
+    <tr><th>المعلم</th>${GROUP_COLS.map(g => `<th>${g[1]}</th>`).join('')}<th>المجموع</th><th>آخر تعبئة</th></tr>
+    ${teachers.map(t => { const tr = R.filter(r => r.teacher === t); const last = tr.map(r => r.ts).sort().pop();
+      return `<tr><td><a href="#" onclick="SEL.teacher='${esc(t)}';goTab('teacher');return false"><b>${esc(t)}</b></a></td>${GROUP_COLS.map(g => `<td>${tr.filter(r => (defOf(r.formId) || {}).group === g[0]).length || '–'}</td>`).join('')}<td><b>${tr.length}</b></td><td>${last ? new Date(last).toLocaleDateString('ar-SA-u-nu-latn') : ''}</td></tr>`; }).join('')}
+  </table></div></section>`;
+
+  // أسلوب التفكير الغالب
+  const thStud = students.map(k => { const SR = R.filter(r => sKey(r) === k); return thinkingProfile(studentThinking(SR)); }).filter(p => p.n);
+  if (thStud.length) {
+    const cnt = { L: 0, E: 0, J: 0, M: 0 };
+    thStud.forEach(p => { if (!p.dominant.length) return; if (p.dominant.length > 1) cnt.M++; else cnt[p.dominant[0]]++; });
+    const tot = thStud.length;
+    h += `<section class="panel glass"><h3>أسلوب التفكير الغالب لدى الطلاب</h3><div class="sub">${tot} طالباً لديهم مقياس تفكير واحد على الأقل · وفق تصنيف ستيرنبرج المعتمد في الكتاب</div>
+      ${bars([['L', 'تشريعي'], ['E', 'تنفيذي'], ['J', 'قضائي'], ['M', 'متعدد الأساليب']].map(([k, t]) => ({ label: t, value: cnt[k], max: tot, text: String(cnt[k]), tip: `${t}: ${cnt[k]} من ${tot} طالباً` })))}</section>`;
+  }
+
+  // خطط التطوير
+  const plans = R.filter(r => r.formId === 'plan'), inds = R.filter(r => r.formId === 'indicators');
+  if (plans.length || inds.length) {
+    const lastInd = uniq(inds.map(sKey)).map(k => inds.filter(r => sKey(r) === k).sort((a, b) => a.ts.localeCompare(b.ts)).pop());
+    const avg = lastInd.length ? Math.round(lastInd.reduce((a, r) => a + r.parts[0].score, 0) / lastInd.length) : null;
+    h += `<section class="panel glass"><h3>خطط التطوير ومؤشرات تطبيقها</h3><div class="sub">${uniq(plans.map(sKey)).length} طالباً لديهم خطة تطوير · ${lastInd.length} منهم قُيّمت مؤشرات خطتهم${avg != null ? ' · متوسط نسبة الإنجاز ' + avg + '%' : ''}</div>
+      ${lastInd.length ? bars(lastInd.sort((a, b) => b.parts[0].score - a.parts[0].score).map(r => ({ label: r.studentName, value: r.parts[0].score, max: 100, level: r.parts[0].level, marks: [60, 80], text: r.parts[0].score + '%', tip: r.studentName + ': ' + r.summary }))) : ''}</section>`;
+  }
+
+  // حسب النموذج
+  h += `<section class="panel glass"><h3>توزيع النتائج في كل نموذج</h3><div class="sub">نسبة الطلاب في كل مستوى (عالٍ / متوسط / منخفض)</div>${keyRow}<div class="tbl"><table>
+    <tr><th>النموذج</th><th>المحور</th><th>العدد</th><th style="width:40%">التوزيع</th><th>المتوسط</th></tr>`;
+  FORMS.forEach(f => {
+    const fr = R.filter(r => r.formId === f.id); if (!fr.length) return;
+    const parts = f.scoring.kind === 'groups' || f.scoring.kind === 'rank' ? [] : fr[0].parts.map(p => p.id);
+    if (!parts.length) {
+      h += `<tr><td><b>${esc(f.short)}</b></td><td colspan="2">${fr.length} نموذجاً</td><td colspan="2"><a href="#" onclick="SEL.form='${f.id}';goTab('form');return false">عرض التحليل ←</a></td></tr>`; return;
+    }
+    parts.forEach((pid, i) => {
+      const ps = fr.map(r => r.parts.find(p => p.id === pid)).filter(Boolean), c = {};
+      ps.forEach(p => c[p.level] = (c[p.level] || 0) + 1);
+      const avg = ps.reduce((a, p) => a + p.score, 0) / ps.length;
+      h += `<tr>${i === 0 ? `<td rowspan="${parts.length}"><a href="#" onclick="SEL.form='${f.id}';goTab('form');return false"><b>${esc(f.short)}</b></a></td>` : ''}
+        <td>${f.scoring.kind === 'style' ? 'أسلوب التفكير' : esc(ps[0].title)}</td><td>${ps.length}</td><td>${dist(c)}</td><td>${f.scoring.kind === 'mean' ? r2(avg) : r2(avg) + ' / ' + ps[0].max}</td></tr>`;
+    });
+  });
+  h += `</table></div></section>`;
+  $('#view').innerHTML = h;
+}
+function goTab(t) { $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t)); TAB = t; draw(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+/* ---------- 2) تحليل نموذج ---------- */
+function formView(R) {
+  const form = getForm(SEL.form), fr = R.filter(r => r.formId === form.id), items = flatItems(form);
+  let h = `<section class="filters glass no-print"><label class="field">النموذج<select id="pickForm">${FORMS.map(f => `<option value="${f.id}" ${f.id === form.id ? 'selected' : ''}>${esc(f.code)} — ${esc(f.title)}</option>`).join('')}</select></label></section>`;
+  h += `<section class="panel glass"><h3>${esc(form.title)}</h3><div class="sub">${fr.length} نموذجاً معبّأً · ${uniq(fr.map(sKey)).length} طالباً</div></section>`;
+  if (!fr.length) { $('#view').innerHTML = h + '<div class="panel glass empty">لم يُعبّأ هذا النموذج بعد ضمن هذا التصفية.</div>'; bindPick(); return; }
+
+  // متوسط كل محور
+  const pids = fr[0].parts.map(p => p.id), agg = pids.map(pid => {
+    const ps = fr.map(r => r.parts.find(p => p.id === pid)).filter(Boolean), c = {};
+    ps.forEach(p => c[p.level] = (c[p.level] || 0) + 1);
+    const avg = ps.reduce((a, p) => a + p.score, 0) / ps.length;
+    return { id: pid, title: ps[0].title + (ps[0].product ? ' — ' + ps[0].product : ''), avg, max: ps[0].max, c, n: ps.length };
+  });
+  const bandsOf = pid => Array.isArray(form.scoring.bands) ? form.scoring.bands : form.scoring.bands ? form.scoring.bands[pid] : null;
+  const isStyle = form.scoring.kind === 'style';
+  const lvlOf = (pid, v) => { if (isStyle) return styleOf(form, Math.round(v)).level; const b = bandsOf(pid); return b ? (b.find(x => Math.round(v * 100) / 100 >= x.min) || b[b.length - 1]).level : (v >= 4.5 ? 'high' : v >= 3.5 ? 'mid' : 'low'); };
+
+  h += `<div class="two"><section class="panel glass"><h3>متوسط المجموعة في كل محور</h3><div class="sub">الخطوط الرأسية = حدود المستويات في الكتاب</div>
+    ${bars([...agg].sort((a, b) => form.scoring.kind === 'sectionSum' ? 0 : b.avg - a.avg).map(a => ({ label: a.title, value: a.avg, max: a.max, level: lvlOf(a.id, a.avg),
+      marks: form.scoring.kind === 'sectionSum' || isStyle ? (bandsOf(a.id) || []).filter(x => x.min > 0).map(x => x.min) : marksFor(form),
+      text: r2(a.avg), tip: `${a.title}: متوسط ${r2(a.avg)} من ${a.max} — ${a.n} طالباً` })))}</section>
+    <section class="panel glass"><h3>عدد الطلاب في كل مستوى</h3>${keyRow}<div class="tbl"><table><tr><th>المحور</th><th>${isStyle ? 'خاصية أولى' : 'عالٍ'}</th><th>${isStyle ? 'خاصية ثانية' : 'متوسط'}</th><th>${isStyle ? 'مؤشر' : 'منخفض'}</th>${isStyle ? '<th>لا دلالة</th>' : ''}<th style="width:35%"></th></tr>
+    ${agg.map(a => `<tr><td>${esc(a.title)}</td><td>${a.c.high || 0}</td><td>${a.c.mid || 0}</td><td>${a.c.low || 0}</td>${isStyle ? `<td>${a.c.none || 0}</td>` : ''}<td>${dist(a.c)}</td></tr>`).join('')}</table></div></section></div>`;
+
+  // تحليل البنود
+  const im = items.map(i => { const v = fr.map(r => r.answers[i.n]).filter(x => x !== undefined && x !== '').map(Number); return { ...i, m: v.length ? v.reduce((a, b) => a + b, 0) / v.length : 0 }; });
+  const smax = Math.max(...SCALES[form.scale].values), sorted = [...im].sort((a, b) => b.m - a.m);
+  const k = Math.min(5, Math.floor(items.length / 2));
+  h += `<div class="two"><section class="panel glass"><h3>أعلى البنود موافقة</h3>${bars(sorted.slice(0, k).map(i => ({ label: i.n + '. ' + i.text, value: i.m, max: smax, text: r2(i.m), tip: `البند ${i.n}: ${i.text} — المتوسط ${r2(i.m)}` })))}</section>
+    <section class="panel glass"><h3>أدنى البنود موافقة</h3>${bars(sorted.slice(-k).reverse().map(i => ({ label: i.n + '. ' + i.text, value: i.m, max: smax, text: r2(i.m), tip: `البند ${i.n}: ${i.text} — المتوسط ${r2(i.m)}` })))}</section></div>`;
+
+  // قراءة تلقائية
+  const notes = [];
+  if (isStyle) {
+    const byLabel = {}; fr.forEach(r => { const p = r.parts[0]; byLabel[p.label] = (byLabel[p.label] || 0) + 1; });
+    Object.entries(byLabel).sort((a, b) => b[1] - a[1]).forEach(([l, c]) => notes.push(`${esc(l)}: ${c} من ${fr.length} طالباً (${Math.round(c / fr.length * 100)}%).`));
+    notes.push(`مفتاح التفسير: ${esc(describeStyleBands(form))}.`);
+    if (form.rev && form.rev.length) notes.push(`متوسطات البنود أدناه للإجابات كما أُدخلت؛ البنود ${form.rev.join('، ')} تُحسب بالعكس في المجموع.`);
+  } else if (form.scoring.kind === 'rank') {
+    const top = [...agg].sort((a, b) => b.avg - a.avg);
+    notes.push(`أكثر أساليب التعبير تفضيلاً لدى المجموعة: <b>${esc(top[0].title)}</b> (${r2(top[0].avg)})، يليه ${esc(top[1].title)} (${r2(top[1].avg)}).`);
+    notes.push(`أقلها تفضيلاً: ${esc(top[top.length - 1].title)} (${r2(top[top.length - 1].avg)}).`);
+  } else {
+    agg.forEach(a => { const n = a.n, hi = a.c.high || 0; if (hi) notes.push(`${esc(a.title)}: ${hi} من ${n} طالباً (${Math.round(hi / n * 100)}%) في المستوى العالي.`); });
+    if (!notes.length) notes.push('لا يوجد طالب في المستوى العالي في أي محور ضمن هذه التصفية.');
+  }
+  notes.push(`أعلى بند: «${esc(sorted[0].text)}» بمتوسط ${r2(sorted[0].m)}، وأدنى بند: «${esc(sorted[sorted.length - 1].text)}» بمتوسط ${r2(sorted[sorted.length - 1].m)}.`);
+  h += `<section class="panel glass"><h3>قراءة النتائج</h3><ul class="analysis">${notes.map(n => `<li>${n}</li>`).join('')}</ul></section>`;
+
+  // جدول الطلاب
+  h += `<section class="panel glass"><h3>نتائج الطلاب</h3><div class="tbl"><table><tr><th>الطالب</th><th>الصف / الفصل</th><th>المعلم</th><th>النتيجة</th></tr>
+    ${fr.sort((a, b) => a.studentName.localeCompare(b.studentName, 'ar')).map(r => `<tr><td><a href="#" onclick="SEL.student='${esc(sKey(r))}';goTab('student');return false"><b>${esc(r.studentName)}</b></a></td>
+      <td>${esc(r.grade)} ${esc(r.classroom || '')}</td><td>${esc(r.teacher)}</td><td class="note">${esc(r.summary)}</td></tr>`).join('')}</table></div></section>`;
+  $('#view').innerHTML = h; bindPick();
+}
+function bindPick() { const p = $('#pickForm'); if (p) p.onchange = () => { SEL.form = p.value; draw(); }; }
+
+/* ---------- 3) ملف الطالب ---------- */
+function studentView(R) {
+  const studs = uniq(R.map(sKey)).map(k => { const r = R.find(x => sKey(x) === k); return { k, name: r.studentName, grade: r.grade, cls: r.classroom }; })
+    .sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+  if (!SEL.student || !studs.find(s => s.k === SEL.student)) SEL.student = studs[0] ? studs[0].k : '';
+  let h = `<section class="filters glass no-print"><label class="field">الطالب<select id="pickStudent">${studs.map(s => `<option value="${esc(s.k)}" ${s.k === SEL.student ? 'selected' : ''}>${esc(s.name)} — ${esc(s.grade)} ${esc(s.cls || '')}</option>`).join('')}</select></label></section>`;
+  if (!studs.length) { $('#view').innerHTML = h + '<div class="panel glass empty">لا يوجد طلاب ضمن هذا التصفية.</div>'; return; }
+  const SR = R.filter(r => sKey(r) === SEL.student), st = studs.find(s => s.k === SEL.student);
+  const latest = id => SR.filter(r => r.formId === id).sort((a, b) => a.ts.localeCompare(b.ts)).pop();
+
+  h += `<section class="panel glass"><span class="kicker">ملف الطالب</span><h3 style="font-size:1.4rem">${esc(st.name)}</h3>
+    <div class="sub">${esc(st.grade)} ${esc(st.cls || '')}${SR[0].studentId ? ' · رقم الطالب ' + esc(SR[0].studentId) : ''} · ${SR.length} نموذجاً · عبّأها: ${uniq(SR.map(r => r.teacher)).map(esc).join('، ')}</div></section>`;
+
+  const notes = [];
+  // الاهتمامات
+  const ints = FORMS.filter(f => f.group === 'الاهتمامات').map(f => ({ f, r: latest(f.id) })).filter(x => x.r);
+  const learn = latest('learning'), expr = latest('expression'), traits = SR.filter(r => r.formId === 'traits');
+  h += '<div class="two">';
+  if (ints.length) {
+    h += `<section class="panel glass"><h3>ملف الاهتمامات</h3><div class="sub">المتوسط من 4 · الخطان = 2.67 (معتدل) و 3.34 (عالٍ)</div>
+      ${bars(ints.map(x => { const p = x.r.parts[0]; return { label: x.f.short, value: p.score, max: 4, level: p.level, marks: [2.67, 3.34], text: r2(p.score), tip: `${x.f.short}: ${r2(p.score)} — ${p.label}` }; }).sort((a, b) => b.value - a.value))}</section>`;
+    const hi = ints.filter(x => x.r.parts[0].level === 'high').map(x => x.f.short), md = ints.filter(x => x.r.parts[0].level === 'mid').map(x => x.f.short);
+    notes.push(hi.length ? `يُظهر <b>توجهاً عالياً</b> نحو: ${hi.map(c => `<span class="chip">${esc(c)}</span>`).join('')}` : 'لم يظهر توجه عالٍ في أيٍّ من مجالات الاهتمام المقيسة.');
+    if (md.length) notes.push(`توجه معتدل نحو: ${md.map(c => `<span class="chip">${esc(c)}</span>`).join('')}`);
+  }
+  if (traits.length) {
+    const avg = id => traits.reduce((a, r) => a + r.parts.find(p => p.id === id).score, 0) / traits.length;
+    const f = getForm('traits');
+    const tp = f.sections.map(s => { const v = avg(s.id), b = f.scoring.bands[s.id], bb = b.find(x => Math.round(v) >= x.min); const max = traits[0].parts.find(p => p.id === s.id).max;
+      return { label: s.title.replace(/^[أ-ي]\s*–\s*/, ''), value: v, max, level: bb.level, lab: bb.label, marks: b.filter(x => x.min > 0).map(x => x.min), text: `${Math.round(v * 10) / 10} / ${max}` }; });
+    h += `<section class="panel glass"><h3>السمات السلوكية</h3><div class="sub">${traits.length > 1 ? 'متوسط تقييم ' + traits.length + ' معلمين' : 'تقييم ' + esc(traits[0].teacher)} · الخطوط = حدود المستويات</div>
+      ${bars(tp.map(t => ({ ...t, tip: `${t.label}: ${t.text} — ${t.lab}` })))}
+      <div class="keyrow">${tp.map(t => `<span>${esc(t.label)}: <span class="lvl ${t.level}">${esc(t.lab)}</span></span>`).join('')}</div></section>`;
+    notes.push('السمات السلوكية: ' + tp.map(t => `${esc(t.label)} <b>${esc(t.lab)}</b>`).join('، ') + '.');
+  }
+  if (learn) {
+    const ps = [...learn.parts].sort((a, b) => b.score - a.score);
+    h += `<section class="panel glass"><h3>أسلوب التعلم المفضل</h3><div class="sub">المتوسط من 5 · الخطان = 3.67 (مفضل) و 4.34 (مفضل بقوة)</div>
+      ${bars(ps.map(p => ({ label: p.title, value: p.score, max: 5, level: p.level, marks: [3.67, 4.34], text: r2(p.score), tip: `${p.title}: ${r2(p.score)} — ${p.label}` })))}</section>`;
+    const s = ps.filter(p => p.level === 'high').map(p => p.title), m = ps.filter(p => p.level === 'mid').map(p => p.title);
+    notes.push(s.length ? `أساليب التعلم المفضلة بقوة: ${s.map(c => `<span class="chip">${esc(c)}</span>`).join('')}` : 'لا يوجد أسلوب تعلم مفضل بقوة.');
+    if (m.length) notes.push(`أساليب مفضلة: ${m.map(c => `<span class="chip">${esc(c)}</span>`).join('')}`);
+  }
+  if (expr) {
+    const ps = [...expr.parts].sort((a, b) => b.score - a.score);
+    h += `<section class="panel glass"><h3>أسلوب التعبير المفضل</h3><div class="sub">درجة الاهتمام بإنتاج كل نوع (من 5)</div>
+      ${bars(ps.map(p => ({ label: p.title, value: p.score, max: 5, level: p.level, text: String(p.score), tip: `${p.product} (${p.title}): ${p.label}` })))}</section>`;
+    const top = ps.filter(p => p.score === ps[0].score);
+    notes.push(`أسلوب التعبير المفضل: ${top.map(p => `<span class="chip">${esc(p.title)}</span>`).join('')} (${top.map(p => esc(p.product)).join('، ')}).`);
+  }
+  h += '</div>';
+  const th = studentThinking(SR);
+  if (th.length) {
+    const prof = thinkingProfile(th);
+    const dom = prof.dominant;
+    h += `<section class="panel glass"><h3>أسلوب التفكير المفضل</h3><div class="sub">${th.length} من 14 مقياساً · درجة التفضيل = ما حققه الطالب في مقاييس كل أسلوب من أعلى ما يمكن تحقيقه فيها</div>
+      <div class="style-cards">${['L', 'E', 'J'].map(k => `<div class="style-card ${dom.includes(k) ? 'dom' : ''}"><b>${STERNBERG[k].name}</b>
+        <div class="pct">${prof.pct[k] == null ? '—' : prof.pct[k] + '%'}</div>
+        <small>${esc(STERNBERG[k].desc)}</small><small>المقاييس: ${prof.acc[k].n} من ${k === 'L' ? 6 : 4}</small></div>`).join('')}</div>
+      <div class="tbl" style="margin-top:12px"><table><tr><th>المقياس</th><th>الدرجة</th><th>الدلالة</th></tr>
+      ${th.map(({ form, part }) => `<tr><td>${esc(form.n + '. ' + form.short)}</td><td>${part.score} / ${part.max}</td><td>${lvl(part)}</td></tr>`).join('')}</table></div></section>`;
+    if (dom.length) {
+      const names = dom.map(k => STERNBERG[k].name);
+      notes.push(`أسلوب التفكير الغالب: <b>${names.join(' و')}</b>${dom.length > 1 ? ' (متقاربان)' : ''} — ${esc(STERNBERG[dom[0]].desc)}`);
+      notes.push(`أفعال مقترحة لأنشطته (مصفوفة ستيرنبرج): ${STERNBERG[dom[0]].verbs.map(v => `<span class="chip">${esc(v)}</span>`).join('')}`);
+    } else notes.push('لم تُظهر مقاييس التفكير المعبّأة دلالة على أسلوب محدد.');
+    if (!prof.complete) notes.push('تحديد أسلوب التفكير أدق بعد تعبئة مقاييس الأساليب الثلاثة.');
+  }
+  {
+    const sk = encodeURIComponent(SR[0].studentId || st.name);
+    h += `<section class="panel glass"><h3>السجل التام وخطة التطوير</h3><div class="tbl"><table><tr><th>النموذج</th><th>الحالة</th><th>الملخص</th><th></th></tr>
+      ${RECORDS.map(d => { const r = latest(d.id);
+        return `<tr><td><b>${esc(d.short)}</b><br><small class="sub">${esc(d.code)}</small></td><td>${r ? `<span class="lvl high">محفوظ ${esc(r.date)}</span>` : '<span class="lvl none">لم يُعبّأ</span>'}</td>
+          <td class="note">${r ? esc(r.summary) : ''}</td><td class="no-print"><a class="btn ghost small" href="sijil-record.html?f=${d.id}&s=${sk}">${r ? 'فتح وتحديث' : 'تعبئة'}</a></td></tr>`; }).join('')}</table></div></section>`;
+    const ind = latest('indicators');
+    if (ind) notes.push(`تطبيق خطة التطوير: ${esc(ind.summary)}.`);
+  }
+  const missing = FORMS.filter(f => !SR.find(r => r.formId === f.id)).map(f => f.short);
+  if (missing.length) notes.push(`نماذج لم تُعبّأ بعد لهذا الطالب (${missing.length}): ${missing.map(esc).join('، ')}.`);
+  h += `<section class="panel glass"><h3>قراءة ملف الطالب</h3><ul class="analysis">${notes.map(n => `<li>${n}</li>`).join('')}</ul>
+    <p class="note">هذه القراءة وصف آلي لنتائج النماذج وفق حدود التفسير في الكتاب، وتُستكمل بنموذج «معلومات الوضع الراهن» وخطة التطوير.</p></section>`;
+
+  h += `<section class="panel glass"><h3>كل النماذج المعبّأة</h3><div class="tbl"><table><tr><th>النموذج</th><th>المعلم</th><th>التاريخ</th><th>النتيجة</th><th>ملاحظات</th></tr>
+    ${SR.map(r => `<tr><td>${esc(defOf(r.formId) ? defOf(r.formId).short : r.formTitle)}</td><td>${esc(r.teacher)}</td><td>${esc(r.date)}</td><td class="note">${esc(r.summary)}</td><td class="note">${esc(r.notes || '')}</td></tr>`).join('')}</table></div></section>`;
+  $('#view').innerHTML = h;
+  $('#pickStudent').onchange = e => { SEL.student = e.target.value; draw(); };
+}
+
+/* ---------- 4) سجل المعلم ---------- */
+function teacherView(R) {
+  const ts = uniq(ALL.map(r => r.teacher));
+  if (!SEL.teacher || !ts.includes(SEL.teacher)) SEL.teacher = $('#fTeacher').value || ts[0] || '';
+  const TR = R.filter(r => r.teacher === SEL.teacher).sort((a, b) => b.ts.localeCompare(a.ts));
+  let h = `<section class="filters glass no-print"><label class="field">المعلم<select id="pickTeacher">${ts.map(t => `<option ${t === SEL.teacher ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select></label></section>`;
+  h += `<div class="tiles"><div class="tile glass"><b>${TR.length}</b><span>نموذجاً معبّأً</span></div>
+    <div class="tile glass"><b>${uniq(TR.map(sKey)).length}</b><span>طالباً</span></div>
+    <div class="tile glass"><b>${uniq(TR.map(r => r.formId)).length}</b><span>نوع نموذج</span></div></div>`;
+  h += `<section class="panel glass"><h3>نماذج ${esc(SEL.teacher)}</h3>${TR.length ? `<div class="tbl"><table><tr><th>التاريخ</th><th>النموذج</th><th>الطالب</th><th>الصف</th><th>النتيجة</th></tr>
+    ${TR.map(r => `<tr><td>${esc(r.date)}</td><td>${esc(defOf(r.formId) ? defOf(r.formId).short : r.formTitle)}</td><td>${esc(r.studentName)}</td><td>${esc(r.grade)} ${esc(r.classroom || '')}</td><td class="note">${esc(r.summary)}</td></tr>`).join('')}</table></div>` : '<div class="empty">لا توجد نماذج ضمن هذا التصفية.</div>'}</section>`;
+  $('#view').innerHTML = h;
+  $('#pickTeacher').onchange = e => { SEL.teacher = e.target.value; draw(); };
+}
+
+/* ---------- تصدير ---------- */
+$('#csv').onclick = () => {
+  const R = rows(); if (!R.length) { toast('لا توجد بيانات للتصدير', 'err'); return; }
+  const head = ['التاريخ', 'العام', 'المعلم', 'النموذج', 'رقم الطالب', 'اسم الطالب', 'الصف', 'الفصل', 'النتيجة', 'ملاحظات'];
+  const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+  const csv = '﻿' + [head, ...R.map(r => [r.date, r.year, r.teacher, r.formTitle, r.studentId, r.studentName, r.grade, r.classroom, r.summary, r.notes])].map(l => l.map(q).join(',')).join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'نتائج_النماذج.csv'; a.click();
+};
+
+load();
+</script>
+</body>
+</html>

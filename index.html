@@ -441,6 +441,9 @@ footer{padding:30px 0 44px;color:var(--muted);font-size:15px}
 footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;padding-block:22px;border-radius:24px;
   background:var(--glass);border:1px solid var(--glass-edge);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 footer b{color:var(--ink);font-weight:600}
+.staff-link{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:12px;font-family:var(--display);font-weight:600;font-size:14px;color:var(--ink);background:rgba(26,22,64,.06);transition:background .2s}
+.staff-link:hover{background:rgba(232,165,10,.18)}
+.staff-link svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
 /* ---------- الظهور ---------- */
 html.js .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
@@ -791,12 +794,16 @@ html.js .reveal.in{opacity:1;transform:none}
   <div class="wrap">
     <div><b data-i18n="brand">منصة الموهبة</b> — <span data-i18n="school">مدارس دار الذكر</span></div>
     <div data-i18n="footer.credit">إعداد وإشراف: مصطفى أحمد حسين — المنسق التنفيذي لبرامج الموهبة والمسابقات الأكاديمية</div>
+    <a class="staff-link" href="sijil.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg><span data-i18n="footer.sijil">للمعلمين: السجل التام</span></a>
   </div>
 </footer>
 
 <script>
 /* رابط سكربت البيانات يُضبط مرة واحدة في js/config.js */
 const DATA_SCRIPT_URL = (window.TP_CONFIG && window.TP_CONFIG.DATA_SCRIPT_URL) || '';
+/* أرقام عامة من «السجل التام» (بدون أسماء) — تُستخدم فقط إذا كانت خانة الرقم في جدول المنصة فارغة */
+const SIJIL_SCRIPT_URL = (window.TP_CONFIG && window.TP_CONFIG.SIJIL_SCRIPT_URL) || '';
+let SIJIL = null;
 
 const I18N = {
  ar:{
@@ -864,6 +871,7 @@ const I18N = {
   'sections.kicker':'أقسام المنصة','sections.t1':'كل ما يخص الموهبة','sections.t2':'في مكان واحد',
   'badge.live':'متاح الآن','badge.soon':'قريباً','go':'ادخل القسم',
   'sister.t':'المنصة الشقيقة: وحدة مهارات القرن 21','sister.d':'ستة برامج تبني مهارات المستقبل لدى جميع الطلاب، وتغذي مسار الموهبة بمشاريع البحث العلمي والابتكار.','sister.go':'زيارة المنصة',
+  'footer.sijil':'للمعلمين: السجل التام',
   'footer.credit':'إعداد وإشراف: مصطفى أحمد حسين — المنسق التنفيذي لبرامج الموهبة والمسابقات الأكاديمية'
  },
  en:{
@@ -931,6 +939,7 @@ const I18N = {
   'sections.kicker':'Platform sections','sections.t1':'Everything about talent','sections.t2':'in one place',
   'badge.live':'Live now','badge.soon':'Coming soon','go':'Open section',
   'sister.t':'Sister platform: 21st Century Skills Unit','sister.d':'Six programs building future skills for every student, feeding the talent path with research and innovation projects.','sister.go':'Visit platform',
+  'footer.sijil':'For teachers: Talent Record',
   'footer.credit':'Prepared and supervised by Moustafa Ahmed Hussein — Executive Coordinator of Talent Programs and Academic Competitions'
  }
 };
@@ -1084,7 +1093,9 @@ function renderCards(){
 function statValues(){
   const map = {};
   if (DATA && DATA.stats && DATA.stats.rows) DATA.stats.rows.forEach(r => { map[String(r[0]).trim()] = {ar:r[1], en:r[2], v:toNum(r[3]), suf:String(r[4] || '').trim()}; });
-  return STAT_KEYS.map(s => { const m = map[s.k] || {}; return {...s, label:(lang === 'ar' ? (m.ar || s.ar) : (m.en || s.en)), v:(m.v != null ? m.v : null), suf:m.suf || ''}; });
+  const fromSijil = { gifted: SIJIL && SIJIL.pool, beneficiaries: SIJIL && SIJIL.students };
+  return STAT_KEYS.map(s => { const m = map[s.k] || {}; const alt = fromSijil[s.k] ? fromSijil[s.k] : null;
+    return {...s, label:(lang === 'ar' ? (m.ar || s.ar) : (m.en || s.en)), v:(m.v != null ? m.v : alt), suf:m.suf || ''}; });
 }
 function renderStats(animate){
   document.getElementById('statsGrid').innerHTML = statValues().map(s =>
@@ -1247,6 +1258,15 @@ loadData((d, state) => {
   DATA = d; DATA_STATE = state; renderStats(false); renderCompCal();
   if (state === 'live') { statsAnimated = false; maybeAnimateStats(); }
 });
+(function loadSijil(){
+  if (!SIJIL_SCRIPT_URL) return;
+  const name = '__tp_sj_' + Date.now(), s = document.createElement('script');
+  window[name] = d => { try { delete window[name]; } catch(e){} s.remove();
+    if (d && d.ok) { SIJIL = d; renderStats(false); } };
+  s.onerror = () => s.remove();
+  s.src = SIJIL_SCRIPT_URL + (SIJIL_SCRIPT_URL.includes('?') ? '&' : '?') + 'mode=public&callback=' + name;
+  document.body.appendChild(s);
+})();
 </script>
 </body>
 </html>

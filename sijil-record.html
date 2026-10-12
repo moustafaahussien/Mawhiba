@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>السجل التام لتطور الموهبة – منصة الموهبة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@300;600;900&family=Sora:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/platform.css">
+<link rel="stylesheet" href="css/sijil.css">
+<meta name="robots" content="noindex">
+</head>
+<body class="sj">
+<div id="hdr"></div>
+<main class="wrap">
+  <div id="demo"></div>
+  <div id="app"></div>
+</main>
+<div id="ftr"></div>
+
+<script src="js/config.js"></script>
+<script src="js/sijil/config.js"></script>
+<script src="js/sijil/forms.js"></script>
+<script src="js/sijil/thinking.js"></script>
+<script src="js/sijil/records.js"></script>
+<script src="js/sijil/common.js"></script>
+<script>
+const GRADES = ['الأول الابتدائي','الثاني الابتدائي','الثالث الابتدائي','الرابع الابتدائي','الخامس الابتدائي','السادس الابتدائي',
+  'الأول المتوسط','الثاني المتوسط','الثالث المتوسط','الأول الثانوي','الثاني الثانوي','الثالث الثانوي'];
+const Q = new URLSearchParams(location.search);
+const def = getRecord(Q.get('f'));
+let INDICATORS = [];          // لنموذج المؤشرات
+let PLAN_KEY = '';
+$('#hdr').innerHTML = header('home');
+$('#demo').innerHTML = demoBanner() + (needCode() ? '<div class="demo">لم تُدخل رمز المعلمين بعد. <a href="sijil.html"><b>ادخل من هنا</b></a> ثم ارجع لهذا النموذج.</div>' : ''); $('#ftr').outerHTML = footerHtml();
+
+const LEARN = FORMS.find(f => f.id === 'learning').scoring.groups;
+
+if (!def) $('#app').innerHTML = `<div class="paper glass empty">النموذج غير موجود. <a href="sijil.html">العودة</a></div>`;
+else render();
+
+/* ---------------- بناء الحقول ---------------- */
+function input(f, val) {
+  const v = val == null ? '' : val, t = f.t || 'text';
+  if (t === 'textarea') return `<textarea data-k="${f.k}" rows="3">${esc(v)}</textarea>`;
+  if (t === 'select') return `<select data-k="${f.k}"><option value="">— اختر —</option>${f.opts.map(o => `<option ${o === v ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select>`;
+  const type = t === 'number' ? 'number' : t === 'email' ? 'email' : t === 'date' ? 'date' : 'text';
+  return `<input data-k="${f.k}" type="${type}" ${type === 'number' ? 'step="any" inputmode="decimal"' : ''} value="${esc(v)}">`;
+}
+function field(f) {
+  const t = f.t || 'text';
+  if (t === 'grid') {
+    const fs = f.dyn === 'learning' ? LEARN.map(g => ({ k: 'le_' + g.id, l: g.title, t: 'number' })) : f.fields;
+    return `<div class="rf">${f.l ? `<div class="rf-l">${esc(f.l)}${f.note ? `<small>${esc(f.note)}</small>` : ''}</div>` : ''}
+      <div class="grid4 rgrid" ${f.flagMin != null ? `data-flag="${f.flagMin}"` : ''}>${fs.map(x => `<label class="field">${esc(x.l)}${input(x)}</label>`).join('')}</div></div>`;
+  }
+  if (t === 'checks') return `<div class="rf">${f.l ? `<div class="rf-l">${esc(f.l)}</div>` : ''}<div class="checks" data-k="${f.k}">${f.opts.map(o =>
+    `<label><input type="checkbox" value="${esc(o)}"><span>${esc(o)}</span></label>`).join('')}</div></div>`;
+  if (t === 'table') return `<div class="rf"><div class="rf-l">${esc(f.l)}${f.note ? `<small>${esc(f.note)}</small>` : ''}</div>
+    <div class="tbl"><table class="rtable" data-k="${f.k}" ${f.flag ? `data-flagcol="${f.flag.col}" data-flagmin="${f.flag.min}"` : ''}>
+      <tr>${f.cols.map(c => `<th ${c.w ? `style="width:${c.w}"` : ''}>${esc(c.l)}</th>`).join('')}<th style="width:36px"></th></tr>
+      ${Array.from({ length: f.rows || 2 }, () => rowHtml(f)).join('')}</table></div>
+    <button type="button" class="btn ghost small no-print" onclick="addRow('${f.k}')">+ إضافة سطر</button></div>`;
+  if (t === 'staff') return `<div class="rf staff" data-k="${f.k}"><div class="rf-l">${esc(f.l)}</div><div class="grid4">
+    <label class="field">الاسم<input data-s="name"></label><label class="field">الصفة<input data-s="role"></label><label class="field">الهاتف<input data-s="phone" inputmode="tel"></label></div>
+    <label class="field" style="margin-top:8px">${esc(f.task || 'وصف مهمة المتابعة')}<textarea data-s="task" rows="2"></textarea></label></div>`;
+  return `<label class="field rf">${esc(f.l)}${input(f)}</label>`;
+}
+function rowHtml(f) {
+  return `<tr>${f.cols.map(c => `<td><input data-c="${c.k}" type="${c.t === 'number' ? 'number' : 'text'}" ${c.t === 'number' ? 'step="any"' : ''}></td>`).join('')}
+    <td class="no-print"><button type="button" class="x" title="حذف السطر" onclick="this.closest('tr').remove()">×</button></td></tr>`;
+}
+function addRow(k) {
+  const f = allFields().find(x => x.k === k); const tb = $(`table[data-k="${k}"] tbody`) || $(`table[data-k="${k}"]`);
+  tb.insertAdjacentHTML('beforeend', rowHtml(f));
+}
+function allFields() {
+  const out = []; def.sections.forEach(s => s.fields.forEach(f => { out.push(f); (f.fields || []).forEach(x => out.push(x)); })); return out;
+}
+
+/* ---------------- الصفحة ---------------- */
+function render() {
+  document.title = def.title + ' — السجل التام';
+  const last = LS.get('tf_last', {});
+  const needKey = def.auto && !isDemo();
+  let h = `<section class="paper glass">
+    <span class="kicker">${esc(def.code)}</span><h1>${esc(def.title)}</h1>
+    <div class="sub">يعبّئه: ${esc(def.who)}</div>
+    <div class="grid4">
+      <label class="field">${esc(def.who)} *<input id="teacher" value="${esc(LS.get('tf_teacher', ''))}" placeholder="الاسم الأول واسم العائلة"></label>
+      <label class="field">العام الدراسي<select id="year">${yearOptions().map(y => `<option ${y === (last.year || hijriYearNow()) ? 'selected' : ''}>${y}</option>`).join('')}</select></label>
+      <label class="field">التاريخ<input id="date" value="${esc(todayStr())}" readonly></label>
+    </div>
+    <div class="grid4">
+      <label class="field">رقم الطالب<input id="sid" inputmode="numeric" placeholder="اختياري"></label>
+      <label class="field">اسم الطالب *<input id="sname" list="studentsList" placeholder="الاسم الرباعي" autocomplete="off"><datalist id="studentsList"></datalist></label>
+      <label class="field">الصف *<select id="grade"><option value="">— اختر —</option>${GRADES.map(g => `<option ${g === last.grade ? 'selected' : ''}>${g}</option>`).join('')}</select></label>
+      <label class="field">الفصل<input id="cls" value="${esc(last.cls || '')}" placeholder="مثال: أ"></label>
+    </div>
+    <div class="instr">${esc(def.intro)}</div>
+    <div class="loadbar no-print">
+      ${needKey ? `<label class="field">مفتاح المشرف<input id="akey" type="password" value="${esc(LS.get('tf_admin', ''))}" placeholder="لجلب بيانات الطالب المحفوظة"></label>` : ''}
+      <button class="btn teal" id="load">${def.id === 'indicators' ? 'جلب خطة الطالب' : def.id === 'status' ? 'جلب نتائج الطالب وتعبئة النموذج' : 'فتح السجل المحفوظ للطالب'}</button>
+      <span class="note" id="loadMsg"></span>
+    </div>
+  </section>`;
+
+  if (def.id === 'indicators') h += `<div id="ind"><section class="paper glass empty">اكتب اسم الطالب ثم اضغط «جلب خطة الطالب».</section></div>`;
+  else def.sections.forEach(s => {
+    h += `<section class="paper glass sec" data-sec="${s.id}"><h2><span>${esc(s.title)}</span>${s.src ? '<span class="live autotag" hidden>تعبئة تلقائية</span>' : ''}</h2>
+      ${s.note ? `<div class="note" style="margin-bottom:10px">${esc(s.note)}</div>` : ''}${s.fields.map(field).join('')}</section>`;
+  });
+  h += `<div class="bar-actions glass"><span class="note" id="sumTxt">${def.id === 'indicators' ? '' : 'يمكن حفظ النموذج في أي وقت وإكماله لاحقاً.'}</span>
+    <div style="display:flex;gap:8px"><button class="btn ghost" onclick="window.print()">طباعة</button><button class="btn" id="submit">حفظ السجل</button></div></div>
+    <div id="result"></div>`;
+  $('#app').innerHTML = h;
+
+  API.students().then(list => {
+    LS.set('tf_students_cache', list);
+    $('#studentsList').innerHTML = list.map(s => `<option value="${esc(s.name)}">${esc([s.id, s.grade, s.cls].filter(Boolean).join(' · '))}</option>`).join('');
+  });
+  $('#sname').addEventListener('change', () => {
+    const s = (LS.get('tf_students_cache', []) || []).find(x => x.name === $('#sname').value);
+    if (!s) return;
+    if (s.id) $('#sid').value = s.id; if (s.grade && GRADES.includes(s.grade)) $('#grade').value = s.grade; if (s.cls) $('#cls').value = s.cls;
+  });
+  $('#app').addEventListener('input', flags);
+  $('#load').onclick = load;
+  $('#submit').onclick = submit;
+  if (Q.get('s')) { $('#sname').value = Q.get('s'); load(); }
+}
+
+/* علامة «تميز» بجانب القيم التي تتجاوز حدّ الكتاب */
+function flags() {
+  $$('.rgrid[data-flag]').forEach(g => { const m = +g.dataset.flag; $$('input[type=number]', g).forEach(i => i.closest('.field').classList.toggle('star', i.value !== '' && +i.value >= m)); });
+  $$('table[data-flagcol]').forEach(t => { const m = +t.dataset.flagmin; $$(`input[data-c="${t.dataset.flagcol}"]`, t).forEach(i => i.closest('td').classList.toggle('star', i.value !== '' && +i.value >= m)); });
+  if (def.id === 'indicators') indTotals();
+}
+
+/* ---------------- القراءة والكتابة ---------------- */
+function collect() {
+  const d = {};
+  $$('[data-k]').forEach(el => {
+    const k = el.dataset.k;
+    if (el.matches('input,select,textarea')) d[k] = el.value.trim();
+    else if (el.classList.contains('checks')) d[k] = $$('input:checked', el).map(i => i.value);
+    else if (el.matches('table')) d[k] = $$('tr', el).slice(1).map(tr => { const o = {}; $$('input[data-c]', tr).forEach(i => o[i.dataset.c] = i.value.trim()); return o; })
+      .filter(o => Object.values(o).some(Boolean));
+    else if (el.classList.contains('staff')) { const o = {}; $$('[data-s]', el).forEach(i => o[i.dataset.s] = i.value.trim()); d[k] = o; }
+  });
+  if (def.id === 'indicators') {
+    d.ratings = {}; INDICATORS.forEach(it => { const r = $(`input[name="r_${it.id}"]:checked`); if (r) d.ratings[it.id] = +r.value; });
+    d.items = INDICATORS; d.plan = PLAN_KEY; d.notes = ($('#indNotes') || {}).value || '';
+  }
+  return d;
+}
+function fill(d) {
+  $$('[data-k]').forEach(el => {
+    const k = el.dataset.k, v = d[k]; if (v == null) return;
+    if (el.matches('input,select,textarea')) el.value = v;
+    else if (el.classList.contains('checks')) $$('input', el).forEach(i => i.checked = v.includes(i.value));
+    else if (el.matches('table')) {
+      const f = allFields().find(x => x.k === k); const rows = $$('tr', el).slice(1);
+      while (rows.length < v.length) { addRow(k); rows.push($$('tr', el).pop()); }
+      v.forEach((o, i) => $$('input[data-c]', rows[i]).forEach(inp => inp.value = o[inp.dataset.c] || ''));
+    } else if (el.classList.contains('staff')) $$('[data-s]', el).forEach(i => i.value = v[i.dataset.s] || '');
+  });
+  flags();
+}
+function flatOf(d) {
+  const out = {}, s = v => Array.isArray(v) ? v.join('، ') : v;
+  if (def.id === 'indicators') { INDICATORS.forEach(it => out[it.group + ': ' + it.text] = d.ratings[it.id] || ''); return out; }
+  allFields().forEach(f => {
+    const v = d[f.k]; if (!f.k && f.t !== 'grid') return;
+    if (f.t === 'grid') { (f.dyn === 'learning' ? LEARN.map(g => ({ k: 'le_' + g.id, l: g.title })) : f.fields).forEach(x => out[(f.l ? f.l + ' – ' : '') + x.l] = d[x.k] || ''); return; }
+    if (!f.k) return;
+    if (f.t === 'table') out[f.l] = (v || []).map(o => f.cols.map(c => o[c.k]).filter(Boolean).join(' / ')).join(' | ');
+    else if (f.t === 'staff') out[f.l] = v ? [v.name, v.role, v.phone, v.task].filter(Boolean).join(' / ') : '';
+    else out[f.l || f.k] = s(v) || '';
+  });
+  return out;
+}
+
+/* ---------------- الجلب والتعبئة التلقائية ---------------- */
+function studentKey() { return normKey($('#sid').value) || normKey($('#sname').value); }
+async function fetchStudent() {
+  const s = studentKey(); if (!s) { toast('اكتب اسم الطالب أو رقمه أولاً', 'err'); return null; }
+  const key = $('#akey') ? $('#akey').value.trim() : '';
+  if (!isDemo() && !key) { toast('اكتب مفتاح المشرف', 'err'); return null; }
+  if (key) LS.set('tf_admin', key);
+  $('#loadMsg').textContent = 'جارٍ الجلب…';
+  try {
+    let d = await API.student(key, s);
+    if (d && d.ok && !d.records.length && $('#sid').value && $('#sname').value) d = await API.student(key, normKey($('#sname').value));
+    if (!d || !d.ok) throw new Error((d && d.error) || 'تعذر الجلب');
+    return d.records.map(r => ({ ...r, answers: typeof r.answers === 'string' ? JSON.parse(r.answers || '{}') : r.answers, parts: typeof r.parts === 'string' ? JSON.parse(r.parts || '[]') : r.parts }));
+  } catch (e) { $('#loadMsg').textContent = ''; toast(e.message, 'err'); return null; }
+}
+const latestOf = (R, id, year) => R.filter(r => r.formId === id && (!year || r.year === year)).sort((a, b) => a.ts.localeCompare(b.ts)).pop();
+
+async function load() {
+  const R = await fetchStudent(); if (!R) return;
+  const year = $('#year').value, any = R[0];
+  if (any) { if (!$('#sid').value && any.studentId) $('#sid').value = any.studentId; if (!$('#grade').value && any.grade) $('#grade').value = any.grade; if (!$('#cls').value && any.classroom) $('#cls').value = any.classroom; }
+  if (def.id === 'indicators') return loadIndicators(R, year);
+  const saved = latestOf(R, def.id, year) || latestOf(R, def.id);
+  if (saved) fill(saved.answers);
+  let msg = saved ? `فُتح السجل المحفوظ (${saved.date}).` : 'لا يوجد سجل محفوظ سابقاً لهذا النموذج.';
+  if (def.id === 'status') { const n = autofill(R); msg += n ? ` عُبّئت ${n} أقسام من نتائج النماذج.` : ' لا توجد نتائج نماذج لهذا الطالب بعد.'; }
+  $('#loadMsg').textContent = msg;
+}
+
+function autofill(R) {
+  let n = 0; const mark = id => { const s = $(`[data-sec="${id}"] .autotag`); if (s) s.hidden = false; n++; };
+  const set = (k, v) => { const el = $(`[data-k="${k}"]`); if (el) el.value = v; };
+  const traits = R.filter(r => r.formId === 'traits');
+  if (traits.length) {
+    const f = getForm('traits');
+    f.sections.forEach(s => {
+      const v = traits.reduce((a, r) => a + r.parts.find(p => p.id === s.id).score, 0) / traits.length;
+      const bd = f.scoring.bands[s.id].find(x => Math.round(v) >= x.min), max = traits[0].parts.find(p => p.id === s.id).max;
+      set('tr_' + s.id, `${Math.round(v * 10) / 10} من ${max} (${bd.label})`);
+    });
+    mark('s2');
+  }
+  let got = false;
+  INTEREST_COLS.forEach(([id], i) => { const r = id && latestOf(R, id); if (r) { set('in' + i, r.parts[0].score); got = true; } });
+  if (got) mark('s3');
+  const le = latestOf(R, 'learning'); if (le) { le.parts.forEach(p => set('le_' + p.id, p.score)); mark('s4'); }
+  const ex = latestOf(R, 'expression');
+  if (ex) { const top = Math.max(...ex.parts.map(p => p.score)); $$('[data-k="expr"] input').forEach(i => i.checked = ex.parts.some(p => p.title === i.value && p.score === top)); mark('s5'); }
+  const th = FORMS.filter(f => f.group === 'التفكير').map(f => { const r = latestOf(R, f.id); return r ? { form: f, part: r.parts[0] } : null; }).filter(Boolean);
+  if (th.length) { const dom = thinkingProfile(th).dominant.map(k => STYLE_NAMES[k]); $$('[data-k="think"] input').forEach(i => i.checked = dom.includes(i.value)); mark('s6'); }
+  flags();
+  return n;
+}
+
+/* ---------------- مؤشرات تطبيق خطة التطوير ---------------- */
+function loadIndicators(R, year) {
+  const plan = latestOf(R, 'plan', year) || latestOf(R, 'plan');
+  if (!plan) { $('#ind').innerHTML = `<section class="paper glass empty">لا توجد خطة تطوير محفوظة لهذا الطالب. <a href="sijil-record.html?f=plan">عبّئ خطة التطوير أولاً</a>.</section>`; $('#loadMsg').textContent = ''; return; }
+  PLAN_KEY = plan.key; INDICATORS = planIndicators(plan.answers);
+  const saved = latestOf(R, 'indicators', year);
+  const rs = saved && saved.answers.plan === plan.key ? saved.answers.ratings : {};
+  const SC = def.scale;
+  let h = '', lastSec = '', lastGroup = '';
+  INDICATORS.forEach(it => {
+    if (it.sec !== lastSec) { if (lastSec) h += '</section>'; h += `<section class="paper glass sec"><h2><span>${esc(it.sec)}</span><span class="live" data-secsum="${esc(it.sec)}"></span></h2>`; lastSec = it.sec; lastGroup = ''; }
+    if (it.group !== lastGroup) { h += `<div class="rf-l">${esc(it.group)}</div>`; lastGroup = it.group; }
+    h += `<div class="q" data-sec="${esc(it.sec)}"><span class="n">•</span><span class="t">${esc(it.text)}${it.time ? `<small>${esc(it.time)}</small>` : ''}</span>
+      <div class="opts" role="radiogroup">${[1, 2, 3, 4, 5].map(v => `<label title="${esc(SC[v])}"><input type="radio" name="r_${it.id}" value="${v}" ${rs[it.id] == v ? 'checked' : ''}><span>${v}</span></label>`).join('')}</div></div>`;
+  });
+  if (lastSec) h += '</section>';
+  h += `<section class="paper glass"><div class="legend">${[1, 2, 3, 4, 5].map(v => `<span><b>${v}</b> = ${esc(SC[v])}</span>`).join('')}</div>
+    <p class="note">مستوى الإنجاز من 1 إلى 5 كما في نموذج الكتاب. دلالات الدرجات ونطاقات الحكم (متوسط 4 فأكثر = إنجاز عالٍ، 3 إلى أقل من 4 = متوسط، أقل من 3 = منخفض) وُضعت لتوحيد التقدير، لأن الكتاب لم يحددها.</p>
+    <label class="field">ملاحظات<textarea id="indNotes" rows="2">${esc(saved ? saved.answers.notes || '' : '')}</textarea></label></section>`;
+  $('#ind').innerHTML = INDICATORS.length ? h : `<section class="paper glass empty">خطة الطالب لا تحتوي أهدافاً أو برامج مكتوبة.</section>`;
+  $('#ind').onchange = indTotals; indTotals();
+  $('#loadMsg').textContent = `خطة ${plan.year} (${plan.date}) — ${INDICATORS.length} مؤشراً${saved ? ' · فُتح التقييم السابق' : ''}.`;
+}
+function indTotals() {
+  const d = {}; INDICATORS.forEach(it => { const r = $(`input[name="r_${it.id}"]:checked`); if (r) d[it.id] = +r.value; });
+  const secs = {}; INDICATORS.forEach(it => { secs[it.sec] = secs[it.sec] || { s: 0, n: 0 }; if (d[it.id]) { secs[it.sec].s += d[it.id]; secs[it.sec].n++; } });
+  $$('[data-secsum]').forEach(el => { const x = secs[el.dataset.secsum]; el.textContent = `المجموع الجزئي: ${x.s} من ${x.n * 5}`; });
+  const r = summarizeRecord(def, { ratings: d });
+  $('#sumTxt').textContent = `${Object.keys(d).length} من ${INDICATORS.length} مقيّماً · ${r.summary}`;
+}
+
+/* ---------------- الحفظ ---------------- */
+async function submit() {
+  const teacher = normKey($('#teacher').value), sname = normKey($('#sname').value), grade = $('#grade').value;
+  if (teacher.split(' ').length < 2) { toast('اكتب الاسم (الاسم الأول واسم العائلة)', 'err'); $('#teacher').focus(); return; }
+  if (!sname) { toast('اكتب اسم الطالب', 'err'); $('#sname').focus(); return; }
+  if (!grade) { toast('اختر الصف', 'err'); $('#grade').focus(); return; }
+  if (def.id === 'indicators' && !INDICATORS.length) { toast('اجلب خطة الطالب أولاً', 'err'); return; }
+  if (needCode()) { toast('أدخل رمز المعلمين من صفحة «نماذج السجل التام» أولاً', 'err'); return; }
+  LS.set('tf_teacher', teacher);
+  const year = $('#year').value, sid = normKey($('#sid').value), cls = normKey($('#cls').value);
+  LS.set('tf_last', { year, grade, cls });
+  const d = collect(), sm = summarizeRecord(def, d);
+  const rec = {
+    key: [def.id, year, sid || sname].join('|'), ts: new Date().toISOString(), date: $('#date').value, year, teacher,
+    formId: def.id, formCode: def.code, formTitle: def.title, studentId: sid, studentName: sname, grade, classroom: cls,
+    answers: d, parts: sm.parts, summary: sm.summary, notes: d.notes || '', flat: flatOf(d)
+  };
+  const btn = $('#submit'); btn.disabled = true; btn.textContent = 'جارٍ الحفظ…';
+  try {
+    const r = await API.submit(rec);
+    toast(r.updated ? 'تم تحديث السجل' : 'تم حفظ السجل');
+    $('#result').innerHTML = `<section class="result glass"><h2>${esc(def.short)} — ${esc(sname)}</h2><p class="note">${esc(sm.summary)}</p>
+      ${sm.parts[0] && sm.parts[0].id === 'achv' ? `<span class="lvl ${sm.parts[0].level}">${esc(sm.parts[0].label)}</span>` : ''}
+      <p class="note">✓ محفوظ باسم: ${esc(teacher)}</p></section>`;
+  } catch (e) {
+    if (e.server) { toast(e.message, 'err'); if (e.auth) setTimeout(() => location.href = 'sijil.html', 1800); }
+    else { Queue.add(rec); toast('تعذر الاتصال؛ حُفظ مؤقتاً وسيُرسل لاحقاً', 'err'); }
+  }
+  finally { btn.disabled = false; btn.textContent = 'حفظ السجل'; }
+}
+</script>
+</body>
+</html>

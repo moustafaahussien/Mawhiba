@@ -1,0 +1,151 @@
+/* أدوات مشتركة: الاتصال بالجدول، التخزين المحلي، التاريخ الهجري */
+
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const isDemo = () => !CONFIG.API_URL;
+const normKey = s => String(s || '').trim().replace(/\s+/g, ' ');
+
+/* العام الدراسي الهجري الحالي (يبدأ العام الدراسي تقريباً في صفر) */
+function hijriYearNow() {
+  try {
+    const p = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', { year: 'numeric', month: 'numeric' }).formatToParts(new Date());
+    const y = +p.find(x => x.type === 'year').value, m = +p.find(x => x.type === 'month').value;
+    return m >= 2 ? `${y}/${y + 1}هـ` : `${y - 1}/${y}هـ`;
+  } catch (e) { return ''; }
+}
+function yearOptions() {
+  const cur = hijriYearNow(); const y = parseInt(cur) || 1448;
+  return [`${y - 1}/${y}هـ`, `${y}/${y + 1}هـ`, `${y + 1}/${y + 2}هـ`];
+}
+function todayStr() {
+  try { return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura-nu-latn', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date()); }
+  catch (e) { return new Date().toLocaleDateString(); }
+}
+
+/* JSONP — نفس طريقة منصة الموهبة */
+function jsonp(params, timeout = 20000) {
+  return new Promise((resolve, reject) => {
+    const cb = '__tf' + Date.now() + Math.floor(Math.random() * 1e4);
+    const s = document.createElement('script');
+    const t = setTimeout(() => { cleanup(); reject(new Error('انتهت مهلة الاتصال')); }, timeout);
+    function cleanup() { clearTimeout(t); delete window[cb]; s.remove(); }
+    window[cb] = d => { cleanup(); resolve(d); };
+    s.onerror = () => { cleanup(); reject(new Error('تعذر الوصول إلى الجدول')); };
+    s.src = CONFIG.API_URL + '?' + new URLSearchParams({ ...params, callback: cb }).toString();
+    document.head.appendChild(s);
+  });
+}
+
+function authErr(msg, d) { const e = new Error(msg); e.server = true; e.auth = !!(d && d.auth); if (e.auth) LS.set('tf_code', ''); return e; }
+
+const API = {
+  /* حفظ سجل */
+  async submit(rec) {
+    rec = Object.assign({}, rec, { code: LS.get('tf_code', '') });
+    if (isDemo()) {
+      const all = LS.get('tf_records', []);
+      const i = all.findIndex(r => r.key === rec.key);
+      if (i >= 0) all[i] = rec; else all.push(rec);
+      LS.set('tf_records', all);
+      return { ok: true, demo: true, updated: i >= 0 };
+    }
+    try {
+      const r = await fetch(CONFIG.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'submit', record: rec }) });
+      const d = await r.json();
+      if (d && d.ok) return d;
+      throw authErr((d && d.error) || 'خطأ في الحفظ', d);
+    } catch (e) {
+      if (e.server) throw e;
+      // بديل: الإرسال عبر JSONP
+      const data = JSON.stringify(rec);
+      if (data.length < 6000) {
+        const d = await jsonp({ mode: 'submit', data });
+        if (d && d.ok) return d;
+        throw authErr((d && d.error) || e.message, d);
+      }
+      throw e;
+    }
+  },
+  /* قائمة الطلاب (اختيارية) من ورقة «الطلاب» */
+  async students() {
+    if (isDemo()) return LS.get('tf_students', []);
+    try { const d = await jsonp({ mode: 'students', code: LS.get('tf_code', '') }); return (d && d.students) || []; } catch (e) { return []; }
+  },
+  /* التحقق من رمز المعلمين */
+  async check(code) {
+    if (isDemo()) return { ok: true, demo: true };
+    return jsonp({ mode: 'check', code });
+  },
+  /* سجلات طالب واحد (تحتاج مفتاح المشرف) */
+  async student(key, s) {
+    const norm = x => normKey(x);
+    if (isDemo()) return { ok: true, records: LS.get('tf_records', []).filter(r => r.studentId === s || norm(r.studentName) === norm(s)) };
+    return jsonp({ mode: 'student', key, s }, 40000);
+  },
+  /* كل السجلات للتقارير (تحتاج مفتاح المشرف) */
+  async report(key) {
+    if (isDemo()) return { ok: true, records: LS.get('tf_records', []) };
+    return jsonp({ mode: 'report', key }, 40000);
+  }
+};
+
+/* طابور الإرسال عند انقطاع الاتصال */
+const Queue = {
+  list() { return LS.get('tf_queue', []); },
+  add(rec) { const q = this.list().filter(r => r.key !== rec.key); q.push(rec); LS.set('tf_queue', q); },
+  async flush() {
+    const q = this.list(); if (!q.length || isDemo()) return 0;
+    const left = []; let sent = 0;
+    for (const r of q) { try { await API.submit(r); sent++; } catch (e) { left.push(r); } }
+    LS.set('tf_queue', left); return sent;
+  }
+};
+
+function toast(msg, type = 'ok') {
+  let t = $('#toast'); if (!t) { t = document.createElement('div'); t.id = 'toast'; document.body.appendChild(t); }
+  t.className = 'toast ' + type; t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 3800);
+}
+
+function demoBanner() {
+  if (!isDemo()) return '';
+  return `<div class="demo">وضع التجربة: البيانات تُحفظ في هذا المتصفح فقط. بعد ربط الجدول (ملف js/config.js) تُحفظ عندك في Google Sheet.</div>`;
+}
+
+function header(active) {
+  const teacher = LS.get('tf_teacher', '');
+  const cur = a => active === a ? ' class="cur"' : '';
+  setTimeout(() => {
+    const bg = $('#burger'), nl = $('#navLinks');
+    if (bg && nl && !bg._b) { bg._b = 1; bg.addEventListener('click', () => nl.classList.toggle('open')); }
+  });
+  return `<div class="aurora" aria-hidden="true"></div><div class="grain" aria-hidden="true"></div>
+  <header class="nav">
+    <a href="index.html" class="brand">
+      <img class="brand-logo" src="assets/school-emblem.png" alt="شعار مدارس دار الذكر" width="48" height="48">
+      <span><b>منصة الموهبة</b><small>${esc(CONFIG.SYSTEM)}</small></span>
+    </a>
+    <div class="nav-right">
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">الرئيسية</a>
+        <a href="sijil.html"${cur('home')}>نماذج السجل التام</a>
+        <a href="sijil-reports.html"${cur('reports')}>تقارير السجل</a>
+      </nav>
+      ${teacher ? `<span class="who" title="المستخدم الحالي">${esc(teacher)}</span>` : ''}
+      <button class="burger" id="burger" type="button" aria-label="القائمة"><span></span><span></span><span></span></button>
+    </div>
+  </header>`;
+}
+function footerHtml() {
+  return `<footer><div class="wrap"><div><b>منصة الموهبة</b> — مدارس دار الذكر · السجل التام لتطور الموهبة</div>
+    <div>إعداد وإشراف: مصطفى أحمد حسين — المنسق التنفيذي لبرامج الموهبة والمسابقات الأكاديمية</div></div></footer>`;
+}
+
+/* رمز المعلمين مطلوب للحفظ (خارج وضع التجربة) */
+function needCode() { return !isDemo() && !LS.get('tf_code', ''); }

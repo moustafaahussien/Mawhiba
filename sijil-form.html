@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>نموذج — السجل التام لتطور الموهبة – منصة الموهبة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@300;600;900&family=Sora:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/platform.css">
+<link rel="stylesheet" href="css/sijil.css">
+<meta name="robots" content="noindex">
+</head>
+<body class="sj">
+<div id="hdr"></div>
+<main class="wrap">
+  <div id="demo"></div>
+  <div id="app"></div>
+</main>
+<div id="ftr"></div>
+
+<script src="js/config.js"></script>
+<script src="js/sijil/config.js"></script>
+<script src="js/sijil/forms.js"></script>
+<script src="js/sijil/thinking.js"></script>
+<script src="js/sijil/common.js"></script>
+<script>
+const GRADES = ['الأول الابتدائي','الثاني الابتدائي','الثالث الابتدائي','الرابع الابتدائي','الخامس الابتدائي','السادس الابتدائي',
+  'الأول المتوسط','الثاني المتوسط','الثالث المتوسط','الأول الثانوي','الثاني الثانوي','الثالث الثانوي'];
+const form = getForm(new URLSearchParams(location.search).get('f'));
+$('#hdr').innerHTML = header('home');
+$('#demo').innerHTML = demoBanner() + (needCode() ? '<div class="demo">لم تُدخل رمز المعلمين بعد. <a href="sijil.html"><b>ادخل من هنا</b></a> ثم ارجع لهذا النموذج.</div>' : ''); $('#ftr').outerHTML = footerHtml();
+
+if (!form) {
+  $('#app').innerHTML = `<div class="paper glass empty">النموذج غير موجود. <a href="sijil.html">العودة إلى قائمة النماذج</a></div>`;
+} else render();
+
+function render() {
+  document.title = form.title + ' — السجل التام';
+  const scale = SCALES[form.scale], items = flatItems(form), sc = form.scoring;
+  const last = LS.get('tf_last', {});
+  const issues = [...(sc.issues || []), ...((sc.groups || []).filter(g => g.issue).map(g => g.title + ': ' + g.issue)), ...(sc.kind === 'style' ? THINK_COMMON_ISSUES : [])];
+
+  let h = `<section class="paper glass">
+    <span class="kicker">${esc(form.code)}</span>
+    <h1>${esc(form.title)}</h1>
+    <div class="sub">يجيب على البنود: ${esc(form.respondent)} · ${items.length} بنداً${form.source ? ' · ' + esc(form.source) : ''}</div>
+    <div class="grid4">
+      <label class="field">اسم المعلم *<input id="teacher" value="${esc(LS.get('tf_teacher', ''))}" placeholder="الاسم الأول واسم العائلة"></label>
+      <label class="field">العام الدراسي<select id="year">${yearOptions().map(y => `<option ${y === (last.year || hijriYearNow()) ? 'selected' : ''}>${y}</option>`).join('')}</select></label>
+      <label class="field">التاريخ<input id="date" value="${esc(todayStr())}" readonly></label>
+    </div>
+    <div class="grid4">
+      <label class="field">رقم الطالب<input id="sid" inputmode="numeric" placeholder="اختياري"></label>
+      <label class="field">اسم الطالب *<input id="sname" list="studentsList" placeholder="الاسم الرباعي" autocomplete="off"><datalist id="studentsList"></datalist></label>
+      <label class="field">الصف *<select id="grade"><option value="">— اختر —</option>${GRADES.map(g => `<option ${g === last.grade ? 'selected' : ''}>${g}</option>`).join('')}</select></label>
+      <label class="field">الفصل<input id="cls" value="${esc(last.cls || '')}" placeholder="مثال: أ"></label>
+    </div>
+    <div class="instr">${esc(form.instructions)}
+      <div class="legend">${scale.show === 'label'
+        ? scale.values.map(v => `<span>${esc(scale.labels[v])} = <b>${v}</b></span>`).join('') + (form.rev && form.rev.length ? `<span>البنود المعلّمة بـ ↺ تُحسب درجتها بالعكس</span>` : '')
+        : scale.values.map(v => `<span><b>${v}</b> = ${esc(scale.labels[v])}</span>`).join('')}</div>
+    </div>
+  </section>`;
+
+  form.sections.forEach(s => {
+    h += `<section class="paper glass sec"><h2><span>${esc(s.title)}</span><span class="live" id="live_${s.id}"></span></h2>`;
+    items.filter(i => i.section === s.id).forEach(i => {
+      const revMark = i.rev ? '<em class="rev" title="تُحسب درجة هذا البند بالعكس">↺</em>' : '';
+      if (i.o) {
+        h += `<div class="q mc" id="q${i.n}" tabindex="-1"><span class="n">${i.n}</span><span class="t">${esc(i.text)}${revMark}</span>
+          <div class="mcopts" role="radiogroup" aria-label="البند ${i.n}">${scale.values.map((v, k) =>
+            `<label><input type="radio" name="a${i.n}" value="${v}"><span><b>${'أبج'[k]}</b>${esc(i.o[k])}</span></label>`).join('')}</div></div>`;
+      } else {
+        h += `<div class="q" id="q${i.n}" tabindex="-1"><span class="n">${i.n}</span><span class="t">${esc(i.text)}${revMark}${i.tag ? `<small>${esc(i.tag)}</small>` : ''}</span>
+          <div class="opts${scale.show === 'label' ? ' txt' : ''}" role="radiogroup" aria-label="البند ${i.n}">${scale.values.map(v =>
+            `<label title="${esc(scale.labels[v])}"><input type="radio" name="a${i.n}" value="${v}"><span>${scale.show === 'label' ? esc(scale.labels[v]) : v}</span></label>`).join('')}</div></div>`;
+      }
+    });
+    h += `</section>`;
+  });
+
+  h += `<section class="paper glass"><h2 style="margin:0 0 8px;font-size:1.05rem">طريقة التصحيح كما وردت في الكتاب</h2>
+    <div class="note">${sc.kind === 'style' ? `الدرجة العظمى ${formMax(form)}. ${esc(describeStyleBands(form))}.${form.rev && form.rev.length ? '<br>البنود المعكوسة: ' + form.rev.join('، ') + '.' : ''}` : ''}${esc(sc.note || '')}${sc.bandText ? '<br>' + Object.entries(sc.bandText).map(([k, t]) => `<b>${esc(form.sections.find(s => s.id === k).title)}:</b> ${esc(t)}`).join('<br>') : ''}</div>
+    ${issues.length ? `<div class="issues"><b>ملاحظات على الأصل:</b><br>${issues.map(esc).join('<br>')}</div>` : ''}
+    <label class="field" style="margin-top:14px">ملاحظات المعلم (اختياري)<textarea id="notes" rows="2"></textarea></label>
+  </section>
+  <div class="bar-actions glass">
+    <div class="progress"><i id="prog"></i></div><span class="note" id="progTxt"></span>
+    <button class="btn" id="submit">حفظ النموذج</button>
+  </div>
+  <div id="result"></div>`;
+  $('#app').innerHTML = h;
+
+  API.students().then(list => {
+    LS.set('tf_students_cache', list);
+    $('#studentsList').innerHTML = list.map(s => `<option value="${esc(s.name)}">${esc([s.id, s.grade, s.cls].filter(Boolean).join(' · '))}</option>`).join('');
+  });
+  $('#sname').addEventListener('change', () => {
+    const s = (LS.get('tf_students_cache', []) || []).find(x => x.name === $('#sname').value);
+    if (!s) return;
+    if (s.id) $('#sid').value = s.id;
+    if (s.grade && GRADES.includes(s.grade)) $('#grade').value = s.grade;
+    if (s.cls) $('#cls').value = s.cls;
+  });
+
+  $('#app').addEventListener('change', e => { if (e.target.name && e.target.name[0] === 'a') { e.target.closest('.q').classList.remove('missing'); update(); } });
+  // اختصار: بعد التركيز على بند اضغط رقم الدرجة
+  $('#app').addEventListener('keydown', e => {
+    const q = e.target.closest && e.target.closest('.q'); if (!q || !/^[0-9]$/.test(e.key)) return;
+    const r = q.querySelector(`input[value="${e.key}"]`); if (!r) return;
+    r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true }));
+    const nx = q.nextElementSibling; if (nx && nx.classList.contains('q')) nx.querySelector('input').focus();
+  });
+  $('#submit').onclick = submit;
+  update();
+}
+
+function answers() {
+  const a = {}; flatItems(form).forEach(i => { const r = $(`input[name="a${i.n}"]:checked`); if (r) a[i.n] = +r.value; }); return a;
+}
+function update() {
+  const items = flatItems(form), a = answers(), n = Object.keys(a).length;
+  $('#prog').style.width = (n / items.length * 100) + '%';
+  $('#progTxt').textContent = `${n} من ${items.length}`;
+  if (form.scoring.kind === 'sectionSum') form.sections.forEach(s => {
+    const its = items.filter(i => i.section === s.id), sum = its.reduce((t, i) => t + (a[i.n] || 0), 0);
+    $('#live_' + s.id).textContent = 'المجموع: ' + sum;
+  });
+  if (form.scoring.kind === 'style') {
+    const p = scoreForm(form, a).parts[0];
+    $('#live_all').textContent = `المجموع: ${p.score} من ${p.max}` + (n === items.length ? ' · ' + p.label : '');
+  }
+  if (form.scoring.kind === 'mean') {
+    const sum = Object.values(a).reduce((t, v) => t + v, 0);
+    $('#live_all').textContent = `مجموع النقاط: ${sum}` + (n === items.length ? ` · المتوسط: ${(sum / items.length).toFixed(2)}` : '');
+  }
+}
+
+async function submit() {
+  const items = flatItems(form), a = answers();
+  const teacher = normKey($('#teacher').value), sname = normKey($('#sname').value), grade = $('#grade').value;
+  if (teacher.split(' ').length < 2) { toast('اكتب اسم المعلم (الاسم الأول واسم العائلة)', 'err'); $('#teacher').focus(); return; }
+  if (!sname) { toast('اكتب اسم الطالب', 'err'); $('#sname').focus(); return; }
+  if (!grade) { toast('اختر الصف', 'err'); $('#grade').focus(); return; }
+  const miss = items.filter(i => !(i.n in a));
+  if (needCode()) { toast('أدخل رمز المعلمين من صفحة «نماذج السجل التام» أولاً', 'err'); return; }
+  if (miss.length) {
+    miss.forEach(i => $('#q' + i.n).classList.add('missing'));
+    $('#q' + miss[0].n).scrollIntoView({ behavior: 'smooth', block: 'center' });
+    toast(`بقي ${miss.length} بند دون إجابة (المحددة باللون الأحمر)`, 'err'); return;
+  }
+  LS.set('tf_teacher', teacher);
+  const year = $('#year').value, sid = normKey($('#sid').value), cls = normKey($('#cls').value);
+  LS.set('tf_last', { year, grade, cls });
+  const sc = scoreForm(form, a);
+  const rec = {
+    key: [form.id, year, teacher, sid || sname].join('|'),
+    ts: new Date().toISOString(), date: $('#date').value, year, teacher,
+    formId: form.id, formCode: form.code, formTitle: form.title,
+    studentId: sid, studentName: sname, grade, classroom: cls,
+    answers: a, parts: sc.parts, summary: sc.summary, notes: $('#notes').value.trim()
+  };
+  const btn = $('#submit'); btn.disabled = true; btn.textContent = 'جارٍ الحفظ…';
+  try {
+    const r = await API.submit(rec);
+    const mine = LS.get('tf_mine', {}); mine[form.id] = (mine[form.id] || 0) + (r.updated ? 0 : 1); LS.set('tf_mine', mine);
+    toast(r.updated ? 'تم تحديث السجل السابق لهذا الطالب' : 'تم حفظ النموذج بنجاح');
+    showResult(rec, true);
+  } catch (e) {
+    if (e.server) { toast(e.message, 'err'); if (e.auth) setTimeout(() => location.href = 'sijil.html', 1800); return; }
+    Queue.add(rec);
+    toast('تعذر الاتصال؛ حُفظ النموذج مؤقتاً وسيُرسل تلقائياً عند فتح الصفحات لاحقاً', 'err');
+    showResult(rec, false);
+  } finally { btn.disabled = false; btn.textContent = 'حفظ النموذج'; }
+}
+
+function showResult(rec, saved) {
+  const parts = rec.parts;
+  const fmt = p => form.scoring.kind === 'sectionSum' || form.scoring.kind === 'style' ? `${p.score}<small> / ${p.max}</small>` : form.scoring.kind === 'rank' ? `${p.score}<small> / 5</small>` : `${p.score.toFixed(2)}<small> / ${p.max}</small>`;
+  const list = form.scoring.kind === 'rank' ? [...parts].sort((x, y) => y.score - x.score) : parts;
+  $('#result').innerHTML = `<section class="result glass" id="res">
+    <h2>نتيجة ${esc(rec.studentName)} — ${esc(form.short)}</h2>
+    <p class="note">${esc(rec.summary)}</p>
+    <div class="parts">${list.map(p => `<div class="part"><b>${esc(p.title)}${p.product ? ' — ' + esc(p.product) : ''}</b>
+      <div class="val">${fmt(p)}</div><span class="lvl ${p.level}">${esc(p.label)}</span></div>`).join('')}</div>
+    <p class="note" style="margin-top:12px">${saved ? '✓ محفوظ باسم المعلم: ' + esc(rec.teacher) : '⏳ في انتظار الإرسال'}</p>
+    <div class="no-print" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+      <button class="btn teal" onclick="nextStudent()">تعبئة النموذج لطالب آخر</button>
+      <button class="btn ghost" onclick="window.print()">طباعة</button>
+      <a class="btn ghost" href="sijil.html">نموذج آخر</a>
+    </div></section>`;
+  $('#res').scrollIntoView({ behavior: 'smooth' });
+}
+function nextStudent() {
+  $$('.opts input').forEach(r => r.checked = false); $$('.q').forEach(q => q.classList.remove('missing'));
+  ['#sid', '#sname', '#notes'].forEach(s => $(s).value = '');
+  $('#result').innerHTML = ''; update(); window.scrollTo({ top: 0, behavior: 'smooth' }); setTimeout(() => $('#sname').focus(), 400);
+}
+</script>
+</body>
+</html>

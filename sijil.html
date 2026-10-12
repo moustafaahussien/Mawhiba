@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>السجل التام لتطور الموهبة – منصة الموهبة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@300;600;900&family=Sora:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/platform.css">
+<link rel="stylesheet" href="css/sijil.css">
+<meta name="robots" content="noindex">
+</head>
+<body class="sj">
+<div id="hdr"></div>
+<main class="wrap">
+  <div id="demo"></div>
+
+  <section class="hero glass">
+    <span class="kicker">للمعلمين · المكوّن الأول من النموذج</span>
+    <h1>السجل التام لتطور الموهبة</h1>
+    <p>النسخة الإلكترونية من نماذج القياس والحصر وسجل الموهبة في كتاب «النموذج التام لتطوير الموهبة». يختار المعلم النموذج والطالب ويُدخل الإجابات، فيُحسب المجموع والمتوسط والتفسير تلقائياً وفق تعليمات الكتاب، ويُحفظ السجل باسم المعلم في سجل المنصة الخاص.</p>
+  </section>
+
+  <section class="teacher glass">
+    <label class="field">اسم المعلم (يُحفظ به كل نموذج تعبّئه)
+      <input id="teacher" placeholder="مثال: أحمد محمد" autocomplete="name">
+    </label>
+    <label class="field" id="codeWrap">رمز المعلمين (من منسق الموهبة)
+      <input id="code" type="password" autocomplete="off" placeholder="••••••">
+    </label>
+    <button class="btn" id="saveTeacher">دخول</button>
+    <span class="note" id="teacherNote" style="flex-basis:100%"></span>
+  </section>
+
+  <div id="list"></div>
+</main>
+<div id="ftr"></div>
+
+<script src="js/config.js"></script>
+<script src="js/sijil/config.js"></script>
+<script src="js/sijil/forms.js"></script>
+<script src="js/sijil/thinking.js"></script>
+<script src="js/sijil/records.js"></script>
+<script src="js/sijil/common.js"></script>
+<script>
+const NEXT = []; // كل نماذج الملحق مكتملة
+const GROUPS = [
+  { id: 'السمات', title: 'السمات السلوكية', c: 'var(--violet)' },
+  { id: 'الاهتمامات', title: 'قياس الاهتمامات', c: 'var(--teal)' },
+  { id: 'الأساليب', title: 'أسلوب التعلم وأسلوب التعبير', c: 'var(--rose)' },
+  { id: 'التفكير', title: 'حصر أسلوب التفكير المفضل (14 مقياساً)', c: 'var(--amber)' },
+  { id: 'السجل', title: 'السجل التام وخطة التطوير', c: 'var(--sky)' }
+];
+
+$('#hdr').innerHTML = header('home');
+$('#demo').innerHTML = demoBanner(); $('#ftr').outerHTML = footerHtml();
+const tInput = $('#teacher');
+tInput.value = LS.get('tf_teacher', '');
+if (isDemo()) $('#codeWrap').hidden = true;
+else if (LS.get('tf_code', '')) $('#code').value = LS.get('tf_code', '');
+function noteTeacher() {
+  const t = LS.get('tf_teacher', ''), ok = isDemo() || LS.get('tf_code', '');
+  $('#teacherNote').textContent = t && ok ? 'أهلاً ' + t + ' — اختر النموذج الذي تريد تعبئته.' : 'اكتب اسمك' + (isDemo() ? '' : ' ورمز المعلمين') + ' ثم اضغط «دخول».';
+}
+$('#saveTeacher').onclick = async () => {
+  const v = normKey(tInput.value), c = ($('#code').value || '').trim();
+  if (v.split(' ').length < 2) { toast('اكتب الاسم الأول واسم العائلة على الأقل', 'err'); return; }
+  if (!isDemo()) {
+    if (!c) { toast('اكتب رمز المعلمين', 'err'); return; }
+    const b = $('#saveTeacher'); b.disabled = true; b.textContent = 'جارٍ التحقق…';
+    try {
+      const d = await API.check(c);
+      if (!d || !d.ok) { toast((d && d.error) || 'رمز المعلمين غير صحيح', 'err'); return; }
+      LS.set('tf_code', c);
+    } catch (e) { toast('تعذر التحقق: ' + e.message, 'err'); return; }
+    finally { b.disabled = false; b.textContent = 'دخول'; }
+  }
+  LS.set('tf_teacher', v); $('#hdr').innerHTML = header('home'); noteTeacher(); toast('تم الدخول');
+};
+noteTeacher();
+
+const mine = LS.get('tf_mine', {});
+let html = '';
+GROUPS.forEach(g => {
+  const fs = FORMS.filter(f => f.group === g.id), soon = NEXT.filter(n => n.group === g.id);
+  if (!fs.length && !soon.length && g.id !== 'السجل') return;
+  html += `<h2 class="group-title" style="--c:${g.c}">${g.title}</h2><div class="cards">`;
+  fs.forEach(f => {
+    const n = flatItems(f).length, done = mine[f.id] || 0;
+    html += `<a class="card glass" style="--c:${g.c}" href="sijil-form.html?f=${f.id}">
+      <span class="code">${esc(f.code)}</span><h3>${esc(f.title)}</h3>
+      <div class="meta"><span>${n} بنداً</span><span>يجيب: ${esc(f.respondent)}</span></div>
+      ${done ? `<span class="done">✓ عبّأت ${done} نموذجاً</span>` : ''}</a>`;
+  });
+  if (g.id === 'السجل') RECORDS.forEach(r => html += `<a class="card glass" style="--c:${g.c}" href="sijil-record.html?f=${r.id}">
+      <span class="code">${esc(r.code)}</span><h3>${esc(r.title)}</h3>
+      <div class="meta"><span>يعبّئه: ${esc(r.who)}</span>${r.auto ? '<span>يجلب بيانات الطالب تلقائياً</span>' : ''}</div></a>`);
+  soon.forEach(s => html += `<div class="card glass soon" style="--c:${g.c}"><span class="code">${esc(s.code)}</span><h3>${esc(s.title)}</h3><div class="meta"><span>الدفعة الثانية — قريباً</span></div></div>`);
+  html += '</div>';
+});
+$('#list').innerHTML = html;
+Queue.flush().then(n => n && toast(`تم إرسال ${n} نموذج كانت معلّقة`, 'info'));
+</script>
+</body>
+</html>
