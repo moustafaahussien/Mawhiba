@@ -77,6 +77,27 @@ const API = {
     if (isDemo()) return LS.get('tf_students', []);
     try { const d = await jsonp({ mode: 'students', code: LS.get('tf_code', '') }); return (d && d.students) || []; } catch (e) { return []; }
   },
+  /* قوائم المشاركين في المسابقات (تحتاج رمز المعلمين) */
+  async participants() {
+    if (isDemo()) return { ok: true, demo: true, rows: LS.get('tf_participants', []) };
+    return jsonp({ mode: 'participants', code: LS.get('tf_code', '') }, 40000);
+  },
+  /* رفع أسماء المشاركين من ملفات التسجيل (تحتاج رمز المعلمين) */
+  async importParticipants(comp, year, rows) {
+    if (isDemo()) {
+      const all = LS.get('tf_participants', []), have = new Set(all.filter(r => r.comp === comp && r.year === year).map(r => normKey(r.name)));
+      let added = 0;
+      rows.forEach(r => { const n = normKey(r.name); if (!n || have.has(n)) return; have.add(n); added++;
+        all.push({ comp, year, name: n, school: r.school, level: r.level, grade: r.grade, stage: 'مسجّل', date: r.date, note: '' }); });
+      LS.set('tf_participants', all);
+      return { ok: true, demo: true, added, kept: rows.length - added, total: have.size };
+    }
+    const r = await fetch(CONFIG.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'importParticipants', code: LS.get('tf_code', ''), comp, year, rows }) });
+    const d = await r.json();
+    if (d && d.ok) return d;
+    throw authErr((d && d.error) || 'تعذر الحفظ', d);
+  },
   /* التحقق من رمز المعلمين */
   async check(code) {
     if (isDemo()) return { ok: true, demo: true };
@@ -136,6 +157,7 @@ function header(active) {
         <a href="index.html">الرئيسية</a>
         <a href="sijil.html"${cur('home')}>نماذج السجل التام</a>
         <a href="sijil-reports.html"${cur('reports')}>تقارير السجل</a>
+        <a href="sijil-competitions.html"${cur('comps')}>المشاركون في المسابقات</a>
       </nav>
       ${teacher ? `<span class="who" title="المستخدم الحالي">${esc(teacher)}</span>` : ''}
       <button class="burger" id="burger" type="button" aria-label="القائمة"><span></span><span></span><span></span></button>

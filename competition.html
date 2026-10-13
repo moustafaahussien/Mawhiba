@@ -249,7 +249,7 @@ TP.addDict({
 const COMPS = window.TP_COMPETITIONS, FIELDS = window.TP_FIELDS, STAGES = window.TP_STAGES;
 const id = (new URLSearchParams(location.search).get('c') || '').toLowerCase();
 const C = COMPS.find(c => c.id === id);
-let DATA = null, FOLDER = { state: 'none', data: null }, folderReq = '';
+let DATA = null, SJ = null, FOLDER = { state: 'none', data: null }, folderReq = '';
 
 const SECTIONS = [
   ['about','info','s.about'], ['link','link','s.link'], ['conditions','check','s.cond'], ['register','list','s.reg'],
@@ -447,7 +447,10 @@ function schedHtml(){
 }
 
 function resultsHtml(){
-  const fun = DATA ? TP.rowsFor(DATA.funnel, C.id).map(r => ({ year: r[3], s: [TP.num(r[4]), TP.num(r[5]), TP.num(r[6]), TP.num(r[7])] })).filter(f => f.s.some(v => v != null)) : [];
+  let fun = DATA ? TP.rowsFor(DATA.funnel, C.id).map(r => ({ year: r[3], s: [TP.num(r[4]), TP.num(r[5]), TP.num(r[6]), TP.num(r[7])] })).filter(f => f.s.some(v => v != null)) : [];
+  /* إن لم تُكتب الأعداد في «مسار المسابقات» تُحسب تلقائياً من قوائم المشاركين في السجل التام (أعداد فقط) */
+  const sjc = SJ && SJ.competitions && SJ.competitions[C.id];
+  if (!fun.length && sjc) fun = Object.keys(sjc).map(y => ({ year: y, s: sjc[y].map(v => v || null) })).filter(f => f.s.some(v => v != null));
   const ach = DATA ? TP.rowsFor(DATA.achievements, C.id).filter(r => (r[1] || '').trim()) : [];
   if (!fun.length && !ach.length) return `<div class="empty">${TP.icon('trophy')}${TP.t('rs.none')}</div>`;
   const names = ['fn.reg','fn.qual','fn.fin','fn.win'];
@@ -483,6 +486,17 @@ TP.onCountdownEnd(render); // عند انتهاء العداد ينتقل تلق
 TP.applyLang();
 if (location.hash) setTimeout(() => { const el = document.querySelector(location.hash); if (el) el.scrollIntoView(); }, 60);
 TP.loadData(d => { if (d) { DATA = d; render(); } });
+
+/* أعداد المشاركين من «السجل التام» (بدون أسماء) */
+(function loadSijilCounts(){
+  const url = (window.TP_CONFIG && window.TP_CONFIG.SIJIL_SCRIPT_URL) || '';
+  if (!url || !C) return;
+  const name = '__tp_sjc_' + Date.now(), sc = document.createElement('script');
+  window[name] = d => { try { delete window[name]; } catch (e) {} sc.remove(); if (d && d.ok && d.competitions && d.competitions[C.id]) { SJ = d; render(); } };
+  sc.onerror = () => sc.remove();
+  sc.src = url + (url.includes('?') ? '&' : '?') + 'mode=public&callback=' + name;
+  document.body.appendChild(sc);
+})();
 </script>
 </body>
 </html>

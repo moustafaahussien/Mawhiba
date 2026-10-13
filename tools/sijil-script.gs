@@ -4,16 +4,23 @@
    يُلصق هذا الملف في: الجدول ← الإضافات (Extensions) ← Apps Script
    ===================================================================== */
 
-/* مفتاح المشرف: كلمة سر خاصة بك — تفتح التقارير وتجلب بيانات الطالب. لا تعطها للمعلمين. */
-const ADMIN_KEY = 'Das@2027';
+/* ⚠️ اكتب الرمزين هنا داخل محرر Apps Script فقط، ولا تكتبهما في نسخة الملف المرفوعة على GitHub
+   (المستودع عام ويستطيع أي شخص قراءته). إذا تُركا فارغين يُرفض كل دخول. */
 
-/* رمز المعلمين: يُعطى للمعلمين، ولا يُقبل حفظ أي نموذج بدونه. غيّره متى شئت (ثم انشر إصداراً جديداً). */
-const TEACHER_CODE = 'das123456';
+/* مفتاح المشرف: كلمة سر خاصة بك — تفتح التقارير وتجلب بيانات الطالب. لا تعطها للمعلمين. */
+const ADMIN_KEY = '';
+
+/* رمز المعلمين: يُعطى للمعلمين، ولا يُقبل حفظ أي نموذج ولا فتح قوائم المشاركين بدونه. غيّره متى شئت (ثم انشر إصداراً جديداً). */
+const TEACHER_CODE = '';
 
 function codeOk_(c) { c = String(c || '').trim(); return c !== '' && (c === TEACHER_CODE || c === ADMIN_KEY); }
 
 const MASTER = 'السجل';
 const STUDENTS = 'الطلاب';
+/* قوائم المشاركين في المسابقات (بالأسماء) — تظهر للمعلمين فقط، وللجمهور الأعداد فقط */
+const PARTICIPANTS = 'المشاركون في المسابقات';
+const PARTICIPANTS_HEADERS = ['المسابقة', 'العام', 'اسم الطالب', 'المدرسة', 'المرحلة الدراسية', 'الصف', 'المرحلة في المسابقة', 'تاريخ التسجيل', 'ملاحظة'];
+const COMP_STAGES = ['مسجّل', 'متأهل', 'نهائي', 'فائز'];
 const MASTER_HEADERS = ['المعرّف', 'وقت الحفظ', 'التاريخ', 'العام الدراسي', 'المعلم', 'رمز النموذج', 'النموذج', 'معرف النموذج',
   'رقم الطالب', 'اسم الطالب', 'الصف', 'الفصل', 'النتيجة', 'ملاحظات', 'الإجابات', 'الدرجات'];
 
@@ -22,6 +29,11 @@ function setupSheet() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   ensureSheet_(ss, MASTER, MASTER_HEADERS, true);
   ensureSheet_(ss, STUDENTS, ['رقم الطالب', 'اسم الطالب', 'الصف', 'الفصل'], true);
+  const ps = ensureSheet_(ss, PARTICIPANTS, PARTICIPANTS_HEADERS, true);
+  ps.getRange('A2:A3000').setDataValidation(SpreadsheetApp.newDataValidation()
+    .requireValueInList(['kangaroo', 'bebras', 'nsmo', 'ibdaa', 'isef'], true).setAllowInvalid(true).build());
+  ps.getRange('G2:G3000').setDataValidation(SpreadsheetApp.newDataValidation()
+    .requireValueInList(COMP_STAGES, true).setAllowInvalid(true).build());
   SpreadsheetApp.flush();
 }
 
@@ -42,6 +54,7 @@ function doPost(e) {
   try {
     const body = JSON.parse(e.postData.contents);
     if (body.action === 'submit') return out_(saveRecord_(body.record));
+    if (body.action === 'importParticipants') return out_(importParticipants_(body));
     return out_({ ok: false, error: 'طلب غير معروف' });
   } catch (err) { return out_({ ok: false, error: String(err.message || err) }); }
 }
@@ -53,6 +66,7 @@ function doGet(e) {
     if (p.mode === 'submit') res = saveRecord_(JSON.parse(p.data));
     else if (p.mode === 'check') res = codeOk_(p.code) ? { ok: true, admin: p.code === ADMIN_KEY } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
     else if (p.mode === 'students') res = codeOk_(p.code) ? { ok: true, students: readStudents_() } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
+    else if (p.mode === 'participants') res = codeOk_(p.code) ? { ok: true, rows: readParticipants_() } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
     else if (p.mode === 'public') res = publicStats_();
     else if (p.mode === 'report') {
       if (p.key !== ADMIN_KEY) res = { ok: false, error: 'مفتاح المشرف غير صحيح' };
@@ -145,6 +159,53 @@ function readStudents_() {
     .map(v => ({ id: v[0], name: v[1].trim(), grade: v[2], cls: v[3] }));
 }
 
+/* قوائم المشاركين: [المسابقة, العام, الاسم, المدرسة, المرحلة الدراسية, الصف, المرحلة في المسابقة, تاريخ التسجيل, ملاحظة] */
+function readParticipants_() {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(PARTICIPANTS);
+  if (!sh || sh.getLastRow() < 2) return [];
+  return sh.getRange(2, 1, sh.getLastRow() - 1, PARTICIPANTS_HEADERS.length).getDisplayValues()
+    .filter(v => String(v[0]).trim() && String(v[2]).trim())
+    .map(v => ({ comp: String(v[0]).trim().toLowerCase(), year: String(v[1]).trim(), name: String(v[2]).trim(), school: String(v[3]).trim(),
+                 level: String(v[4]).trim(), grade: String(v[5]).trim(), stage: String(v[6]).trim() || 'مسجّل', date: v[7], note: v[8] }));
+}
+
+/* استيراد ملفات التسجيل المصدَّرة من موقع المسابقة (من صفحة «المشاركون في المسابقات»).
+   يضيف الأسماء الجديدة فقط، ويحتفظ بمرحلة كل طالب موجود وملاحظته كما هي. يحتاج رمز المعلمين أو مفتاح المشرف. */
+function importParticipants_(b) {
+  if (!codeOk_(b.code)) return { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
+  const comp = String(b.comp || '').trim().toLowerCase(), year = String(b.year || '').trim();
+  if (!comp || !year || !Array.isArray(b.rows)) return { ok: false, error: 'بيانات ناقصة' };
+  const lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sh = ensureSheet_(ss, PARTICIPANTS, PARTICIPANTS_HEADERS, true);
+    const norm = x => String(x || '').trim().replace(/\s+/g, ' ');
+    const have = {};
+    readParticipants_().forEach(r => { if (r.comp === comp && r.year === year) have[norm(r.name)] = 1; });
+    const add = [];
+    b.rows.forEach(r => {
+      const n = norm(r.name); if (!n || have[n]) return; have[n] = 1;
+      add.push([comp, year, n, norm(r.school), norm(r.level), norm(r.grade), 'مسجّل', norm(r.date), '']);
+    });
+    if (add.length) sh.getRange(sh.getLastRow() + 1, 1, add.length, PARTICIPANTS_HEADERS.length).setNumberFormat('@').setValues(add);
+    return { ok: true, added: add.length, kept: b.rows.length - add.length, total: Object.keys(have).length };
+  } finally { lock.releaseLock(); }
+}
+
+/* أعداد المشاركين لكل مسابقة وعام ومرحلة — أعداد فقط بدون أي اسم.
+   المرحلة تراكمية: الفائز يُحسب أيضاً في النهائيين والمتأهلين والمسجلين. */
+function participantCounts_() {
+  const out = {};
+  readParticipants_().forEach(function (r) {
+    const lvl = Math.max(0, COMP_STAGES.indexOf(r.stage));
+    const y = r.year || 'غير محدد';
+    out[r.comp] = out[r.comp] || {};
+    out[r.comp][y] = out[r.comp][y] || [0, 0, 0, 0];
+    for (let i = 0; i <= lvl; i++) out[r.comp][y][i]++;
+  });
+  return out;
+}
+
 /* ---------------- أرقام عامة للصفحة الرئيسية للمنصة (بدون أي اسم أو نتيجة فردية) ---------------- */
 function publicStats_() {
   const R = readRecords_();
@@ -159,6 +220,7 @@ function publicStats_() {
     students: uniq(R.map(sk)),                 // طلاب لهم سجل في النموذج
     pool: uniq(plans.map(sk)),                 // طلاب لهم خطة تطوير (الوعاء الإثرائي)
     forms: R.length,                           // نماذج معبّأة
+    competitions: participantCounts_(),        // أعداد المشاركين في المسابقات (بدون أسماء)
     achievement: pcts.length ? Math.round(pcts.reduce((a, b) => a + b, 0) / pcts.length) : null
   };
 }

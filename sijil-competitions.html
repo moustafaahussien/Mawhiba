@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>المشاركون في المسابقات – منصة الموهبة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@300;600;900&family=Sora:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/platform.css">
+<link rel="stylesheet" href="css/sijil.css">
+<meta name="robots" content="noindex">
+<style>
+.pc-tabs button{display:inline-flex;align-items:center;gap:8px}
+.pc-tabs button small{font-family:'Sora',sans-serif;font-weight:800;font-size:.78rem;padding:1px 8px;border-radius:999px;background:rgba(26,22,64,.08)}
+.pc-tabs button.on small{background:rgba(255,255,255,.25)}
+.tile.c1 b{color:#7B4DFF}.tile.c2 b{color:#0EA5D6}.tile.c3 b{color:#E8A50A}.tile.c4 b{color:#0E9F76}
+.stg{display:inline-block;padding:2px 10px;border-radius:999px;font-weight:700;font-size:.82rem;background:rgba(26,22,64,.06);color:var(--ink2)}
+.stg.s1{background:rgba(14,165,214,.12);color:#0B7FA6}.stg.s2{background:rgba(232,165,10,.16);color:#9A6A04}.stg.s3{background:rgba(14,159,118,.14);color:#0B7A5B}
+.sch{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.sch h3{margin:0}
+.sch .cnt{font-weight:800;color:var(--muted)}
+.gradebar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+td.n{width:44px;color:var(--muted);font-family:'Sora',sans-serif}
+td.nm{font-weight:700}
+.privacy{display:flex;gap:10px;align-items:flex-start;padding:12px 16px;margin-bottom:16px;border-radius:16px;background:rgba(226,56,111,.07);border:1px solid rgba(226,56,111,.25);color:var(--ink2);font-size:.92rem;line-height:1.8}
+.privacy b{color:#B4234F}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.summary .srow{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--fline)}
+.summary .srow:last-of-type{border-bottom:0}
+.summary h4{margin:0;font-size:.95rem;color:var(--ink2)}
+.sums{display:flex;flex-wrap:wrap;gap:8px}
+.sumc{font:inherit;display:inline-flex;align-items:center;gap:8px;padding:6px 8px 6px 12px;border-radius:12px;border:1px solid var(--glass-edge);background:rgba(255,255,255,.7);cursor:pointer;font-weight:700;font-size:.9rem;color:var(--ink)}
+html[dir=rtl] .sumc{padding:6px 12px 6px 8px}
+.sumc b{font-family:'Sora',sans-serif;font-weight:800;min-width:30px;text-align:center;padding:2px 8px;border-radius:9px;background:rgba(123,77,255,.12);color:#5B33D6}
+.sumc:hover{border-color:#7B4DFF}
+.sumc.on{background:linear-gradient(135deg,#8E6BFF,#6D4BFF);color:#fff;border-color:transparent}
+.sumc.on b{background:rgba(255,255,255,.25);color:#fff}
+@media(max-width:640px){.summary .srow{grid-template-columns:1fr}}
+@media print{.privacy{display:none}.panel{break-inside:auto}}
+</style>
+</head>
+<body class="sj">
+<div id="hdr"></div>
+<main class="wrap">
+  <div id="demo"></div>
+
+  <section class="hero glass">
+    <span class="kicker">للمعلمين · قوائم الطلاب</span>
+    <h1>المشاركون في المسابقات</h1>
+    <p>أسماء طلابنا المسجلين في كل مسابقة، وأعدادهم حسب المدرسة والصف والمرحلة. ارفع ملفات التسجيل كما تصدّرها من موقع المسابقة، فتظهر الأسماء هنا مباشرة. الصفحة لا تُفتح إلا برمز المعلمين، ولا يظهر للجمهور في صفحات المنصة إلا الأعداد.</p>
+  </section>
+
+  <section class="teacher glass no-print" id="gate" hidden>
+    <label class="field">رمز المعلمين (من منسق الموهبة)
+      <input id="code" type="password" autocomplete="off" placeholder="••••••">
+    </label>
+    <button class="btn" id="open">عرض القوائم</button>
+    <span class="note" id="gateNote" style="flex-basis:100%"></span>
+  </section>
+
+  <section class="panel glass no-print" id="up" hidden>
+    <div class="sch"><h3>📥 رفع ملفات التسجيل</h3><button class="btn ghost small" type="button" id="upToggle">إخفاء</button></div>
+    <div id="upBody">
+      <p class="sub">اختر ملف Excel أو أكثر كما صدّرته من موقع المسابقة (ملف لكل مدرسة مثلاً). تُضاف الأسماء الجديدة فقط، ولا يتكرر طالب موجود، ولا تتغير مرحلته.</p>
+      <div class="filters" style="padding:0;margin:10px 0">
+        <label class="field">المسابقة<select id="upComp"></select></label>
+        <label class="field">العام<input id="upYear"></label>
+        <label class="field" style="flex:2 1 260px">ملفات التسجيل (Excel)<input id="upFiles" type="file" accept=".xlsx,.xls,.csv" multiple></label>
+      </div>
+      <div id="upPreview"></div>
+    </div>
+  </section>
+
+  <div id="app"></div>
+</main>
+<div id="ftr"></div>
+
+<script src="js/config.js"></script>
+<script src="js/competitions-data.js"></script>
+<script src="js/sijil/config.js"></script>
+<script src="js/sijil/common.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
+<script>
+$('#hdr').innerHTML = header('comps');
+$('#demo').innerHTML = demoBanner(); $('#ftr').outerHTML = footerHtml();
+
+const COMP_NAMES = Object.fromEntries((window.TP_COMPETITIONS || []).map(c => [c.id, c.short ? c.short.ar : c.name.ar]));
+const STAGES = ['مسجّل', 'متأهل', 'نهائي', 'فائز'];
+const stageIx = s => Math.max(0, STAGES.indexOf(String(s || '').trim()));
+/* ترتيب الصفوف: الابتدائي ثم المتوسط ثم الثانوي، والأول قبل الثاني */
+const ORD = ['الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس', 'السادس'];
+function gradeRank(g) {
+  g = String(g || '');
+  const lvl = /ثانوي/.test(g) ? 2 : /متوسط/.test(g) ? 1 : 0;
+  const i = ORD.findIndex(o => g.includes(o));
+  return lvl * 10 + (i < 0 ? 9 : i);
+}
+const collator = new Intl.Collator('ar');
+
+let ROWS = [], COMP = '', F = { year: '', stage: '', level: '', school: '', grade: '', q: '' };
+
+async function load() {
+  $('#app').innerHTML = '<div class="empty">جارٍ تحميل القوائم…</div>';
+  try {
+    const d = await API.participants();
+    if (!d || !d.ok) {
+      if (d && d.auth) { LS.set('tf_code', ''); showGate('رمز المعلمين غير صحيح أو تغيّر — اكتب الرمز الحالي.'); $('#app').innerHTML = ''; return; }
+      throw new Error((d && d.error) || 'تعذر التحميل');
+    }
+    $('#gate').hidden = true;
+    $('#up').hidden = false;
+    ROWS = d.rows || [];
+    if (!ROWS.length) {
+      $('#app').innerHTML = `<div class="panel glass empty">لا توجد أسماء بعد — ارفع ملفات التسجيل من «رفع ملفات التسجيل» أعلاه.</div>`;
+      return;
+    }
+    const comps = [...new Set(ROWS.map(r => r.comp))];
+    if (!comps.includes(COMP)) COMP = comps[0];
+    const years = [...new Set(ROWS.map(r => r.year).filter(Boolean))].sort().reverse();
+    if (!F.year || !years.includes(F.year)) F.year = years[0] || '';
+    render();
+  } catch (e) {
+    $('#app').innerHTML = `<div class="panel glass empty">تعذر الوصول إلى الجدول: ${esc(e.message)}</div>`;
+  }
+}
+
+function showGate(msg) {
+  $('#gate').hidden = false; $('#gateNote').textContent = msg || 'اكتب رمز المعلمين ثم اضغط «عرض القوائم».';
+}
+$('#open').onclick = async () => {
+  const c = ($('#code').value || '').trim();
+  if (!c) { toast('اكتب رمز المعلمين', 'err'); return; }
+  const b = $('#open'); b.disabled = true; b.textContent = 'جارٍ التحقق…';
+  try {
+    const d = await API.check(c);
+    if (!d || !d.ok) { toast((d && d.error) || 'رمز المعلمين غير صحيح', 'err'); return; }
+    LS.set('tf_code', c); load();
+  } catch (e) { toast('تعذر التحقق: ' + e.message, 'err'); }
+  finally { b.disabled = false; b.textContent = 'عرض القوائم'; }
+};
+
+function filtered() {
+  const q = normKey(F.q);
+  return ROWS.filter(r => r.comp === COMP && (!F.year || r.year === F.year) &&
+    (!F.stage || stageIx(r.stage) >= stageIx(F.stage)) && (!F.level || r.level === F.level) && (!F.school || r.school === F.school) &&
+    (!F.grade || r.grade === F.grade) && (!q || normKey(r.name).includes(q)));
+}
+
+function render() {
+  const inComp = ROWS.filter(r => r.comp === COMP && (!F.year || r.year === F.year));
+  const comps = [...new Set(ROWS.map(r => r.comp))];
+  const years = [...new Set(ROWS.filter(r => r.comp === COMP).map(r => r.year).filter(Boolean))].sort().reverse();
+  const schools = [...new Set(inComp.map(r => r.school))].sort(collator.compare);
+  const levels = [...new Set(inComp.map(r => r.level).filter(Boolean))].sort((a, b) => gradeRank(a) - gradeRank(b));
+  const levelRank = l => /ثانوي/.test(l) ? 2 : /متوسط/.test(l) ? 1 : 0;
+  levels.sort((a, b) => levelRank(a) - levelRank(b));
+  /* ملخص قابل للضغط: حسب المرحلة الدراسية والمدرسة والصف (يُحسب على القائمة الظاهرة) */
+  const countBy = (arr, k) => arr.reduce((o, r) => (o[r[k]] = (o[r[k]] || 0) + 1, o), {});
+  const grades = [...new Set(inComp.map(r => r.grade))].sort((a, b) => gradeRank(a) - gradeRank(b));
+  const list = filtered();
+  const cL = countBy(list, 'level'), cS = countBy(list, 'school'), cG = countBy(list, 'grade');
+  const sumChips = (obj, key, order) => Object.keys(obj).filter(Boolean).sort(order).map(v =>
+    `<button type="button" class="sumc${F[key] === v ? ' on' : ''}" data-sum="${key}" data-v="${esc(v)}"><span>${esc(v)}</span><b>${obj[v]}</b></button>`).join('');
+  const atLeast = i => inComp.filter(r => stageIx(r.stage) >= i).length;
+  const opt = (v, cur, label) => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(label || v)}</option>`;
+
+  /* التجميع: المدرسة ← الطلاب مرتبين بالصف ثم الاسم */
+  const bySchool = {};
+  list.forEach(r => (bySchool[r.school] = bySchool[r.school] || []).push(r));
+  const blocks = Object.keys(bySchool).sort(collator.compare).map(sc => {
+    const rs = bySchool[sc].sort((a, b) => gradeRank(a.grade) - gradeRank(b.grade) || collator.compare(a.name, b.name));
+    const gc = {}; rs.forEach(r => gc[r.grade] = (gc[r.grade] || 0) + 1);
+    return `<section class="panel glass">
+      <div class="sch"><h3>${esc(sc || 'مدرسة غير محددة')}</h3><span class="cnt">${rs.length} طالباً</span></div>
+      <div class="gradebar">${Object.keys(gc).sort((a, b) => gradeRank(a) - gradeRank(b)).map(g => `<span class="chip">${esc(g)}: ${gc[g]}</span>`).join('')}</div>
+      <div class="tbl"><table><thead><tr><th>م</th><th>اسم الطالب</th><th>الصف</th><th>المرحلة في المسابقة</th><th>تاريخ التسجيل</th><th>ملاحظة</th></tr></thead><tbody>
+      ${rs.map((r, i) => `<tr><td class="n">${i + 1}</td><td class="nm">${esc(r.name)}</td><td>${esc(r.grade)}</td><td><span class="stg s${stageIx(r.stage)}">${esc(r.stage || 'مسجّل')}</span></td><td>${esc(r.date || '—')}</td><td>${esc(r.note || '')}</td></tr>`).join('')}
+      </tbody></table></div></section>`;
+  }).join('');
+
+  $('#app').innerHTML = `
+    <div class="privacy no-print"><span>🔒</span><span><b>بيانات طلاب:</b> هذه القوائم للاستخدام الداخلي فقط. لا تنشرها ولا ترسلها خارج المدرسة، ولا تنشر أسماء الطلاب على الصفحات العامة إلا بموافقة أولياء أمورهم.</span></div>
+    <div class="tabs glass pc-tabs no-print">${comps.map(c => `<button type="button" data-comp="${esc(c)}" class="${c === COMP ? 'on' : ''}">${esc(COMP_NAMES[c] || c)}<small>${ROWS.filter(r => r.comp === c && (!F.year || r.year === F.year)).length}</small></button>`).join('')}</div>
+    <div class="tiles">
+      <div class="tile glass c1"><b>${atLeast(0)}</b><span>مسجّل</span></div>
+      <div class="tile glass c2"><b>${atLeast(1)}</b><span>متأهل</span></div>
+      <div class="tile glass c3"><b>${atLeast(2)}</b><span>نهائي</span></div>
+      <div class="tile glass c4"><b>${atLeast(3)}</b><span>فائز</span></div>
+    </div>
+    <section class="panel glass summary">
+      <div class="srow"><h4>حسب المرحلة الدراسية</h4><div class="sums">${sumChips(cL, 'level', (a, b) => levelRank(a) - levelRank(b))}</div></div>
+      <div class="srow"><h4>حسب المدرسة</h4><div class="sums">${sumChips(cS, 'school', collator.compare)}</div></div>
+      <div class="srow"><h4>حسب الصف</h4><div class="sums">${sumChips(cG, 'grade', (a, b) => gradeRank(a) - gradeRank(b))}</div></div>
+      <p class="note no-print">اضغط على أي بند لعرض طلابه فقط، واضغط عليه مرة أخرى للإلغاء.</p>
+    </section>
+    <div class="filters glass no-print">
+      ${years.length > 1 ? `<label class="field">العام<select data-f="year">${years.map(y => opt(y, F.year)).join('')}</select></label>` : ''}
+      <label class="field">المرحلة في المسابقة<select data-f="stage">${opt('', F.stage, 'الكل')}${STAGES.map(s => opt(s, F.stage, s === 'مسجّل' ? 'كل المسجلين' : s + ' فأعلى')).join('')}</select></label>
+      <label class="field">المرحلة الدراسية<select data-f="level">${opt('', F.level, 'كل المراحل')}${levels.map(l => opt(l, F.level)).join('')}</select></label>
+      <label class="field">المدرسة<select data-f="school">${opt('', F.school, 'كل المدارس')}${schools.map(s => opt(s, F.school)).join('')}</select></label>
+      <label class="field">الصف<select data-f="grade">${opt('', F.grade, 'كل الصفوف')}${grades.map(g => opt(g, F.grade)).join('')}</select></label>
+      <label class="field">بحث بالاسم<input data-f="q" value="${esc(F.q)}" placeholder="اكتب جزءاً من الاسم"></label>
+      <div class="acts"><button class="btn ghost" type="button" id="csv">تنزيل Excel</button><button class="btn ghost" type="button" onclick="print()">طباعة</button></div>
+    </div>
+    <p class="note">يظهر ${list.length} من ${inComp.length} طالباً في «${esc(COMP_NAMES[COMP] || COMP)}»${F.year ? ' — <bdi dir="ltr">' + esc(F.year) + '</bdi>' : ''}.</p>
+    ${blocks || '<div class="panel glass empty">لا توجد أسماء تطابق التصفية.</div>'}`;
+
+  $$('[data-comp]').forEach(b => b.onclick = () => { COMP = b.dataset.comp; F.level = F.school = F.grade = ''; render(); });
+  $$('[data-sum]').forEach(b => b.onclick = () => { const k = b.dataset.sum; F[k] = F[k] === b.dataset.v ? '' : b.dataset.v; render(); });
+  $$('select[data-f]').forEach(s => s.onchange = () => { F[s.dataset.f] = s.value; render(); });
+  const qi = $('input[data-f="q"]');
+  qi.oninput = () => { F.q = qi.value; clearTimeout(qi._t); qi._t = setTimeout(() => { render(); const n = $('input[data-f="q"]'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }, 250); };
+  $('#csv').onclick = () => downloadCsv(list);
+}
+
+/* تنزيل القائمة الظاهرة كملف يفتحه Excel بالعربية */
+function downloadCsv(list) {
+  const head = ['المسابقة', 'العام', 'اسم الطالب', 'المدرسة', 'المرحلة الدراسية', 'الصف', 'المرحلة في المسابقة', 'تاريخ التسجيل', 'ملاحظة'];
+  const cell = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+  const lines = [head.map(cell).join(',')].concat(list.map(r => [COMP_NAMES[r.comp] || r.comp, r.year, r.name, r.school, r.level, r.grade, r.stage, r.date, r.note].map(cell).join(',')));
+  const blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `المشاركون-${COMP_NAMES[COMP] || COMP}-${F.year || ''}.csv`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+/* ---------- رفع ملفات التسجيل ---------- */
+const curYear = (() => { const d = new Date(), y = d.getFullYear(); return d.getMonth() >= 6 ? `${y}-${y + 1}` : `${y - 1}-${y}`; })();
+$('#upComp').innerHTML = (window.TP_COMPETITIONS || []).map(c => `<option value="${c.id}">${esc(COMP_NAMES[c.id])}</option>`).join('');
+$('#upYear').value = curYear;
+$('#upToggle').onclick = () => { const b = $('#upBody'); b.hidden = !b.hidden; $('#upToggle').textContent = b.hidden ? 'إظهار' : 'إخفاء'; };
+let PARSED = [];
+
+/* يقرأ ملف التصدير: يبحث عن سطر العناوين الذي فيه «الاسم» ويأخذ ما تحته */
+const COLS = { name: ['الاسم', 'اسم الطالب'], school: ['المدرسة'], level: ['المرحلة', 'المرحلة الدراسية'], grade: ['الصف الدراسي', 'الصف'], date: ['تاريخ طلب المشاركة', 'تاريخ التسجيل'] };
+function parseSheet(rows) {
+  const hi = rows.findIndex(r => r.some(c => COLS.name.includes(String(c || '').trim())));
+  if (hi < 0) return [];
+  const head = rows[hi].map(c => String(c || '').trim());
+  const ix = Object.fromEntries(Object.entries(COLS).map(([k, names]) => [k, head.findIndex(h => names.includes(h))]));
+  return rows.slice(hi + 1).map(r => {
+    const g = k => ix[k] >= 0 ? normKey(r[ix[k]]) : '';
+    return { name: g('name'), school: g('school'), level: g('level'), grade: g('grade'), date: g('date') };
+  }).filter(r => r.name && !/^عدد|^المجموع/.test(r.name));
+}
+$('#upFiles').onchange = async e => {
+  const files = [...e.target.files]; PARSED = [];
+  if (!files.length) { $('#upPreview').innerHTML = ''; return; }
+  if (!window.XLSX) { toast('جارٍ تحميل قارئ ملفات Excel… أعد المحاولة بعد ثوانٍ', 'err'); return; }
+  const per = [];
+  for (const f of files) {
+    try {
+      const wb = XLSX.read(await f.arrayBuffer(), { type: 'array' });
+      let got = [];
+      wb.SheetNames.forEach(n => { got = got.concat(parseSheet(XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, raw: false, defval: '' }))); });
+      per.push({ file: f.name, n: got.length, school: (got[0] || {}).school || '' }); PARSED = PARSED.concat(got);
+    } catch (err) { per.push({ file: f.name, n: 0, err: true }); }
+  }
+  const uniq = new Set(PARSED.map(r => r.name)).size;
+  $('#upPreview').innerHTML = `<div class="tbl"><table><thead><tr><th>الملف</th><th>المدرسة</th><th>عدد الطلاب</th></tr></thead><tbody>
+    ${per.map(p => `<tr><td>${esc(p.file)}</td><td>${esc(p.school || (p.err ? 'تعذرت قراءة الملف' : '—'))}</td><td><b>${p.n}</b></td></tr>`).join('')}</tbody></table></div>
+    <p class="note">المجموع: <b>${uniq}</b> طالباً${uniq < PARSED.length ? ` (بعد حذف ${PARSED.length - uniq} اسماً مكرراً بين الملفات)` : ''}.</p>
+    ${uniq ? `<button class="btn" type="button" id="upSave">حفظ الأسماء في الصفحة</button>` : '<p class="note">لم أجد عمود «الاسم» في الملفات المختارة.</p>'}`;
+  const sv = $('#upSave'); if (sv) sv.onclick = saveImport;
+};
+async function saveImport() {
+  const comp = $('#upComp').value, year = ($('#upYear').value || '').trim();
+  if (!year) { toast('اكتب العام', 'err'); return; }
+  const b = $('#upSave'); b.disabled = true; b.textContent = 'جارٍ الحفظ…';
+  try {
+    const d = await API.importParticipants(comp, year, PARSED);
+    toast(`تمت إضافة ${d.added} طالباً${d.kept ? ` (و${d.kept} موجودون من قبل)` : ''}`);
+    $('#upFiles').value = ''; $('#upPreview').innerHTML = ''; PARSED = [];
+    COMP = comp; F.year = year; load();
+  } catch (e) {
+    toast(e.auth ? 'رمز المعلمين غير صحيح — أعد الدخول' : 'تعذر الحفظ: ' + e.message, 'err');
+    if (e.auth) showGate();
+  } finally { b.disabled = false; b.textContent = 'حفظ الأسماء في الصفحة'; }
+}
+
+if (isDemo() || LS.get('tf_code', '')) load(); else showGate();
+</script>
+</body>
+</html>
