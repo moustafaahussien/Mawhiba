@@ -27,8 +27,12 @@
  *  - التدريب            : جدول التدريب في المدرسة (البرنامج، الموعد، المكان، المدرب...)
  *  - الإنجازات          : إنجازات المدرسة في كل مسابقة
  *  - خطة الإعداد        : بنود خطة الإعداد لكل مسابقة (تحل محل الخطة المكتوبة في الموقع)
+ *  - المكونات           : حالة كل مكوّن من مكونات النموذج التسعة، ومسؤوله، ومجلد مصادره
+ *  - وحدات المكونات     : وحدات/فعاليات كل مكوّن هذا العام (العنوان، الفرع، الفئة، الوسيلة، التاريخ...)
  *
  * معرّفات المسابقات: kangaroo, bebras, nsmo, ibdaa, isef
+ * معرّفات المكونات : record, general-enrichment, skills, clusters, specialty, projects,
+ *                    acceleration, mentorship, support
  *
  * مجلد المصادر: أنشئ مجلداً في Google Drive لكل مسابقة وضع فيه الحقائب والملفات
  * (ويمكن تقسيمه لمجلدات فرعية تظهر كمجموعات)، واجعل مشاركته
@@ -46,8 +50,17 @@ const SHEETS = {
   dates:        'المواعيد',
   training:     'التدريب',
   achievements: 'الإنجازات',
-  plans:        'خطة الإعداد'
+  plans:        'خطة الإعداد',
+  components:   'المكونات',
+  units:        'وحدات المكونات'
 };
+
+/** معرّفات مكونات النموذج التام لتطوير الموهبة (تُستخدم في عمود «المعرّف») */
+const COMPONENT_IDS = [
+  ['record', 'السجل التام لتطور الموهبة'], ['general-enrichment', 'برنامج الإثراء العام'], ['skills', 'برنامج تنمية المهارات'],
+  ['clusters', 'برنامج الأنشطة الموجهة'], ['specialty', 'برنامج الإثراء المتخصص'], ['projects', 'برنامج المشاريع الهادفة'],
+  ['acceleration', 'برنامج التسريع الأكاديمي'], ['mentorship', 'برنامج الرعاية الخاصة'], ['support', 'البرامج المساندة']
+];
 
 /** البنود الأولية لتبويب «خطة الإعداد» (تُكتب مرة واحدة عند إنشاء التبويب، ثم تعدّلها من الجدول) */
 const PLAN_SEED = [["kangaroo","حل نموذج من أسئلة الأعوام السابقة أسبوعياً حسب مستوى الطالب، ومناقشة الحلول الكاملة جماعياً.","Solve one past paper weekly at the student’s level and discuss the full solutions as a group."],
@@ -200,6 +213,13 @@ function setupSheet() {
 
   makeSheet_(ss, SHEETS.plans, ['المعرّف', 'البند', 'Item (English)'], PLAN_SEED);
 
+  makeSheet_(ss, SHEETS.components,
+    ['المعرّف', 'المكوّن', 'الحالة', 'مجلد المصادر', 'المسؤول', 'ملاحظة'],
+    COMPONENT_IDS.map(function (c) { return [c[0], c[1], '', '', '', '']; }));
+
+  makeSheet_(ss, SHEETS.units,
+    ['المعرّف', 'عنوان الوحدة', 'الفرع', 'الفئة المستهدفة', 'وسيلة التقديم', 'التاريخ', 'الوقت', 'المشرف', 'ملاحظة'], []);
+
   Object.keys(SHEETS).forEach(function (k) {
     const sh = ss.getSheetByName(SHEETS[k]);
     sh.setRightToLeft(true);
@@ -220,6 +240,18 @@ function setupSheet() {
     SpreadsheetApp.newDataValidation().requireValueInList(['مفتوح', 'قريباً', 'مغلق'], true).build());
   ss.getSheetByName(SHEETS.achievements).getRange('D2:D500').setDataValidation(
     SpreadsheetApp.newDataValidation().requireValueInList(['مدرسي', 'إقليمي', 'وطني', 'دولي'], true).setAllowInvalid(true).build());
+  // قوائم المكونات: المعرّف، والحالة، وفروع الإثراء العام ووسائله (يُسمح بغيرها)
+  const compRule = SpreadsheetApp.newDataValidation().requireValueInList(COMPONENT_IDS.map(function (c) { return c[0]; }), true).setAllowInvalid(true).build();
+  ss.getSheetByName(SHEETS.units).getRange('A2:A1000').setDataValidation(compRule);
+  ss.getSheetByName(SHEETS.components).getRange('C2:C20').setDataValidation(
+    SpreadsheetApp.newDataValidation().requireValueInList(['مفعّل', 'قيد التفعيل', 'غير مفعّل'], true).setAllowInvalid(true).build());
+  ss.getSheetByName(SHEETS.units).getRange('C2:C1000').setDataValidation(
+    SpreadsheetApp.newDataValidation().requireValueInList(['الأعلام', 'التاريخ', 'الثقافة العامة', 'التربية الاجتماعية', 'العلوم', 'الجغرافيا', 'الفلك', 'الحيوانات', 'النبات', 'الاقتصاد', 'الصحة', 'التربية البدنية', 'السلوك', 'أخرى'], true).setAllowInvalid(true).build());
+  ss.getSheetByName(SHEETS.units).getRange('E2:E1000').setDataValidation(
+    SpreadsheetApp.newDataValidation().requireValueInList(['متحدث', 'مجموعة عمل', 'عرض عملي', 'عرض فني', 'حلقة نقاش', 'تواصل عبر الإنترنت', 'فيلم سينمائي', 'مقاطع من أفلام', 'عرض شرائح', 'شريط سمعي', 'شريط فيديو', 'برنامج تلفزيوني', 'جريدة يومية / مجلة', 'برنامج كمبيوتر', 'معروضات معلّقة', 'رحلات ميدانية', 'زيارة شخص', 'زيارة مراكز التعلم', 'الإنترنت', 'أخرى'], true).setAllowInvalid(true).build());
+  ss.getSheetByName(SHEETS.units).getRange('F2:F1000').setNumberFormat('yyyy-mm-dd');
+  ss.getSheetByName(SHEETS.units).getRange('G2:G1000').setNumberFormat('@');
+
   // أعمدة التواريخ بصيغة YYYY-MM-DD، وعمود الوقت نصاً (مثل 17:00)
   ss.getSheetByName(SHEETS.dates).getRange('D2:E500').setNumberFormat('yyyy-mm-dd');
   ss.getSheetByName(SHEETS.dates).getRange('G2:G500').setNumberFormat('@');

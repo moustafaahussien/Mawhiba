@@ -149,6 +149,8 @@ html[dir=rtl] .chip{padding:6px 8px 6px 16px}
 .ball svg{position:relative;z-index:1;width:46%;height:46%;stroke:#fff;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 .3cqw .5cqw rgba(0,0,0,.28))}
 @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
 .orb:hover .ball{transform:scale(1.12)}
+.orb{cursor:pointer;outline:none}
+.orb:focus-visible .ball{box-shadow:0 0 0 .6cqw #fff,0 0 0 1.1cqw var(--c)}
 .pill{position:absolute;top:calc(100% + .7cqw);left:50%;transform:translateX(-50%);width:max-content;max-width:24cqw;padding:2px 9px;
   font-family:var(--display);font-weight:600;font-size:clamp(9.5px,1.95cqw,13.5px);line-height:1.45;color:var(--ink);
   background:rgba(255,255,255,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--glass-edge);border-radius:12px;box-shadow:0 6px 16px -8px rgba(120,70,10,.45);transition:background .2s,color .2s}
@@ -276,6 +278,11 @@ html[dir=rtl] .comp .en{text-align:right}
 .comp .who{align-self:flex-start;display:inline-flex;gap:6px;align-items:center;font-family:var(--display);font-weight:600;font-size:12.5px;padding:3px 12px;border-radius:999px;color:color-mix(in srgb,var(--c) 75%,#1A1640);background:color-mix(in srgb,var(--c) 13%,#fff);border:1px solid color-mix(in srgb,var(--c) 30%,#fff)}
 .comp .who svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
 .comp .subs{display:flex;flex-wrap:wrap;gap:6px}
+.comp.live{border-color:color-mix(in srgb,var(--c) 40%,#fff)}
+.comp .go{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-family:var(--display);font-weight:600;font-size:14.5px;padding:11px 16px;border-radius:15px;color:#fff;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--c) 70%,#fff),var(--c) 60%,color-mix(in srgb,var(--c) 75%,#1A1640));box-shadow:0 14px 26px -14px var(--c)}
+.comp .go svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transform:scaleX(var(--flip));transition:transform .25s}
+.comp.live:hover .go svg{transform:translateX(calc(var(--fx) * 5px)) scaleX(var(--flip))}
 .comp .subs span{font-size:12.5px;font-weight:600;padding:2px 10px;border-radius:9px;background:rgba(26,22,64,.06)}
 .comps-note{margin-top:18px;text-align:center;color:var(--muted);font-size:14px}
 @media(max-width:980px){.comps{grid-template-columns:repeat(2,1fr)}}
@@ -476,6 +483,7 @@ html.js .reveal.in{opacity:1;transform:none}
 <script src="js/config.js"></script>
 <script>window.TP_HOST_PAGE = true;</script>
 <script src="js/competitions-data.js"></script>
+<script src="js/components-data.js"></script>
 <script src="js/platform.js"></script>
 </head>
 <body>
@@ -844,6 +852,7 @@ const I18N = {
   'res.5':'أثّرت البيئة الداعمة للموهبة بصورة دالة على الطلاب والمعلمين.',
   'res.src':'نُشرت دراسة فاعلية النموذج أيضاً في مجلة Gifted and Talented International الصادرة عن المجلس العالمي للأطفال الموهوبين (2010).',
   'cc.kicker':'المسابقات والتقويم','cc.t1':'مسابقاتنا…','cc.t2':'ومواعيدها القادمة','cc.sub':'المسابقات العلمية والأكاديمية التي يشارك فيها طلابنا، مع حالة التسجيل وأقرب موعد لكل مسابقة وعدّاد تنازلي للوقت المتبقي.','cc.next':'أقرب موعد','cc.tba':'تُعلن المواعيد قريباً','cc.nearest':'الموعد القادم','cc.now':'جارٍ الآن','cc.none':'لا توجد مواعيد قادمة معلنة حالياً — تُضاف فور إعلانها.','cc.note':'المواعيد مأخوذة من المصادر الرسمية للمسابقات، ومن جدول بيانات المنصة عند تحديثه، وكلها بتوقيت الرياض.','cc.all':'كل المسابقات والتقويم الكامل',
+  'cmp.open':'اقرأ المكوّن كاملاً',
   'au.name':'د. عادل عبدالجليل بترجي','au.role':'مؤلف النموذج · مؤسس مدارس دار الذكر',
   'au.bio':'<p>يترأس الدكتور عادل عبدالجليل بترجي المجلس الاستشاري لمدارس دار الذكر الأهلية بجدة، وبهذه الصفة يشرف على جميع أعمال التطوير التربوي والتعليمي للمدارس، والتي منها الكشف عن الموهبة وتطويرها. كما يرأس مجلس التأسيس لجامعة الثريا للعلوم والتقنية.</p><p>حاصل على شهادة البكالوريوس في الرياضيات من جامعة كانساس بالولايات المتحدة، والدكتوراه في علم النفس من الجامعة الأمريكية في بريطانيا، وكانت رسالته في تصميم نموذج للكشف عن الموهبة وتطويرها.</p><p>يقدّم العديد من الدورات التدريبية وورش العمل في مجال الكشف عن الموهبة وتطويرها، والتعلم باستخدام استراتيجيات التفكير التحليلي والإبداعي، والتربية القيادية.</p><p>صمّم النموذج التام لتطوير الموهبة وطبّقه ميدانياً في مدارس دار الذكر، وأهداه «إلى أصحاب القدرات العقلية العالية، والسمات الشخصية المتميزة، والنظرات المستقبلية الطموحة».</p>',
   'cmp.kicker':'مكونات النموذج','cmp.t1':'تسعة مكوّنات…','cmp.t2':'منظومة واحدة',
@@ -912,6 +921,7 @@ const I18N = {
   'res.5':'The environment supportive of giftedness had a significant effect on students and teachers.',
   'res.src':'A study of the model’s efficacy was also published in Gifted and Talented International, journal of the World Council for Gifted and Talented Children (2010).',
   'cc.kicker':'Competitions & Calendar','cc.t1':'Our competitions…','cc.t2':'and upcoming dates','cc.sub':'The scientific and academic competitions our students take part in, with registration status, the next date for each and a live countdown.','cc.next':'Next date','cc.tba':'Dates to be announced','cc.nearest':'Next up','cc.now':'Ongoing now','cc.none':'No upcoming dates announced yet — they will be added once announced.','cc.note':'Dates come from the official competition sources and from the platform data sheet when updated; all times are Riyadh time.','cc.all':'All competitions & full calendar',
+  'cmp.open':'Read the full component',
   'au.name':'Dr. Adel A. Batterjee','au.role':'Author of the model · Founder of Dar Al-Thikr Schools',
   'au.bio':'<p>Dr. Adel Abduljalil Batterjee chairs the Advisory Board of Dar Al-Thikr Private Schools in Jeddah, and in this capacity oversees all educational and instructional development work at the schools, including the identification and development of giftedness. He also chairs the Founding Board of Al-Thuraya University for Science and Technology.</p><p>He holds a BSc in Mathematics from the University of Kansas, USA, and a PhD in Psychology from the American University in Britain; his dissertation designed a model for identifying and developing giftedness.</p><p>He delivers many training courses and workshops on identifying and developing giftedness, learning through analytical and creative thinking strategies, and leadership education.</p><p>He designed the Total Giftedness Development Model, implemented it at Dar Al-Thikr Schools, and dedicated it "to those with high mental abilities, distinguished personal traits and ambitious visions of the future".</p>',
   'cmp.kicker':'Model components','cmp.t1':'Nine components…','cmp.t2':'one system',
@@ -974,7 +984,7 @@ const CARDS = [
   {k:'kpis', href:'kpis.html', live:true, c:'#F07B0F', ic:'chart',
    ar:['المؤشرات والتقارير','لوحة مؤشرات الأداء ومقارنة الأعوام ومسار المسابقات والتقارير الدورية والسنوية.'],
    en:['KPIs & Reports','Performance indicators, year-over-year comparison, competition pipeline and periodic and annual reports.']},
-  {k:'model', href:'#components', live:true, c:'#7B4DFF', ic:'model', ar:['النموذج ومكوناته التسعة','النموذج التام لتطوير الموهبة: تعريفه، والكتاب والمؤلف، ومكوناته التسعة، ومستويات الموهبة، ومصطلحاته.'], en:['The Model & its nine components','The Total Giftedness Development Model: definition, book and author, nine components, levels and terminology.']},
+  {k:'model', href:'#components', live:true, c:'#7B4DFF', ic:'model', ar:['النموذج ومكوناته التسعة','النموذج التام لتطوير الموهبة: تعريفه، والكتاب والمؤلف، ومكوناته التسعة، ومستويات الموهبة، وصفحة تفصيلية لكل مكوّن.'], en:['The Model & its nine components','The Total Giftedness Development Model: definition, book and author, nine components, levels, and a detailed page for each component.']},
   {k:'identify', c:'#0EA5D6', ic:'search', ar:['الكشف الشامل والقياس','الأسلوب الشامل للكشف بمعاييره المتعددة، ومقياس موهبة للقدرات العقلية المتعددة، ودور ولي الأمر.'], en:['Identification','The Mawhiba Multiple Mental Abilities test, nomination criteria and the parent’s role.']},
   {k:'care', c:'#0E9F76', ic:'heart', ar:['الرعاية الخاصة والإثراء','برنامج الرعاية الخاصة والإثراء المتخصص، وفصول موهبة ومنحة دروب، والبرامج الإثرائية مع الجامعات.'], en:['Care Programs','Mawhiba classes, the Duroob grant, and enrichment programs with Mawhiba and universities.']},
   {k:'comp', href:'competitions.html', live:true, c:'#E2386F', ic:'cal', ar:['المسابقات والتقويم','كل المسابقات بملخص لكل منها، وصفحة خاصة بالشروط والتسجيل والمخطط الزمني والمصادر والتدريب والنتائج.'], en:['Competitions & Calendar','Every competition with a summary and its own page: conditions, registration, timeline, resources, training and results.']},
@@ -1064,17 +1074,24 @@ function renderOrbit(){
   // عند تغيير اللغة نحدّث الأسماء فقط حتى لا تختل حركة الدوران المتزامنة
   const pills = ring.querySelectorAll('.pill');
   if (pills.length === n) { pills.forEach((p, i) => p.textContent = TGDM[i].s[lang]); return; }
-  ring.innerHTML = TGDM.map((c, i) =>
-    `<div class="slot" style="--a:${-90 + i * 360 / n}deg"><div class="up1"><div class="up2"><span class="orb" style="--c:${c.c};--d:${(.08 * i + .1).toFixed(2)}s"><span class="ball">${ico(c.ic)}</span><span class="pill">${c.s[lang]}</span></span></div></div></div>`).join('');
+  // كل كرة رابط لصفحة مكوّنها (component.html?c=<المعرّف>)
+  const pages = window.TP_COMPONENTS || [];
+  ring.innerHTML = TGDM.map((c, i) => { const pg = pages.find(x => x.n === c.n);
+    const href = pg ? `component.html?c=${pg.id}` : '#components';
+    return `<div class="slot" style="--a:${-90 + i * 360 / n}deg"><div class="up1"><div class="up2"><a class="orb" href="${href}" aria-label="${c.ar} — ${c.en}" style="--c:${c.c};--d:${(.08 * i + .1).toFixed(2)}s"><span class="ball">${ico(c.ic)}</span><span class="pill">${c.s[lang]}</span></a></div></div></div>`; }).join('');
 }
 function renderComps(){
-  document.getElementById('comps').innerHTML = TGDM.map(c => `<article class="comp glass reveal" style="--c:${c.c}">
+  const pages = window.TP_COMPONENTS || [];
+  document.getElementById('comps').innerHTML = TGDM.map(c => { const pg = pages.find(x => x.n === c.n && x.ready);
+    const tag = pg ? 'a' : 'article';
+    return `<${tag} class="comp glass reveal${pg ? ' live' : ''}" style="--c:${c.c}"${pg ? ` href="component.html?c=${pg.id}"` : ''}>
     <div class="c-top"><span class="gorb">${ico(c.ic)}</span><span class="no">${String(c.n).padStart(2, '0')}</span></div>
     <h3>${lang === 'ar' ? c.ar : c.s.en}</h3><div class="en">${c.en}</div>
     <p>${c.d[lang]}</p>
     ${c.subs ? `<div class="subs">${c.subs[lang].map(x => `<span>${x}</span>`).join('')}</div>` : ''}
     <span class="who"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0"/></svg>${c.who[lang]}</span>
-  </article>`).join('');
+    ${pg ? `<span class="go"><span>${t('cmp.open')}</span><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></span>` : ''}
+  </${tag}>`; }).join('');
   observe(document.querySelectorAll('#comps .reveal'));
 }
 function renderCards(){
