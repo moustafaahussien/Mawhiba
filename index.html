@@ -1110,7 +1110,13 @@ function renderCards(){
 function statValues(){
   const map = {};
   if (DATA && DATA.stats && DATA.stats.rows) DATA.stats.rows.forEach(r => { map[String(r[0]).trim()] = {ar:r[1], en:r[2], v:toNum(r[3]), suf:String(r[4] || '').trim()}; });
-  const fromSijil = { gifted: SIJIL && SIJIL.pool, beneficiaries: SIJIL && SIJIL.students };
+  /* من السجل التام: الوعاء الإثرائي والمستفيدون، ومن قوائم المشاركين: عدد المشاركات وعدد المسابقات لأحدث عام (أعداد فقط) */
+  const sjc = (SIJIL && SIJIL.competitions) || {};
+  const yrs = [...new Set(Object.values(sjc).flatMap(o => Object.keys(o)))].sort();
+  const ly = yrs[yrs.length - 1];
+  const part = ly ? Object.keys(sjc).reduce((a, id) => a + ((sjc[id][ly] || [])[0] || 0), 0) : 0;
+  const nComp = ly ? Object.keys(sjc).filter(id => ((sjc[id][ly] || [])[0] || 0) > 0).length : 0;
+  const fromSijil = { gifted: SIJIL && SIJIL.pool, beneficiaries: SIJIL && SIJIL.students, participants: part || null, competitions: nComp || null };
   return STAT_KEYS.map(s => { const m = map[s.k] || {}; const alt = fromSijil[s.k] ? fromSijil[s.k] : null;
     return {...s, label:(lang === 'ar' ? (m.ar || s.ar) : (m.en || s.en)), v:(m.v != null ? m.v : alt), suf:m.suf || ''}; });
 }

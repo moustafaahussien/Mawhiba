@@ -232,6 +232,7 @@ html.js .reveal.in{opacity:1;transform:none}
 </style>
 <script>document.documentElement.classList.add('js')</script>
 <script src="js/config.js"></script>
+<script src="js/competitions-data.js"></script>
 </head>
 <body>
 <div class="aurora" aria-hidden="true"></div>
@@ -424,6 +425,7 @@ function buildModel(data){
   // تبويب «مسار المسابقات»: قد يبدأ بعمود «المعرّف» (الإصدار الأحدث) أو بدونه
   const fo = data && data.funnel && /المعر[ّ]?ف|^id$/i.test((data.funnel.headers || [])[0] || '') ? 1 : 0;
   const F = data && data.funnel && data.funnel.rows ? data.funnel.rows.map(r => ({
+    id: fo ? String(r[0] || '').trim().toLowerCase() : '',
     ar:r[fo], en:r[fo + 1] || r[fo], field:r[fo + 2], year:String(r[fo + 3] || '').trim(),
     s:[toNum(r[fo + 4]),toNum(r[fo + 5]),toNum(r[fo + 6]),toNum(r[fo + 7])] })) : [];
   F.forEach(f => { if (f.year && !years.includes(f.year)) years.push(f.year); });
@@ -433,6 +435,40 @@ function buildModel(data){
     if (kpis.some(k => k.vals[i] != null) || F.some(f => f.year === years[i] && f.s.some(v => v != null))) { y = years[i]; break; }
   }
   return { years, kpis, funnel:F, reports:R, defaultYear:y };
+}
+
+/* أعداد المشاركين من قوائم «المشاركون في المسابقات» في السجل التام (أعداد فقط، بدون أسماء).
+   تُستخدم فقط حيث تكون الخانة فارغة في جدول المنصة — الرقم المكتوب يدوياً يتقدّم دائماً. */
+function mergeSijil(M){
+  const C = SJ && SJ.competitions; if (!C) return;
+  const COMPS = window.TP_COMPETITIONS || [], FIELDS = window.TP_FIELDS || {};
+  Object.keys(C).forEach(id => Object.keys(C[id]).forEach(year => {
+    const counts = C[id][year].map(v => v || null);
+    if (!M.years.includes(year)) { M.years.push(year); M.kpis.forEach(k => k.vals.push(null)); }
+    let f = M.funnel.find(x => x.year === year && (x.id === id || (!x.id && COMPS.some(c => c.id === id && (x.ar === c.name.ar || x.ar === c.short.ar)))));
+    if (!f) {
+      const c = COMPS.find(x => x.id === id) || { name:{ ar:id, en:id }, field:'' };
+      f = { id, ar:c.name.ar, en:c.name.en, field:FIELDS[c.field] ? FIELDS[c.field].ar : '', year, s:[null, null, null, null] };
+      M.funnel.push(f);
+    }
+    f.s = f.s.map((v, i) => v != null ? v : counts[i]);
+  }));
+  // مؤشر «عدد المشاركين في المسابقات» = مجموع المسجلين في كل المسابقات لذلك العام (إن كانت خانته فارغة)
+  const k = M.kpis.find(x => x.key === 'participants');
+  if (k) M.years.forEach((y, i) => {
+    if (k.vals[i] != null) return;
+    const sum = Object.keys(C).reduce((a, id) => a + ((C[id][y] || [])[0] || 0), 0);
+    if (sum) k.vals[i] = sum;
+  });
+}
+let RAW = null, SJ = null, YEAR_PICKED = false;
+function rebuild(){
+  MODEL = buildModel(RAW); mergeSijil(MODEL);
+  let y = MODEL.defaultYear;
+  for (let i = MODEL.years.length - 1; i >= 0; i--) {
+    if (MODEL.kpis.some(k => k.vals[i] != null) || MODEL.funnel.some(f => f.year === MODEL.years[i] && f.s.some(v => v != null))) { y = MODEL.years[i]; break; }
+  }
+  if (!YEAR_PICKED || !MODEL.years.includes(YEAR)) YEAR = y;
 }
 
 function statusOf(k, yi){
@@ -607,7 +643,7 @@ document.getElementById('langBtn').onclick = () => { lang = lang === 'ar' ? 'en'
 document.getElementById('printBtn').onclick = () => { document.querySelectorAll('.reveal').forEach(el => el.classList.add('in')); window.print(); };
 addEventListener('beforeprint', () => document.querySelectorAll('.reveal').forEach(el => el.classList.add('in')));
 document.addEventListener('click', e => {
-  const y = e.target.closest('[data-year]'); if (y) { YEAR = y.dataset.year; render(); return; }
+  const y = e.target.closest('[data-year]'); if (y) { YEAR = y.dataset.year; YEAR_PICKED = true; render(); return; }
   const a = e.target.closest('[data-axis]'); if (a) { AXIS = a.dataset.axis; render(); return; }
   const v = e.target.closest('[data-view]'); if (v) {
     VIEW = v.dataset.view;
@@ -627,8 +663,18 @@ document.addEventListener('focusin', e => { const el = e.target.closest('[data-t
 document.addEventListener('focusout', () => tip.classList.remove('on'));
 
 applyLang();
-MODEL = buildModel(null); YEAR = MODEL.defaultYear; render();
-loadData((d, state) => { STATE = state; if (d) { MODEL = buildModel(d); YEAR = MODEL.defaultYear; } render(); });
+rebuild(); render();
+loadData((d, state) => { STATE = state; if (d) RAW = d; rebuild(); render(); });
+/* أعداد المشاركين من «السجل التام» */
+(function loadSijilCounts(){
+  const url = (window.TP_CONFIG && window.TP_CONFIG.SIJIL_SCRIPT_URL) || '';
+  if (!url) return;
+  const name = '__tp_sjk_' + Date.now(), sc = document.createElement('script');
+  window[name] = d => { try { delete window[name]; } catch (e) {} sc.remove(); if (d && d.ok && d.competitions) { SJ = d; rebuild(); render(); } };
+  sc.onerror = () => sc.remove();
+  sc.src = url + (url.includes('?') ? '&' : '?') + 'mode=public&callback=' + name;
+  document.body.appendChild(sc);
+})();
 </script>
 </body>
 </html>
