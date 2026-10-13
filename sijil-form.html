@@ -24,8 +24,6 @@
 <script src="js/sijil/thinking.js"></script>
 <script src="js/sijil/common.js"></script>
 <script>
-const GRADES = ['الأول الابتدائي','الثاني الابتدائي','الثالث الابتدائي','الرابع الابتدائي','الخامس الابتدائي','السادس الابتدائي',
-  'الأول المتوسط','الثاني المتوسط','الثالث المتوسط','الأول الثانوي','الثاني الثانوي','الثالث الثانوي'];
 const form = getForm(new URLSearchParams(location.search).get('f'));
 $('#hdr').innerHTML = header('home');
 $('#demo').innerHTML = demoBanner() + (needCode() ? '<div class="demo">لم تُدخل رمز المعلمين بعد. <a href="sijil.html"><b>ادخل من هنا</b></a> ثم ارجع لهذا النموذج.</div>' : ''); $('#ftr').outerHTML = footerHtml();
@@ -52,7 +50,7 @@ function render() {
     <div class="grid4">
       <label class="field">رقم الطالب<input id="sid" inputmode="numeric" placeholder="اختياري"></label>
       <label class="field">اسم الطالب *<input id="sname" list="studentsList" placeholder="الاسم الرباعي" autocomplete="off"><datalist id="studentsList"></datalist></label>
-      <label class="field">الصف *<select id="grade"><option value="">— اختر —</option>${GRADES.map(g => `<option ${g === last.grade ? 'selected' : ''}>${g}</option>`).join('')}</select></label>
+      <label class="field">الصف *<select id="grade"><option value="">— اختر —</option>${gradeOptions(last.grade)}</select></label>
       <label class="field">الفصل<input id="cls" value="${esc(last.cls || '')}" placeholder="مثال: أ"></label>
     </div>
     <div class="instr">${esc(form.instructions)}

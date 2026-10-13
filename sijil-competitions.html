@@ -87,14 +87,8 @@ $('#demo').innerHTML = demoBanner(); $('#ftr').outerHTML = footerHtml();
 const COMP_NAMES = Object.fromEntries((window.TP_COMPETITIONS || []).map(c => [c.id, c.short ? c.short.ar : c.name.ar]));
 const STAGES = ['مسجّل', 'متأهل', 'نهائي', 'فائز'];
 const stageIx = s => Math.max(0, STAGES.indexOf(String(s || '').trim()));
-/* ترتيب الصفوف: الابتدائي ثم المتوسط ثم الثانوي، والأول قبل الثاني */
-const ORD = ['الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس', 'السادس'];
-function gradeRank(g) {
-  g = String(g || '');
-  const lvl = /ثانوي/.test(g) ? 2 : /متوسط/.test(g) ? 1 : 0;
-  const i = ORD.findIndex(o => g.includes(o));
-  return lvl * 10 + (i < 0 ? 9 : i);
-}
+/* ترتيب الصفوف من القائمة الموحدة في js/sijil/config.js */
+const gradeRank = g => gradeOrder(g);
 const collator = new Intl.Collator('ar');
 
 let ROWS = [], COMP = '', F = { year: '', stage: '', level: '', school: '', grade: '', q: '' };
@@ -152,7 +146,7 @@ function render() {
   const years = [...new Set(ROWS.filter(r => r.comp === COMP).map(r => r.year).filter(Boolean))].sort().reverse();
   const schools = [...new Set(inComp.map(r => r.school))].sort(collator.compare);
   const levels = [...new Set(inComp.map(r => r.level).filter(Boolean))].sort((a, b) => gradeRank(a) - gradeRank(b));
-  const levelRank = l => /ثانوي/.test(l) ? 2 : /متوسط/.test(l) ? 1 : 0;
+  const levelRank = l => /grade|american|أمريكي/i.test(l) ? 3 : /ثانوي/.test(l) ? 2 : /متوسط/.test(l) ? 1 : 0;
   levels.sort((a, b) => levelRank(a) - levelRank(b));
   /* ملخص قابل للضغط: حسب المرحلة الدراسية والمدرسة والصف (يُحسب على القائمة الظاهرة) */
   const countBy = (arr, k) => arr.reduce((o, r) => (o[r[k]] = (o[r[k]] || 0) + 1, o), {});

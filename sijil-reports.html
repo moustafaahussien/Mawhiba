@@ -86,7 +86,7 @@ function fillFilters() {
   const opt = (sel, vals, label) => { const cur = sel.value; sel.innerHTML = `<option value="">${label}</option>` + vals.map(v => `<option ${v === cur ? 'selected' : ''}>${esc(v)}</option>`).join(''); };
   opt($('#fYear'), uniq(ALL.map(r => r.year)), 'كل الأعوام');
   opt($('#fTeacher'), uniq(ALL.map(r => r.teacher)), 'كل المعلمين');
-  opt($('#fGrade'), uniq(ALL.map(r => r.grade)), 'كل الصفوف');
+  opt($('#fGrade'), sortGrades([...new Set(ALL.map(r => r.grade).filter(Boolean))]), 'كل الصفوف');
   opt($('#fCls'), uniq(ALL.map(r => r.classroom)), 'كل الفصول');
 }
 ['#fYear', '#fTeacher', '#fGrade', '#fCls'].forEach(s => $(s).onchange = draw);
