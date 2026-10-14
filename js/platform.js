@@ -19,10 +19,10 @@
   TP.t = k => (TP.dict[lang] && TP.dict[lang][k] != null) ? TP.dict[lang][k] : ((TP.dict.ar && TP.dict.ar[k]) || k);
   TP.addDict = d => { ['ar', 'en'].forEach(l => { TP.dict[l] = Object.assign(TP.dict[l] || {}, d[l] || {}); }); };
   TP.addDict({
-    ar: { brand:'منصة الموهبة', school:'مدارس دار الذكر', 'nav.home':'الرئيسية', 'nav.comps':'المسابقات', 'nav.kpis':'المؤشرات والتقارير',
+    ar: { brand:'منصة الموهبة', school:'مدارس دار الذكر', 'alt.logo':'شعار مدارس دار الذكر', 'aria.menu':'القائمة', 'aria.lang':'اللغة', 'nav.home':'الرئيسية', 'nav.model':'مكونات النموذج', 'nav.comps':'المسابقات', 'nav.kpis':'المؤشرات والتقارير',
           'footer.sijil':'للمعلمين: السجل التام', 'footer.credit':'إعداد وإشراف: مصطفى أحمد حسين — المنسق التنفيذي لبرامج الموهبة والمسابقات الأكاديمية',
           'st.open':'التسجيل مفتوح', 'st.soon':'يفتح قريباً', 'st.closed':'التسجيل مغلق' },
-    en: { brand:'Talent Platform', school:'Dar Al-Thikr Schools', 'nav.home':'Home', 'nav.comps':'Competitions', 'nav.kpis':'KPIs & Reports',
+    en: { brand:'Talent Platform', school:'Dar Al-Thikr Schools', 'alt.logo':'Dar Al-Thikr Schools logo', 'aria.menu':'Menu', 'aria.lang':'Language', 'nav.home':'Home', 'nav.model':'Model components', 'nav.comps':'Competitions', 'nav.kpis':'KPIs & Reports',
           'footer.sijil':'For teachers: Talent Record', 'footer.credit':'Prepared and supervised by Moustafa Ahmed Hussein — Executive Coordinator of Talent Programs and Academic Competitions',
           'st.open':'Registration open', 'st.soon':'Opening soon', 'st.closed':'Registration closed' }
   });
@@ -31,6 +31,8 @@
     h.lang = lang; h.dir = lang === 'ar' ? 'rtl' : 'ltr';
     document.querySelectorAll('[data-i18n]').forEach(el => { const v = TP.t(el.dataset.i18n); if (typeof v === 'string') el.textContent = v; });
     document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = TP.t(el.dataset.i18nPh); });
+    document.querySelectorAll('[data-i18n-alt]').forEach(el => { el.alt = TP.t(el.dataset.i18nAlt); });
+    document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', TP.t(el.dataset.i18nAria)); });
     handlers.forEach(fn => fn(lang));
   };
   TP.toggleLang = function () {

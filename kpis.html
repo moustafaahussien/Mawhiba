@@ -242,7 +242,7 @@ html.js .reveal.in{opacity:1;transform:none}
 
 <header class="nav">
   <a href="index.html" class="brand">
-    <img class="brand-logo" src="assets/school-emblem.png" alt="شعار مدارس دار الذكر" width="48" height="48">
+    <img class="brand-logo" src="assets/school-emblem.png" alt="شعار مدارس دار الذكر" id="logoImg" width="48" height="48">
     <span><b data-i18n="brand">منصة الموهبة</b><small data-i18n="school">مدارس دار الذكر</small></span>
   </a>
   <div class="tools">
@@ -637,6 +637,7 @@ function applyLang(){
   document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   document.title = t('title') + ' – ' + t('brand');
   document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
+  const lg = document.getElementById('logoImg'); if (lg) lg.alt = lang === 'ar' ? 'شعار مدارس دار الذكر' : 'Dar Al-Thikr Schools logo';
   if (MODEL) render();
 }
 document.getElementById('langBtn').onclick = () => { lang = lang === 'ar' ? 'en' : 'ar'; try { localStorage.setItem('tp-lang', lang); } catch(e){} applyLang(); };

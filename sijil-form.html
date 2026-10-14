@@ -23,6 +23,7 @@
 <script src="js/sijil/forms.js"></script>
 <script src="js/sijil/thinking.js"></script>
 <script src="js/sijil/common.js"></script>
+<script src="js/sijil/i18n.js"></script>
 <script>
 const form = getForm(new URLSearchParams(location.search).get('f'));
 $('#hdr').innerHTML = header('home');
@@ -45,7 +46,7 @@ function render() {
     <div class="grid4">
       <label class="field">اسم المعلم *<input id="teacher" value="${esc(LS.get('tf_teacher', ''))}" placeholder="الاسم الأول واسم العائلة"></label>
       <label class="field">العام الدراسي<select id="year">${yearOptions().map(y => `<option ${y === (last.year || hijriYearNow()) ? 'selected' : ''}>${y}</option>`).join('')}</select></label>
-      <label class="field">التاريخ<input id="date" value="${esc(todayStr())}" readonly></label>
+      <label class="field">التاريخ<input id="date" class="tv" value="${esc(todayStr())}" readonly></label>
     </div>
     <div class="grid4">
       <label class="field">رقم الطالب<input id="sid" inputmode="numeric" placeholder="اختياري"></label>
@@ -153,7 +154,7 @@ async function submit() {
   const sc = scoreForm(form, a);
   const rec = {
     key: [form.id, year, teacher, sid || sname].join('|'),
-    ts: new Date().toISOString(), date: $('#date').value, year, teacher,
+    ts: new Date().toISOString(), date: todayStr(), year, teacher,
     formId: form.id, formCode: form.code, formTitle: form.title,
     studentId: sid, studentName: sname, grade, classroom: cls,
     answers: a, parts: sc.parts, summary: sc.summary, notes: $('#notes').value.trim()

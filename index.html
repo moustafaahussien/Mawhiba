@@ -493,7 +493,7 @@ html.js .reveal.in{opacity:1;transform:none}
 <!-- الشريط العلوي -->
 <header class="nav">
   <a href="#top" class="brand">
-    <img class="brand-logo" src="assets/school-emblem.png" alt="شعار مدارس دار الذكر" width="48" height="48">
+    <img class="brand-logo" src="assets/school-emblem.png" alt="شعار مدارس دار الذكر" data-i18n-alt="alt.logo" width="48" height="48">
     <span><b data-i18n="brand">منصة الموهبة</b><small data-i18n="school">مدارس دار الذكر</small></span>
   </a>
   <div class="nav-right">
@@ -506,7 +506,7 @@ html.js .reveal.in{opacity:1;transform:none}
       <a href="kpis.html" data-i18n="nav.kpis">المؤشرات والتقارير</a>
     </nav>
     <button class="lang" id="langBtn" type="button" aria-label="Language"><span data-l="ar">ع</span><span data-l="en">EN</span></button>
-    <button class="burger" id="burger" type="button" aria-label="القائمة"><span></span><span></span><span></span></button>
+    <button class="burger" id="burger" type="button" aria-label="القائمة" data-i18n-aria="aria.menu"><span></span><span></span><span></span></button>
   </div>
 </header>
 
@@ -635,7 +635,7 @@ html.js .reveal.in{opacity:1;transform:none}
     </div>
     <div class="book-grid">
       <div class="cover-wrap reveal">
-        <span class="cover"><img src="assets/book/tgdm-cover.jpg" alt="غلاف كتاب النموذج التام لتطوير الموهبة" loading="lazy"></span>
+        <span class="cover"><img src="assets/book/tgdm-cover.jpg" alt="غلاف كتاب النموذج التام لتطوير الموهبة" data-i18n-alt="alt.cover" loading="lazy"></span>
         <span class="spine-glow"></span>
         <div class="book-meta">
           <div class="full"><span data-i18n="bm.author.k">المؤلف</span><b data-i18n="bm.author">عادل بن عبدالجليل بن إبراهيم بترجي</b></div>
@@ -853,6 +853,8 @@ const I18N = {
   'res.src':'نُشرت دراسة فاعلية النموذج أيضاً في مجلة Gifted and Talented International الصادرة عن المجلس العالمي للأطفال الموهوبين (2010).',
   'cc.kicker':'المسابقات والتقويم','cc.t1':'مسابقاتنا…','cc.t2':'ومواعيدها القادمة','cc.sub':'المسابقات العلمية والأكاديمية التي يشارك فيها طلابنا، مع حالة التسجيل وأقرب موعد لكل مسابقة وعدّاد تنازلي للوقت المتبقي.','cc.next':'أقرب موعد','cc.tba':'تُعلن المواعيد قريباً','cc.nearest':'الموعد القادم','cc.now':'جارٍ الآن','cc.none':'لا توجد مواعيد قادمة معلنة حالياً — تُضاف فور إعلانها.','cc.note':'المواعيد مأخوذة من المصادر الرسمية للمسابقات، ومن جدول بيانات المنصة عند تحديثه، وكلها بتوقيت الرياض.','cc.all':'كل المسابقات والتقويم الكامل',
   'cmp.open':'اقرأ المكوّن كاملاً',
+  'c2.s':'الإثراء العام','c3.s':'تنمية المهارات','c4.s':'الأنشطة الموجهة','c5.s':'الإثراء المتخصص','c6.s':'المشاريع الهادفة','c7.s':'التسريع الأكاديمي','c8.s':'الرعاية الخاصة',
+  'alt.logo':'شعار مدارس دار الذكر','alt.cover':'غلاف كتاب النموذج التام لتطوير الموهبة','aria.menu':'القائمة',
   'au.name':'د. عادل عبدالجليل بترجي','au.role':'مؤلف النموذج · مؤسس مدارس دار الذكر',
   'au.bio':'<p>صمّم النموذج التام لتطوير الموهبة وطبّقه ميدانياً في مدارس دار الذكر، وأهداه «إلى أصحاب القدرات العقلية العالية، والسمات الشخصية المتميزة، والنظرات المستقبلية الطموحة».</p>',
   'cmp.kicker':'مكونات النموذج','cmp.t1':'تسعة مكوّنات…','cmp.t2':'منظومة واحدة',
@@ -922,6 +924,8 @@ const I18N = {
   'res.src':'A study of the model’s efficacy was also published in Gifted and Talented International, journal of the World Council for Gifted and Talented Children (2010).',
   'cc.kicker':'Competitions & Calendar','cc.t1':'Our competitions…','cc.t2':'and upcoming dates','cc.sub':'The scientific and academic competitions our students take part in, with registration status, the next date for each and a live countdown.','cc.next':'Next date','cc.tba':'Dates to be announced','cc.nearest':'Next up','cc.now':'Ongoing now','cc.none':'No upcoming dates announced yet — they will be added once announced.','cc.note':'Dates come from the official competition sources and from the platform data sheet when updated; all times are Riyadh time.','cc.all':'All competitions & full calendar',
   'cmp.open':'Read the full component',
+  'c2.s':'General Enrichment','c3.s':'Skills Development','c4.s':'Enrichment Clusters','c5.s':'Specialty Enrichment','c6.s':'Targeted Projects','c7.s':'Academic Acceleration','c8.s':'Mentorship',
+  'alt.logo':'Dar Al-Thikr Schools logo','alt.cover':'Cover of The Total Giftedness Development Model','aria.menu':'Menu',
   'au.name':'Dr. Adel A. Batterjee','au.role':'Author of the model · Founder of Dar Al-Thikr Schools',
   'au.bio':'<p>He designed the Total Giftedness Development Model, implemented it at Dar Al-Thikr Schools, and dedicated it "to those with high mental abilities, distinguished personal traits and ambitious visions of the future".</p>',
   'cmp.kicker':'Model components','cmp.t1':'Nine components…','cmp.t2':'one system',
@@ -1078,7 +1082,7 @@ function renderOrbit(){
   const pages = window.TP_COMPONENTS || [];
   ring.innerHTML = TGDM.map((c, i) => { const pg = pages.find(x => x.n === c.n);
     const href = pg ? `component.html?c=${pg.id}` : '#components';
-    return `<div class="slot" style="--a:${-90 + i * 360 / n}deg"><div class="up1"><div class="up2"><a class="orb" href="${href}" aria-label="${c.ar} — ${c.en}" style="--c:${c.c};--d:${(.08 * i + .1).toFixed(2)}s"><span class="ball">${ico(c.ic)}</span><span class="pill">${c.s[lang]}</span></a></div></div></div>`; }).join('');
+    return `<div class="slot" style="--a:${-90 + i * 360 / n}deg"><div class="up1"><div class="up2"><a class="orb" href="${href}" aria-label="${lang === 'en' ? c.en : c.ar}" style="--c:${c.c};--d:${(.08 * i + .1).toFixed(2)}s"><span class="ball">${ico(c.ic)}</span><span class="pill">${c.s[lang]}</span></a></div></div></div>`; }).join('');
 }
 function renderComps(){
   const pages = window.TP_COMPONENTS || [];
@@ -1186,6 +1190,8 @@ function applyLang(){
   document.title = t('brand') + ' – ' + t('school');
   document.querySelectorAll('[data-i18n]').forEach(el => { const v = t(el.dataset.i18n); if (typeof v === 'string' && v) el.textContent = v; });
   document.querySelectorAll('[data-i18n-html]').forEach(el => { const v = t(el.dataset.i18nHtml); if (v) el.innerHTML = v; });
+  document.querySelectorAll('[data-i18n-alt]').forEach(el => { const v = t(el.dataset.i18nAlt); if (v) el.alt = v; });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => { const v = t(el.dataset.i18nAria); if (v) el.setAttribute('aria-label', v); });
   renderOrbit(); renderComps();
   renderBand(); renderCards(); renderStats(false); renderCompCal();
 }

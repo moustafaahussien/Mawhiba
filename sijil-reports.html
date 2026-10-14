@@ -53,6 +53,7 @@
 <script src="js/sijil/thinking.js"></script>
 <script src="js/sijil/records.js"></script>
 <script src="js/sijil/common.js"></script>
+<script src="js/sijil/i18n.js"></script>
 <script>
 $('#hdr').innerHTML = header('reports');
 $('#demo').innerHTML = demoBanner(); $('#ftr').outerHTML = footerHtml();
@@ -147,7 +148,7 @@ function overview(R) {
   h += `<section class="panel glass"><h3>ما عبّأه كل معلم</h3><div class="sub">عدد النماذج لكل معلم حسب نوع النموذج</div><div class="tbl"><table>
     <tr><th>المعلم</th>${GROUP_COLS.map(g => `<th>${g[1]}</th>`).join('')}<th>المجموع</th><th>آخر تعبئة</th></tr>
     ${teachers.map(t => { const tr = R.filter(r => r.teacher === t); const last = tr.map(r => r.ts).sort().pop();
-      return `<tr><td><a href="#" onclick="SEL.teacher='${esc(t)}';goTab('teacher');return false"><b>${esc(t)}</b></a></td>${GROUP_COLS.map(g => `<td>${tr.filter(r => (defOf(r.formId) || {}).group === g[0]).length || '–'}</td>`).join('')}<td><b>${tr.length}</b></td><td>${last ? new Date(last).toLocaleDateString('ar-SA-u-nu-latn') : ''}</td></tr>`; }).join('')}
+      return `<tr><td><a href="#" onclick="SEL.teacher='${esc(t)}';goTab('teacher');return false"><b class="nt">${esc(t)}</b></a></td>${GROUP_COLS.map(g => `<td>${tr.filter(r => (defOf(r.formId) || {}).group === g[0]).length || '–'}</td>`).join('')}<td><b>${tr.length}</b></td><td>${last ? new Date(last).toLocaleDateString('ar-SA-u-nu-latn') : ''}</td></tr>`; }).join('')}
   </table></div></section>`;
 
   // أسلوب التفكير الغالب
@@ -243,7 +244,7 @@ function formView(R) {
 
   // جدول الطلاب
   h += `<section class="panel glass"><h3>نتائج الطلاب</h3><div class="tbl"><table><tr><th>الطالب</th><th>الصف / الفصل</th><th>المعلم</th><th>النتيجة</th></tr>
-    ${fr.sort((a, b) => a.studentName.localeCompare(b.studentName, 'ar')).map(r => `<tr><td><a href="#" onclick="SEL.student='${esc(sKey(r))}';goTab('student');return false"><b>${esc(r.studentName)}</b></a></td>
+    ${fr.sort((a, b) => a.studentName.localeCompare(b.studentName, 'ar')).map(r => `<tr><td><a href="#" onclick="SEL.student='${esc(sKey(r))}';goTab('student');return false"><b class="nt">${esc(r.studentName)}</b></a></td>
       <td>${esc(r.grade)} ${esc(r.classroom || '')}</td><td>${esc(r.teacher)}</td><td class="note">${esc(r.summary)}</td></tr>`).join('')}</table></div></section>`;
   $('#view').innerHTML = h; bindPick();
 }
@@ -259,7 +260,7 @@ function studentView(R) {
   const SR = R.filter(r => sKey(r) === SEL.student), st = studs.find(s => s.k === SEL.student);
   const latest = id => SR.filter(r => r.formId === id).sort((a, b) => a.ts.localeCompare(b.ts)).pop();
 
-  h += `<section class="panel glass"><span class="kicker">ملف الطالب</span><h3 style="font-size:1.4rem">${esc(st.name)}</h3>
+  h += `<section class="panel glass"><span class="kicker">ملف الطالب</span><h3 class="nt" style="font-size:1.4rem">${esc(st.name)}</h3>
     <div class="sub">${esc(st.grade)} ${esc(st.cls || '')}${SR[0].studentId ? ' · رقم الطالب ' + esc(SR[0].studentId) : ''} · ${SR.length} نموذجاً · عبّأها: ${uniq(SR.map(r => r.teacher)).map(esc).join('، ')}</div></section>`;
 
   const notes = [];
@@ -347,7 +348,7 @@ function teacherView(R) {
     <div class="tile glass"><b>${uniq(TR.map(sKey)).length}</b><span>طالباً</span></div>
     <div class="tile glass"><b>${uniq(TR.map(r => r.formId)).length}</b><span>نوع نموذج</span></div></div>`;
   h += `<section class="panel glass"><h3>نماذج ${esc(SEL.teacher)}</h3>${TR.length ? `<div class="tbl"><table><tr><th>التاريخ</th><th>النموذج</th><th>الطالب</th><th>الصف</th><th>النتيجة</th></tr>
-    ${TR.map(r => `<tr><td>${esc(r.date)}</td><td>${esc(defOf(r.formId) ? defOf(r.formId).short : r.formTitle)}</td><td>${esc(r.studentName)}</td><td>${esc(r.grade)} ${esc(r.classroom || '')}</td><td class="note">${esc(r.summary)}</td></tr>`).join('')}</table></div>` : '<div class="empty">لا توجد نماذج ضمن هذا التصفية.</div>'}</section>`;
+    ${TR.map(r => `<tr><td>${esc(r.date)}</td><td>${esc(defOf(r.formId) ? defOf(r.formId).short : r.formTitle)}</td><td class="nt">${esc(r.studentName)}</td><td>${esc(r.grade)} ${esc(r.classroom || '')}</td><td class="note">${esc(r.summary)}</td></tr>`).join('')}</table></div>` : '<div class="empty">لا توجد نماذج ضمن هذا التصفية.</div>'}</section>`;
   $('#view').innerHTML = h;
   $('#pickTeacher').onchange = e => { SEL.teacher = e.target.value; draw(); };
 }

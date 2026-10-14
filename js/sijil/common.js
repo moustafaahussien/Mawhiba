@@ -159,7 +159,8 @@ function header(active) {
         <a href="sijil-reports.html"${cur('reports')}>تقارير السجل</a>
         <a href="sijil-competitions.html"${cur('comps')}>المشاركون في المسابقات</a>
       </nav>
-      ${teacher ? `<span class="who" title="المستخدم الحالي">${esc(teacher)}</span>` : ''}
+      ${teacher ? `<span class="who nt" title="المستخدم الحالي">${esc(teacher)}</span>` : ''}
+      <button class="lang" id="sjLang" type="button" aria-label="Language / اللغة"><span data-l="ar">ع</span><span data-l="en">EN</span></button>
       <button class="burger" id="burger" type="button" aria-label="القائمة"><span></span><span></span><span></span></button>
     </div>
   </header>`;

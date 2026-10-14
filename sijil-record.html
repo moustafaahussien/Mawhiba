@@ -24,6 +24,7 @@
 <script src="js/sijil/thinking.js"></script>
 <script src="js/sijil/records.js"></script>
 <script src="js/sijil/common.js"></script>
+<script src="js/sijil/i18n.js"></script>
 <script>
 const Q = new URLSearchParams(location.search);
 const def = getRecord(Q.get('f'));
@@ -87,7 +88,7 @@ function render() {
     <div class="grid4">
       <label class="field">${esc(def.who)} *<input id="teacher" value="${esc(LS.get('tf_teacher', ''))}" placeholder="الاسم الأول واسم العائلة"></label>
       <label class="field">العام الدراسي<select id="year">${yearOptions().map(y => `<option ${y === (last.year || hijriYearNow()) ? 'selected' : ''}>${y}</option>`).join('')}</select></label>
-      <label class="field">التاريخ<input id="date" value="${esc(todayStr())}" readonly></label>
+      <label class="field">التاريخ<input id="date" class="tv" value="${esc(todayStr())}" readonly></label>
     </div>
     <div class="grid4">
       <label class="field">رقم الطالب<input id="sid" inputmode="numeric" placeholder="اختياري"></label>
@@ -277,7 +278,7 @@ async function submit() {
   LS.set('tf_last', { year, grade, cls });
   const d = collect(), sm = summarizeRecord(def, d);
   const rec = {
-    key: [def.id, year, sid || sname].join('|'), ts: new Date().toISOString(), date: $('#date').value, year, teacher,
+    key: [def.id, year, sid || sname].join('|'), ts: new Date().toISOString(), date: todayStr(), year, teacher,
     formId: def.id, formCode: def.code, formTitle: def.title, studentId: sid, studentName: sname, grade, classroom: cls,
     answers: d, parts: sm.parts, summary: sm.summary, notes: d.notes || '', flat: flatOf(d)
   };
