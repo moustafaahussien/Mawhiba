@@ -301,7 +301,10 @@ TP.addDict({
        'u.next':'القادم', 'u.cur':'يُقدَّم الآن', 'u.title':'الوحدة / الفعالية', 'u.branch':'الفرع / المجال', 'u.target':'الفئة', 'u.mean':'الوسيلة', 'u.date':'الموعد', 'u.sup':'المشرف', 'u.st':'الحالة',
        'u.done':'نُفّذت', 'u.up':'قادمة', 'u.tba':'يُحدَّد لاحقاً',
        'd.units':'وحدات وفعاليات هذا العام', 'd.branches':'فروع محتوى مغطّاة', 'd.means':'وسائل تقديم مستخدمة', 'd.done':'نُفّذ منها', of:'من',
-       'u.none':'تظهر هنا وحدات هذا المكوّن وفعالياته لهذا العام ومواعيدها تلقائياً فور إدخالها في تبويب «وحدات المكونات» بجدول بيانات المنصة.',
+       'care.staff':'إدارة البرنامج (للمعلمين)', 'care.count':'إجمالي الحضور', 'u.postponed':'مؤجلة',
+       'care.students':'مشاركاً نشطاً', 'care.mentors':'من الفريق المنفّذ', 'care.done':'جلسات منفذة', 'care.att':'نسبة الحضور', 'care.date':'الموعد', 'care.title':'الجلسة', 'care.field':'المجال',
+       'care.mentor':'الراعي', 'care.place':'المكان', 'care.n':'عدد الطلاب', 'care.year':'العام الدراسي', 'care.priv':'لا تُعرض أسماء المشاركين في هذه الصفحة.',
+       'u.none':'تظهر هنا وحدات هذا المكوّن وجلساته لهذا العام ومواعيدها وأماكنها تلقائياً فور إدخالها من صفحة «إدارة البرامج» للمعلمين، أو في تبويب «وحدات المكونات» بجدول بيانات المنصة.',
        'res.school':'مصادر المكوّن في المدرسة', 'res.loading':'جارٍ تحميل الملفات…', 'res.none':'تظهر هنا ملفات المكوّن تلقائياً عند ربط مجلد المصادر في تبويب «المكونات».',
        'res.err':'تعذر الوصول إلى مجلد المصادر — تأكد من مشاركته «أي شخص لديه الرابط».', 'res.empty':'المجلد فارغ حالياً.', 'res.general':'ملفات عامة', updated:'آخر تحديث',
        pre:'الفصل الأول', post:'الفصل الثاني', 'sig.y':'دالّ إحصائياً', 'sig.n':'غير دالّ',
@@ -317,7 +320,10 @@ TP.addDict({
        'u.next':'Next', 'u.cur':'Running now', 'u.title':'Unit / activity', 'u.branch':'Branch / field', 'u.target':'Group', 'u.mean':'Medium', 'u.date':'Date', 'u.sup':'Supervisor', 'u.st':'Status',
        'u.done':'Delivered', 'u.up':'Upcoming', 'u.tba':'TBA',
        'd.units':'Units & activities this year', 'd.branches':'Content branches covered', 'd.means':'Delivery media used', 'd.done':'Delivered so far', of:'of',
-       'u.none':'This component’s units and activities for the year, and their dates, appear here once entered in the "Component units" tab of the platform data sheet.',
+       'care.staff':'Manage the program (teachers)', 'care.count':'Total attendance', 'u.postponed':'Postponed',
+       'care.students':'active participants', 'care.mentors':'program staff', 'care.done':'sessions held', 'care.att':'Attendance rate', 'care.date':'When', 'care.title':'Session', 'care.field':'Field',
+       'care.mentor':'Mentor', 'care.place':'Place', 'care.n':'Students', 'care.year':'School year', 'care.priv':'Participant names are not shown on this page.',
+       'u.none':'This component’s units and sessions for the year, with dates and places, appear here once entered on the teachers’ “Program management” page or in the "Component units" tab of the platform data sheet.',
        'res.school':'Component resources at school', 'res.loading':'Loading files…', 'res.none':'Component files appear here once a resources folder is linked in the "Components" tab.',
        'res.err':'Could not access the resources folder — make sure it is shared "Anyone with the link".', 'res.empty':'The folder is empty for now.', 'res.general':'General files', updated:'Updated',
        pre:'Term 1', post:'Term 2', 'sig.y':'Significant', 'sig.n':'Not significant',
@@ -329,7 +335,7 @@ TP.addDict({
 const COMPS = window.TP_COMPONENTS;
 const id = (new URLSearchParams(location.search).get('c') || '').toLowerCase();
 const C = COMPS.find(c => c.id === id);
-let DATA = null, FOLDER = { state: 'none', data: null }, folderReq = '';
+let DATA = null, FOLDER = { state: 'none', data: null }, folderReq = '', PUB = null;
 
 const L = o => (o && (o[TP.lang()] || o.ar)) || [];
 const compLink = c => `component.html?c=${c.id}`;
@@ -467,28 +473,49 @@ function render(){
   if (st.folder && folderReq !== st.folder) loadFolder(st.folder);
 }
 
+/* قسم «هذا العام»: يجمع وحدات تبويب «وحدات المكونات» في جدول بيانات المنصة،
+   وجلسات البرنامج من صفحة «إدارة البرامج» (سجل المنصة الخاص — أعداد وجلسات بدون أسماء المشاركين). */
+function progData(){
+  const pp = PUB && PUB[C.id]; if (!pp) return null;
+  const yr = Object.keys(pp.years || {}).sort().pop();
+  return yr ? { yr, Y: pp.years[yr], sessions: (pp.sessions || []).filter(x => x.year === yr) } : null;
+}
 function yearHtml(){
-  const U = units();
-  if (!U.length) return `<div class="empty">${TP.icon('cal')}${TP.t('u.none')}</div>`;
+  const PD = progData();
+  const fromSheet = units().map(u => Object.assign(u, { place: '', status: '' }));
+  const fromProg = PD ? PD.sessions.map(x => ({ ar: x.title, en: x.title, branch: x.field || '', target: x.target || '', mean: x.means || '', sup: x.lead || '', place: x.place || '',
+    status: x.status || '', note: '', d: TP.parseDate(x.date, x.from), e: x.to ? TP.parseDate(x.date, x.to) : null })) : [];
+  const U = [...fromSheet, ...fromProg].sort((a, b) => (a.d ? +a.d : 9e15) - (b.d ? +b.d : 9e15));
+  const staff = `<p style="margin-top:16px"><a class="btn ghost" href="sijil-programs.html?p=${C.id}">${TP.icon('users')}<span>${TP.t('care.staff')}</span></a></p>`;
+  if (!U.length && !PD) return `<div class="empty">${TP.icon('cal')}${TP.t('u.none')}</div>${C.id === 'record' ? '' : staff}`;
   const now = Date.now();
-  const nx = TP.nextDate(U.filter(u => u.d));
+  const isPast = u => u.status === 'منفذة' || (u.d && TP.phase(u, now) === 'past');
+  const nx = TP.nextDate(U.filter(u => u.d && u.status !== 'منفذة'));
   const nb = new Set(U.map(u => u.branch.trim()).filter(Boolean)).size;
   const nm = new Set(U.map(u => u.mean.trim()).filter(Boolean)).size;
-  const done = U.filter(u => u.d && TP.phase(u, now) === 'past').length;
+  const done = U.filter(isPast).length;
   const card = nx ? `<div class="cd-card"><div class="cd-info"><span class="gorb">${TP.icon('cal')}</span>
-      <div><small>${TP.t(TP.phase(nx, now) === 'cur' ? 'u.cur' : 'u.next')}</small><h3>${TP.esc(nx.ar)}</h3><span>${TP.esc([nx.branch, nx.target, TP.dateText(nx)].filter(Boolean).join(' · '))}</span></div></div>
+      <div><small>${TP.t(TP.phase(nx, now) === 'cur' ? 'u.cur' : 'u.next')}</small><h3>${TP.esc(nx.ar)}</h3><span>${TP.esc([nx.branch, nx.target, nx.place, TP.dateText(nx)].filter(Boolean).join(' · '))}</span></div></div>
       ${TP.countdown(nx)}</div>` : '';
   const dv = (k, v, max) => `<div class="dv"><span>${TP.t(k)}</span><b>${TP.fmt(v)}${max ? ` <small>${TP.t('of')} ${TP.fmt(max)}</small>` : ''}</b>${max ? `<div class="bar"><i data-w="${Math.min(100, v / max * 100)}%" style="width:0"></i></div>` : ''}</div>`;
-  /* للإثراء العام: مؤشرات التنوع في الفروع والوسائل (من بنود تقييم البرنامج) */
-  const tiles = has('branches') ? dv('d.units', U.length) + dv('d.branches', nb, L(C.branches).length - 1) + dv('d.means', nm)
-                                : dv('d.units', U.length) + dv('d.done', done, U.length);
-  return `${card}<div class="div${has('branches') ? '' : ' two'}">${tiles}</div>
-    <div class="units"><table><thead><tr>${['u.title','u.branch','u.target','u.mean','u.date','u.sup','u.st'].map(k => `<th>${TP.t(k)}</th>`).join('')}</tr></thead><tbody>
-    ${U.map(u => { const ph = u.d ? TP.phase(u, now) : 'tba';
-      const stc = ph === 'past' ? ['done', 'u.done'] : ph === 'tba' ? ['tba', 'u.tba'] : ['next', ph === 'cur' ? 'u.cur' : 'u.up'];
-      return `<tr class="${ph === 'past' ? 'past' : ''}"><td><b>${TP.esc(u.ar)}</b>${u.note ? `<br><small class="muted">${TP.esc(u.note)}</small>` : ''}</td><td>${TP.esc(u.branch || '—')}</td><td>${TP.esc(u.target || '—')}</td><td>${TP.esc(u.mean || '—')}</td>
-        <td>${u.d ? TP.esc(TP.dateText(u)) : '—'}</td><td>${TP.esc(u.sup || '—')}</td><td><span class="st ${stc[0]}">${TP.t(stc[1])}</span></td></tr>`; }).join('')}
-    </tbody></table></div>`;
+  let tiles = has('branches') ? dv('d.units', U.length) + dv('d.branches', nb, L(C.branches).length - 1) + dv('d.means', nm)
+                              : dv('d.units', U.length) + dv('d.done', done, U.length);
+  if (PD) {
+    const Y = PD.Y, pct = Y.seats ? Math.round(Y.att / Y.seats * 100) : null;
+    if (Y.active) tiles += dv('care.students', Y.active);
+    if (Y.staff) tiles += dv('care.mentors', Y.staff);
+    tiles += pct != null ? `<div class="dv"><span>${TP.t('care.att')}</span><b>${pct}%</b><div class="bar"><i data-w="${pct}%" style="width:0"></i></div></div>` : Y.count ? dv('care.count', Y.count) : '';
+  }
+  const cols = [['u.title', 1], ['u.branch', U.some(u => u.branch)], ['u.target', U.some(u => u.target)], ['u.mean', U.some(u => u.mean)], ['u.date', 1], ['u.sup', U.some(u => u.sup)], ['care.place', U.some(u => u.place)], ['u.st', 1]];
+  const show = k => cols.find(c => c[0] === k)[1];
+  return `${card}<div class="div" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">${tiles}</div>
+    ${U.length ? `<div class="units"><table><thead><tr>${cols.filter(c => c[1]).map(c => `<th>${TP.t(c[0])}</th>`).join('')}</tr></thead><tbody>
+    ${U.map(u => { const ph = u.status === 'منفذة' ? 'past' : u.status === 'ملغاة' ? 'tba' : u.d ? TP.phase(u, now) : 'tba';
+      const stc = u.status === 'مؤجلة' ? ['tba', 'u.postponed'] : ph === 'past' ? ['done', 'u.done'] : ph === 'tba' ? ['tba', 'u.tba'] : ['next', ph === 'cur' ? 'u.cur' : 'u.up'];
+      return `<tr class="${ph === 'past' ? 'past' : ''}"><td><b>${TP.esc(u.ar)}</b>${u.note ? `<br><small class="muted">${TP.esc(u.note)}</small>` : ''}</td>${show('u.branch') ? `<td>${TP.esc(u.branch || '—')}</td>` : ''}${show('u.target') ? `<td>${TP.esc(u.target || '—')}</td>` : ''}${show('u.mean') ? `<td>${TP.esc(u.mean || '—')}</td>` : ''}
+        <td>${u.d ? TP.esc(TP.dateText(u)) : '—'}</td>${show('u.sup') ? `<td>${TP.esc(u.sup || '—')}</td>` : ''}${show('care.place') ? `<td>${TP.esc(u.place || '—')}</td>` : ''}<td><span class="st ${stc[0]}">${TP.t(stc[1])}</span></td></tr>`; }).join('')}
+    </tbody></table></div>` : ''}
+    ${PD ? `<p class="muted" style="font-size:13.5px;margin-top:10px">${TP.esc(TP.t('care.year'))} <bdi>${TP.esc(PD.yr)}</bdi> · ${TP.t('care.priv')}</p>` : ''}${C.id === 'record' ? '' : staff}`;
 }
 
 const FILE_KIND = m => /pdf/.test(m) ? ['pdf', '#E0354B'] : /presentation|powerpoint/.test(m) ? ['slides', '#F07B0F'] : /spreadsheet|excel/.test(m) ? ['sheet', '#0E9F76'] :
@@ -566,6 +593,16 @@ TP.onCountdownEnd(render);
 TP.applyLang();
 if (location.hash) setTimeout(() => { const el = document.querySelector(location.hash); if (el) el.scrollIntoView(); }, 60);
 TP.loadData(d => { if (d) { DATA = d; render(); } });
+/* أعداد البرنامج وجلساته من سجل المنصة الخاص (بدون أسماء المشاركين) */
+(function loadProgramStats(){
+  const url = (window.TP_CONFIG && window.TP_CONFIG.SIJIL_SCRIPT_URL) || '';
+  if (!url || !C || C.id === 'record') return;
+  const name = '__tp_prog_' + Date.now(), sc = document.createElement('script');
+  window[name] = d => { try { delete window[name]; } catch (e) {} sc.remove(); if (d && d.ok && d.programs) { PUB = d.programs; render(); } };
+  sc.onerror = () => sc.remove();
+  sc.src = url + (url.includes('?') ? '&' : '?') + 'mode=public&callback=' + name;
+  document.body.appendChild(sc);
+})();
 </script>
 </body>
 </html>

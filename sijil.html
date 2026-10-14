@@ -41,6 +41,7 @@
 <script src="js/sijil/forms.js"></script>
 <script src="js/sijil/thinking.js"></script>
 <script src="js/sijil/records.js"></script>
+<script src="js/sijil/programs.js"></script>
 <script src="js/sijil/common.js"></script>
 <script src="js/sijil/i18n.js"></script>
 <script>
@@ -99,6 +100,9 @@ GROUPS.forEach(g => {
   soon.forEach(s => html += `<div class="card glass soon" style="--c:${g.c}"><span class="code">${esc(s.code)}</span><h3>${esc(s.title)}</h3><div class="meta"><span>الدفعة الثانية — قريباً</span></div></div>`);
   html += '</div>';
 });
+html += `<h2 class="group-title" style="--c:#C2410C">إدارة برامج النموذج</h2><div class="cards">` +
+  PROGRAMS.map(p => `<a class="card glass" style="--c:${p.c}" href="sijil-programs.html?p=${p.id}"><span class="code">المكوّن ${p.n}</span><h3>${esc(p.name)}</h3>
+  <div class="meta"><span>${esc(p.staff)}</span><span>${esc(p.people)}</span><span>${esc(p.sessions)}</span></div></a>`).join('') + '</div>';
 $('#list').innerHTML = html;
 Queue.flush().then(n => n && toast(`تم إرسال ${n} نموذج كانت معلّقة`, 'info'));
 </script>

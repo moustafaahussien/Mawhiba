@@ -98,6 +98,34 @@ const API = {
     if (d && d.ok) return d;
     throw authErr((d && d.error) || 'تعذر الحفظ', d);
   },
+  /* إدارة البرامج: الفريق والمشاركون والجلسات لكل البرامج (تحتاج رمز المعلمين) */
+  async programs() {
+    if (isDemo()) { const d = LS.get('tf_programs', {}); return { ok: true, demo: true, staff: d.staff || [], people: d.people || [], sessions: d.sessions || [] }; }
+    return jsonp({ mode: 'programs', code: LS.get('tf_code', '') }, 40000);
+  },
+  /* حفظ سطر أو أكثر: table = staff | people | sessions */
+  async progSave(table, rows) {
+    if (isDemo()) {
+      const d = LS.get('tf_programs', {}), list = d[table] = d[table] || [], ids = [];
+      rows.forEach(r => { const id = r.id || Math.random().toString(36).slice(2, 10); const i = list.findIndex(x => x.id === id);
+        const row = Object.assign({}, r, { id }); if (i >= 0) list[i] = row; else list.push(row); ids.push(id); });
+      LS.set('tf_programs', d); return { ok: true, demo: true, ids };
+    }
+    const r = await fetch(CONFIG.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'progSave', code: LS.get('tf_code', ''), table, rows }) });
+    const d = await r.json();
+    if (d && d.ok) return d;
+    throw authErr((d && d.error) || 'تعذر الحفظ', d);
+  },
+  /* الحذف بمفتاح المشرف فقط */
+  async progDelete(table, ids, key) {
+    if (isDemo()) { const d = LS.get('tf_programs', {}); d[table] = (d[table] || []).filter(x => !ids.includes(x.id)); LS.set('tf_programs', d); return { ok: true, demo: true, deleted: ids.length }; }
+    const r = await fetch(CONFIG.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'progDelete', key, table, ids }) });
+    const d = await r.json();
+    if (d && d.ok) return d;
+    const e = new Error((d && d.error) || 'تعذر الحذف'); e.server = true; throw e;
+  },
   /* التحقق من رمز المعلمين */
   async check(code) {
     if (isDemo()) return { ok: true, demo: true };
@@ -158,6 +186,7 @@ function header(active) {
         <a href="sijil.html"${cur('home')}>نماذج السجل التام</a>
         <a href="sijil-reports.html"${cur('reports')}>تقارير السجل</a>
         <a href="sijil-competitions.html"${cur('comps')}>المشاركون في المسابقات</a>
+        <a href="sijil-programs.html"${cur('programs')}>إدارة البرامج</a>
       </nav>
       ${teacher ? `<span class="who nt" title="المستخدم الحالي">${esc(teacher)}</span>` : ''}
       <button class="lang" id="sjLang" type="button" aria-label="Language / اللغة"><span data-l="ar">ع</span><span data-l="en">EN</span></button>

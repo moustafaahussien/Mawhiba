@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>إدارة البرامج – منصة الموهبة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@300;600;900&family=Sora:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/platform.css">
+<link rel="stylesheet" href="css/sijil.css">
+<meta name="robots" content="noindex">
+<style>
+.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:end;justify-content:space-between;padding:12px 14px;margin-bottom:16px}
+.bar .field{flex:0 1 220px}
+.bar .tabs{margin:0;padding:0}
+.prog-pick{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.prog-pick a{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;font-weight:700;font-size:.86rem;text-decoration:none;color:var(--ink2);background:rgba(255,255,255,.7);border:1px solid var(--glass-edge)}
+.prog-pick a b{font-family:'Sora',sans-serif;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;color:#fff;background:var(--c);font-size:.75rem}
+.prog-pick a.on{color:#fff;background:var(--c);border-color:transparent}
+.prog-pick a.on b{background:rgba(255,255,255,.25)}
+.tile b{color:var(--c)}
+.tile small{display:block;color:var(--muted);font-size:.8rem;font-weight:600}
+.hint{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding:10px 14px;border-radius:14px;background:color-mix(in srgb,var(--c) 8%,#fff);color:var(--ink2);font-size:.92rem;line-height:1.8}
+.form{padding:18px 20px;margin-bottom:16px;border:2px solid color-mix(in srgb,var(--c) 35%,#fff)}
+.form h3{margin:0 0 10px;font-size:1.05rem}
+.form .grid4 .wide{grid-column:1/-1}
+.form .acts,.rowacts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.form .acts{margin-top:14px}
+.field input,.field select,.field textarea{font:inherit}
+.stud-pick{grid-column:1/-1}
+.stud-pick .quick{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+.repeat{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:12px;align-items:end;padding:10px 12px;border-radius:12px;background:rgba(109,75,255,.06)}
+.repeat label.chk{display:flex;align-items:center;gap:8px;font-weight:700}
+.st{display:inline-block;padding:2px 10px;border-radius:999px;font-weight:700;font-size:.8rem;white-space:nowrap;background:rgba(26,22,64,.06)}
+.st.s-active,.st.s-done{background:rgba(14,159,118,.14);color:#0B7A5B}
+.st.s-planned{background:rgba(14,165,214,.12);color:#0B7FA6}
+.st.s-paused,.st.s-postponed{background:rgba(232,165,10,.16);color:#8A5D00}
+.st.s-finished{background:rgba(123,77,255,.12);color:#5B33D6}
+.st.s-cancelled{background:rgba(226,56,111,.1);color:#B4234F}
+td.bold{font-weight:700}
+td .sm{display:block;color:var(--muted);font-size:.8rem;font-weight:600}
+.rowacts .btn{margin:0;padding:5px 10px;font-size:.8rem}
+.grp-h{margin:18px 4px 8px;font-size:1rem;color:var(--ink2)}
+tr.past td{opacity:.75}
+tr.today td{background:rgba(232,165,10,.1)}
+.att{padding:16px 18px;margin-bottom:16px;border:2px solid rgba(14,159,118,.35)}
+.del{padding:14px 16px;margin-bottom:16px;border:2px solid rgba(226,56,111,.35)}
+.del .acts{display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin-top:10px}
+.places{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.privacy{display:flex;gap:10px;align-items:flex-start;padding:12px 16px;margin-bottom:16px;border-radius:16px;background:rgba(226,56,111,.07);border:1px solid rgba(226,56,111,.25);color:var(--ink2);font-size:.92rem;line-height:1.8}
+@media print{.privacy,.form,.att,.del,.prog-pick,.hint{display:none!important}}
+</style>
+</head>
+<body class="sj">
+<div id="hdr"></div>
+<main class="wrap">
+  <div id="demo"></div>
+
+  <section class="hero glass" id="hero"></section>
+
+  <section class="teacher glass no-print" id="gate" hidden>
+    <label class="field">رمز المعلمين (من منسق الموهبة)
+      <input id="code" type="password" autocomplete="off" placeholder="••••••">
+    </label>
+    <button class="btn" id="open">دخول</button>
+    <span class="note" id="gateNote" style="flex-basis:100%"></span>
+  </section>
+
+  <div id="app"></div>
+</main>
+<div id="ftr"></div>
+
+<script src="js/config.js"></script>
+<script src="js/sijil/config.js"></script>
+<script src="js/sijil/programs.js"></script>
+<script src="js/sijil/common.js"></script>
+<script src="js/sijil/i18n.js"></script>
+<script>
+$('#hdr').innerHTML = header('programs');
+$('#demo').innerHTML = demoBanner(); $('#ftr').outerHTML = footerHtml();
+
+const PERSON_STATUS = ['نشط', 'متوقف', 'أنهى البرنامج'];
+const SESSION_STATUS = ['مجدولة', 'منفذة', 'مؤجلة', 'ملغاة'];
+const ST_CLASS = { 'نشط': 's-active', 'متوقف': 's-paused', 'أنهى البرنامج': 's-finished', 'مجدولة': 's-planned', 'منفذة': 's-done', 'مؤجلة': 's-postponed', 'ملغاة': 's-cancelled' };
+const TARGETS = ['جميع الطلاب', 'المرحلة الابتدائية', 'المرحلة المتوسطة', 'المرحلة الثانوية', 'الوعاء الإثرائي', 'المعلمون', 'أولياء الأمور'];
+
+let P = getProgram(new URLSearchParams(location.search).get('p')) || getProgram(LS.get('tf_prog', '')) || getProgram('mentorship');
+let DB = { staff: [], people: [], sessions: [] }, TAB = 'people', YEAR = hijriYearNow();
+let EDIT = null, ATT = null, DEL = null, Q = { q: '', lead: '', status: '' }, KNOWN = [];
+
+const split = s => String(s || '').split(/[،,\n]+/).map(x => normKey(x)).filter(Boolean);
+const join = a => a.join('، ');
+const mine = list => list.filter(r => r.prog === P.id && (r.year || '') === YEAR);
+const todayISO = () => new Date(Date.now() + 3 * 36e5).toISOString().slice(0, 10);
+const LOC = () => (window.SJ && SJ.lang() === 'en') ? 'en-GB' : 'ar-SA-u-ca-gregory-nu-latn';
+const dayName = iso => { try { return new Date(iso + 'T12:00:00').toLocaleDateString(LOC(), { weekday: 'long' }); } catch (e) { return ''; } };
+const fmtDay = iso => { if (!iso) return '—'; try { const d = new Date(iso + 'T12:00:00'); return isNaN(d) ? iso : d.toLocaleDateString(LOC(), { day: 'numeric', month: 'long', year: 'numeric' }); } catch (e) { return iso; } };
+/* بيانات يدخلها المستخدم: لا تُترجم */
+const D = v => v ? `<span class="nt">${esc(v)}</span>` : '—';
+
+/* حقول كل جدول حسب البرنامج */
+function DEF(table) {
+  if (table === 'staff') return [
+    { k: 'name', l: 'الاسم', req: 1, list: 'staffList' },
+    { k: 'role', l: 'الدور', list: 'roleList' },
+    { k: 'spec', l: 'التخصص' },
+    { k: 'field', l: 'المجال', list: 'fieldList' },
+    { k: 'phone', l: 'الجوال', type: 'tel' },
+    { k: 'email', l: 'البريد الإلكتروني', type: 'email' },
+    { k: 'note', l: 'ملاحظة', wide: 1 }];
+  if (table === 'people') return [
+    { k: 'name', l: 'الاسم', req: 1, list: 'studList' },
+    { k: 'sid', l: 'رقم الطالب' },
+    { k: 'grade', l: 'الصف', type: 'grade', req: !P.gradeOptional },
+    { k: 'cls', l: 'الفصل' },
+    { k: 'field', l: P.pField, opts: P.fieldOpts, list: P.id === 'clusters' ? 'actList' : 'fieldList' },
+    { k: 'lead', l: P.lead, type: 'lead' },
+    ...(P.x1 ? [Object.assign({ k: 'x1' }, P.x1)] : []),
+    ...(P.x2 ? [Object.assign({ k: 'x2' }, P.x2)] : []),
+    { k: 'joined', l: 'تاريخ الانضمام', type: 'date' },
+    { k: 'status', l: 'الحالة', type: 'select', opts: PERSON_STATUS },
+    { k: 'note', l: 'ملاحظة', wide: 1 }];
+  return [
+    { k: 'date', l: 'التاريخ', type: 'date', req: 1 },
+    { k: 'from', l: 'من الساعة', type: 'time' },
+    { k: 'to', l: 'إلى الساعة', type: 'time' },
+    { k: 'status', l: 'الحالة', type: 'select', opts: SESSION_STATUS },
+    { k: 'title', l: 'العنوان', req: 1, wide: 1 },
+    { k: 'field', l: P.sField, opts: P.fieldOpts, list: 'fieldList' },
+    ...(P.target ? [{ k: 'target', l: 'الفئة المستهدفة', list: 'targetList' }] : []),
+    ...(P.means && P.means.length ? [{ k: 'means', l: 'وسيلة التقديم', type: 'select', opts: ['', ...P.means] }] : []),
+    { k: 'lead', l: P.lead, type: 'lead' },
+    { k: 'place', l: 'المكان', list: 'placeList', ph: 'مثال: مختبر العلوم 2' },
+    { k: 'students', type: 'students' },
+    ...(P.count ? [{ k: 'count', l: 'عدد الحضور (إن لم تُسجَّل الأسماء)', type: 'number' }] : []),
+    { k: 'note', l: 'ملاحظة', wide: 1 }];
+}
+
+function heroHtml() {
+  document.documentElement.style.setProperty('--c', P.c);
+  $('#hero').innerHTML = `<span class="kicker">للمعلمين · إدارة برامج النموذج</span><h1>${esc(P.name)}</h1>
+    <p>أضف الفريق المنفّذ والمشاركين وجدول الجلسات والوحدات ومكانها، وسجّل الحضور بعد كل جلسة. البيانات في جدول السجل الخاص، ولا يظهر منها في صفحة البرنامج العامة إلا الأعداد والجدول بدون أسماء المشاركين.</p>
+    <div class="prog-pick no-print">${PROGRAMS.map(p => `<a href="?p=${p.id}" style="--c:${p.c}" class="${p.id === P.id ? 'on' : ''}" data-prog="${p.id}"><b>${p.n}</b><span>${esc(p.name)}</span></a>`).join('')}</div>
+    <div class="hint">💡 <span>${esc(P.hint)}</span></div>`;
+}
+
+/* ---------- التحميل ---------- */
+async function load() {
+  $('#app').innerHTML = '<div class="panel glass empty">جارٍ تحميل البيانات…</div>';
+  try {
+    const d = await API.programs();
+    if (!d || !d.ok) {
+      if (d && d.auth) { LS.set('tf_code', ''); showGate('رمز المعلمين غير صحيح أو تغيّر — اكتب الرمز الحالي.'); $('#app').innerHTML = ''; return; }
+      throw new Error((d && d.error) || 'تعذر التحميل');
+    }
+    $('#gate').hidden = true;
+    DB = { staff: d.staff || [], people: d.people || [], sessions: d.sessions || [] };
+    API.students().then(list => { KNOWN = (list || []).map(s => s.name); });
+    render();
+  } catch (e) { $('#app').innerHTML = `<div class="panel glass empty">تعذر الوصول إلى الجدول: ${esc(e.message)}</div>`; }
+}
+function showGate(msg) { $('#gate').hidden = false; $('#gateNote').textContent = msg || 'اكتب رمز المعلمين ثم اضغط «دخول».'; }
+$('#open').onclick = async () => {
+  const c = ($('#code').value || '').trim();
+  if (!c) { toast('اكتب رمز المعلمين', 'err'); return; }
+  const b = $('#open'); b.disabled = true; b.textContent = 'جارٍ التحقق…';
+  try {
+    const d = await API.check(c);
+    if (!d || !d.ok) { toast((d && d.error) || 'رمز المعلمين غير صحيح', 'err'); return; }
+    LS.set('tf_code', c); if (d.admin) LS.set('tf_admin', c); load();
+  } catch (e) { toast('تعذر التحقق: ' + e.message, 'err'); }
+  finally { b.disabled = false; b.textContent = 'دخول'; }
+};
+
+/* ---------- الحساب ---------- */
+function stats() {
+  const pe = mine(DB.people), st = mine(DB.staff), se = mine(DB.sessions).filter(s => s.status !== 'ملغاة');
+  const done = se.filter(s => s.status === 'منفذة');
+  let seats = 0, att = 0, count = 0;
+  done.forEach(s => { const n = split(s.students).length, a = split(s.attended).length; seats += n; att += a; count += a || (parseInt(s.count, 10) || 0); });
+  return { active: pe.filter(s => s.status !== 'متوقف').length, people: pe.length, staff: st.length, sessions: se.length, done: done.length, pct: seats ? Math.round(att / seats * 100) : null, count };
+}
+const sessionsOf = name => mine(DB.sessions).filter(s => split(s.students).includes(normKey(name)));
+
+/* ---------- العرض ---------- */
+const TABS = () => [['people', P.people], ['staff', P.staff], ['sessions', P.sessions]];
+function render() {
+  heroHtml();
+  const S = stats();
+  const years = [...new Set([...yearOptions(), ...['staff', 'people', 'sessions'].flatMap(t => DB[t].map(r => r.year)).filter(Boolean)])].sort();
+  const all = t => DB[t].filter(r => r.prog === P.id);
+  let h = `<div class="bar glass no-print">
+      <div class="tabs" role="tablist">${TABS().map(([k, l]) => `<button type="button" class="${k === TAB ? 'on' : ''}" data-tab="${k}">${esc(l)}</button>`).join('')}</div>
+      <label class="field">العام الدراسي<select id="yearSel">${years.map(y => `<option${y === YEAR ? ' selected' : ''}>${esc(y)}</option>`).join('')}</select></label>
+    </div>
+    <div class="tiles">
+      <div class="tile glass"><b>${S.active}</b><span>${esc(P.people)}</span><small>نشط من ${S.people}</small></div>
+      <div class="tile glass"><b>${S.staff}</b><span>${esc(P.staff)}</span></div>
+      <div class="tile glass"><b>${S.done} / ${S.sessions}</b><span>منفذ من المجدول</span><small>${esc(P.sessions)}</small></div>
+      ${S.pct != null ? `<div class="tile glass"><b>${S.pct}%</b><span>نسبة الحضور</span><small>في الجلسات المنفذة</small></div>` : `<div class="tile glass"><b>${S.count}</b><span>إجمالي الحضور</span><small>في الجلسات المنفذة</small></div>`}
+    </div>
+    <div class="privacy no-print">🔒 <span>بيانات المشاركين للاستخدام الداخلي فقط، ولا يظهر منها في صفحة البرنامج العامة إلا الأعداد والجدول بدون الأسماء.</span></div>
+    <datalist id="fieldList">${[...new Set([...(P.fieldOpts || []), ...all('people').map(r => r.field), ...all('staff').map(r => r.field), ...all('sessions').map(r => r.field)].filter(Boolean))].map(x => `<option value="${esc(x)}">`).join('')}</datalist>
+    <datalist id="placeList">${[...new Set(DB.sessions.map(r => r.place).filter(Boolean))].map(x => `<option value="${esc(x)}">`).join('')}</datalist>
+    <datalist id="studList">${[...new Set([...KNOWN, ...DB.people.map(r => r.name)])].map(x => `<option value="${esc(x)}">`).join('')}</datalist>
+    <datalist id="staffList">${[...new Set(DB.staff.map(r => r.name))].map(x => `<option value="${esc(x)}">`).join('')}</datalist>
+    <datalist id="roleList">${[...new Set([P.staffOne, ...all('staff').map(r => r.role)].filter(Boolean))].map(x => `<option value="${esc(x)}">`).join('')}</datalist>
+    <datalist id="targetList">${[...new Set([...TARGETS, ...all('sessions').map(r => r.target)].filter(Boolean))].map(x => `<option value="${esc(x)}">`).join('')}</datalist>
+    <datalist id="actList">${[...new Set(mine(DB.sessions).map(r => r.title).filter(Boolean))].map(x => `<option value="${esc(x)}">`).join('')}</datalist>`;
+  h += DEL ? delHtml() : '';
+  h += EDIT ? formHtml() : '';
+  h += ATT ? attHtml() : '';
+  h += TAB === 'people' ? peopleHtml() : TAB === 'staff' ? staffHtml() : sessionsHtml();
+  $('#app').innerHTML = h;
+  $('#yearSel').onchange = e => { YEAR = e.target.value; EDIT = ATT = DEL = null; render(); };
+}
+
+function toolsHtml(table, extra) {
+  const one = table === 'people' ? P.personOne : table === 'staff' ? P.staffOne : P.sessionOne;
+  return `<div class="filters glass no-print">
+    <label class="field">بحث<input data-q="q" value="${esc(Q.q)}" placeholder="اكتب جزءاً من الاسم أو العنوان"></label>
+    ${table !== 'staff' ? `<label class="field">${esc(P.lead)}<select data-q="lead"><option value="">الكل</option>${mine(DB.staff).map(m => `<option${m.name === Q.lead ? ' selected' : ''}>${esc(m.name)}</option>`).join('')}</select></label>` : ''}
+    ${extra || ''}
+    <div class="rowacts"><button type="button" class="btn" data-add="${table}">+ <span>إضافة</span> <span>${esc(one)}</span></button>
+      <button type="button" class="btn ghost" data-csv="${table}">تصدير CSV</button><button type="button" class="btn ghost" onclick="window.print()">طباعة</button></div>
+  </div>`;
+}
+const match = (r, keys) => !Q.q || keys.some(k => String(r[k] || '').includes(Q.q.trim()));
+const stBadge = s => s ? `<span class="st ${ST_CLASS[s] || ''}">${esc(s)}</span>` : '—';
+const statusSel = opts => `<label class="field">الحالة<select data-q="status"><option value="">الكل</option>${opts.map(s => `<option${s === Q.status ? ' selected' : ''}>${s}</option>`).join('')}</select></label>`;
+const emptyMsg = () => `<div class="empty">لا توجد بيانات في هذا العام بعد — اضغط «إضافة».</div>`;
+
+function peopleHtml() {
+  const list = mine(DB.people).filter(r => match(r, ['name', 'field', 'lead', 'grade', 'x1', 'x2']) && (!Q.lead || r.lead === Q.lead) && (!Q.status || r.status === Q.status))
+    .sort((a, b) => gradeOrder(a.grade) - gradeOrder(b.grade) || a.name.localeCompare(b.name, 'ar'));
+  const noLead = mine(DB.people).filter(r => !r.lead && r.status !== 'متوقف').length;
+  const xs = [P.x1, P.x2].filter(Boolean);
+  return toolsHtml('people', statusSel(PERSON_STATUS)) + `<section class="panel glass">
+    <h3>${esc(P.people)}</h3><p class="sub"><span>${list.length}</span> · <span>بدون ${esc(P.lead)}:</span> <span>${noLead}</span></p>
+    ${list.length ? `<div class="tbl"><table><thead><tr><th>#</th><th>الاسم</th><th>الصف / الفصل</th><th>${esc(P.pField)}</th><th>${esc(P.lead)}</th>${xs.map(x => `<th>${esc(x.l)}</th>`).join('')}<th>الحضور</th><th>الحالة</th><th class="no-print"></th></tr></thead><tbody>
+    ${list.map((r, i) => { const ss = sessionsOf(r.name).filter(s => s.status === 'منفذة'), at = ss.filter(s => split(s.attended).includes(normKey(r.name))).length;
+      const isStudent = !P.x1 || P.x1.l !== 'الفئة' || !r.x1 || r.x1 === 'طالب';
+      return `<tr><td>${i + 1}</td><td class="bold">${D(r.name)}${r.joined ? `<span class="sm">انضم: ${esc(fmtDay(r.joined))}</span>` : ''}</td><td>${r.grade ? esc(r.grade) : '—'} ${D(r.cls).replace('—', '')}</td><td>${D(r.field)}</td>
+        <td>${D(r.lead)}</td>${xs.map((x, j) => `<td>${x.type === 'select' ? (r['x' + (j + 1)] ? esc(r['x' + (j + 1)]) : '—') : D(r['x' + (j + 1)])}</td>`).join('')}<td>${ss.length ? `${at} / ${ss.length}` : '—'}</td><td>${stBadge(r.status || 'نشط')}</td>
+        <td class="no-print"><div class="rowacts"><button type="button" class="btn ghost" data-edit="people" data-id="${r.id}">تعديل</button>
+          ${isStudent ? `<a class="btn ghost" href="sijil-record.html?f=plan&s=${encodeURIComponent(r.sid || r.name)}">خطة التطوير</a>` : ''}
+          <button type="button" class="btn ghost" data-del="people" data-id="${r.id}">حذف</button></div></td></tr>`; }).join('')}
+    </tbody></table></div>` : emptyMsg()}</section>`;
+}
+
+function staffHtml() {
+  const list = mine(DB.staff).filter(r => match(r, ['name', 'spec', 'field', 'role'])).sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+  return toolsHtml('staff') + `<section class="panel glass">
+    <h3>${esc(P.staff)}</h3><p class="sub">${list.length}</p>
+    ${list.length ? `<div class="tbl"><table><thead><tr><th>#</th><th>الاسم</th><th>الدور</th><th>التخصص</th><th>المجال</th><th>التواصل</th><th>${esc(P.people)}</th><th>${esc(P.sessions)}</th><th class="no-print"></th></tr></thead><tbody>
+    ${list.map((r, i) => { const ns = mine(DB.people).filter(s => s.lead === r.name && s.status !== 'متوقف').length, se = mine(DB.sessions).filter(s => s.lead === r.name && s.status !== 'ملغاة');
+      return `<tr><td>${i + 1}</td><td class="bold">${D(r.name)}</td><td>${D(r.role)}</td><td>${D(r.spec)}</td><td>${D(r.field)}</td>
+        <td><bdi class="nt">${esc(r.phone || '')}</bdi>${r.email ? `<span class="sm nt">${esc(r.email)}</span>` : ''}${!r.phone && !r.email ? '—' : ''}</td><td>${ns}</td><td>${se.filter(s => s.status === 'منفذة').length} / ${se.length}</td>
+        <td class="no-print"><div class="rowacts"><button type="button" class="btn ghost" data-edit="staff" data-id="${r.id}">تعديل</button><button type="button" class="btn ghost" data-del="staff" data-id="${r.id}">حذف</button></div></td></tr>`; }).join('')}
+    </tbody></table></div>` : emptyMsg()}</section>`;
+}
+
+function sessionsHtml() {
+  const t = todayISO();
+  const list = mine(DB.sessions).filter(r => match(r, ['title', 'field', 'place', 'lead', 'students', 'target']) && (!Q.lead || r.lead === Q.lead) && (!Q.status || r.status === Q.status));
+  const up = list.filter(r => r.date >= t && r.status !== 'منفذة').sort((a, b) => (a.date + a.from).localeCompare(b.date + b.from));
+  const past = list.filter(r => !(r.date >= t && r.status !== 'منفذة')).sort((a, b) => (b.date + b.from).localeCompare(a.date + a.from));
+  const places = {}; mine(DB.sessions).forEach(s => { if (s.place && s.status !== 'ملغاة') places[s.place] = (places[s.place] || 0) + 1; });
+  const table = rows => `<div class="tbl"><table><thead><tr><th>التاريخ</th><th>الوقت</th><th>العنوان</th><th>${esc(P.lead)}</th><th>المكان</th><th>المشاركون</th><th>الحضور</th><th>الحالة</th><th class="no-print"></th></tr></thead><tbody>
+    ${rows.map(r => { const n = split(r.students).length, a = split(r.attended).length, c = parseInt(r.count, 10) || 0;
+      const sub = [r.field, r.target, r.means].filter(Boolean);
+      return `<tr class="${r.date < t ? 'past' : r.date === t ? 'today' : ''}"><td class="bold">${esc(fmtDay(r.date))}<span class="sm">${esc(dayName(r.date))}</span></td>
+        <td><bdi>${esc([r.from, r.to].filter(Boolean).join(' – ') || '—')}</bdi></td><td><b>${D(r.title)}</b>${sub.length ? `<span class="sm">${sub.map(x => D(x)).join(' · ')}</span>` : ''}</td>
+        <td>${D(r.lead)}</td><td>${D(r.place)}</td><td>${n || '—'}</td><td>${r.status === 'منفذة' ? (n ? `${a} / ${n}` : (c || '—')) : '—'}</td><td>${stBadge(r.status || 'مجدولة')}</td>
+        <td class="no-print"><div class="rowacts"><button type="button" class="btn ghost" data-att="${r.id}">الحضور</button><button type="button" class="btn ghost" data-edit="sessions" data-id="${r.id}">تعديل</button><button type="button" class="btn ghost" data-del="sessions" data-id="${r.id}">حذف</button></div></td></tr>`; }).join('')}
+    </tbody></table></div>`;
+  return toolsHtml('sessions', statusSel(SESSION_STATUS)) + `<section class="panel glass">
+    <h3>${esc(P.sessions)}</h3><p class="sub">${list.length}${Object.keys(places).length ? ' · <span>أماكن التدريب:</span>' : ''}</p>
+    ${Object.keys(places).length ? `<div class="places">${Object.entries(places).sort((a, b) => b[1] - a[1]).map(([p, n]) => `<span class="chip"><span class="nt">${esc(p)}</span> · ${n}</span>`).join('')}</div>` : ''}
+    ${list.length ? `${up.length ? `<h4 class="grp-h"><span>القادمة</span> <bdi>(${up.length})</bdi></h4>${table(up)}` : ''}${past.length ? `<h4 class="grp-h"><span>السابقة</span> <bdi>(${past.length})</bdi></h4>${table(past)}` : ''}` : emptyMsg()}</section>`;
+}
+
+/* ---------- نموذج الإضافة والتعديل ---------- */
+function fieldHtml(f, v) {
+  v = v == null ? '' : v;
+  const req = f.req ? ' *' : '';
+  if (f.type === 'grade') return `<label class="field">${f.l}${req}<select data-k="${f.k}"><option value="">— اختر —</option>${gradeOptions(v)}</select></label>`;
+  if (f.type === 'select' || (f.opts && f.opts.length)) {
+    const opts = f.type === 'select' ? f.opts : ['', ...f.opts];
+    const all = v && !opts.includes(v) ? [...opts, v] : opts;
+    return `<label class="field">${esc(f.l)}<select data-k="${f.k}">${all.map(o => `<option value="${esc(o)}"${o === v ? ' selected' : ''}>${o ? esc(o) : '— اختر —'}</option>`).join('')}</select></label>`;
+  }
+  if (f.type === 'lead') return `<label class="field">${esc(f.l)}<select data-k="${f.k}"><option value="">— بدون —</option>${mine(DB.staff).map(m => `<option${m.name === v ? ' selected' : ''}>${esc(m.name)}</option>`).join('')}${v && !mine(DB.staff).some(m => m.name === v) ? `<option selected>${esc(v)}</option>` : ''}</select></label>`;
+  if (f.type === 'students') {
+    const chosen = split(v), active = mine(DB.people).filter(s => s.status !== 'متوقف' || chosen.includes(s.name));
+    return `<div class="stud-pick"><div class="field">المشاركون في الجلسة</div>
+      ${active.length ? `<div class="quick"><button type="button" class="btn ghost small" data-pick="all">كل المشاركين النشطين</button><button type="button" class="btn ghost small" data-pick="lead">مشاركو المنفّذ المختار</button><button type="button" class="btn ghost small" data-pick="none">إلغاء التحديد</button></div>
+      <div class="checks" id="studChecks">${active.map(s => `<label><input type="checkbox" value="${esc(s.name)}"${chosen.includes(s.name) ? ' checked' : ''}><span class="nt">${esc(s.name)}</span></label>`).join('')}</div>`
+      : `<p class="sub">لم يُضف مشاركون بعد؛ يمكنك الاكتفاء بعدد الحضور.</p>`}</div>`;
+  }
+  return `<label class="field${f.wide ? ' wide' : ''}">${esc(f.l)}${req}<input data-k="${f.k}" type="${f.type || 'text'}" value="${esc(v)}"${f.list ? ` list="${f.list}"` : ''}${f.ph ? ` placeholder="${esc(f.ph)}"` : ''}${f.type === 'tel' ? ' inputmode="tel"' : ''}${f.type === 'number' ? ' min="0"' : ''}></label>`;
+}
+function formHtml() {
+  const { table, row } = EDIT, isNew = !row.id;
+  const one = table === 'people' ? P.personOne : table === 'staff' ? P.staffOne : P.sessionOne;
+  return `<section class="form glass no-print" id="form"><h3><span>${isNew ? 'إضافة' : 'تعديل'}</span> <span>${esc(one)}</span></h3>
+    <div class="grid4">${DEF(table).map(f => fieldHtml(f, row[f.k])).join('')}
+    ${table === 'sessions' && isNew ? `<div class="repeat"><label class="chk"><input type="checkbox" id="rep"> تكرار أسبوعي</label><label class="field">حتى تاريخ<input type="date" id="repUntil"></label><span class="sub">تُنشأ جلسة في اليوم نفسه من كل أسبوع حتى التاريخ المحدد.</span></div>` : ''}</div>
+    <div class="acts"><button type="button" class="btn" id="save">حفظ</button><button type="button" class="btn ghost" data-cancel="1">إلغاء</button></div></section>`;
+}
+function readForm() {
+  const { table, row } = EDIT, out = Object.assign({}, row, { prog: P.id, year: row.year || YEAR });
+  $$('#form [data-k]').forEach(el => out[el.dataset.k] = normKey(el.value));
+  if (table === 'sessions' && $('#studChecks')) out.students = join($$('#studChecks input:checked').map(i => i.value));
+  return out;
+}
+async function saveForm() {
+  const { table } = EDIT, r = readForm();
+  const miss = DEF(table).filter(f => f.req && !r[f.k]);
+  if (miss.length) { toast('أكمل الحقول المطلوبة: ' + miss.map(f => f.l).join('، '), 'err'); return; }
+  if (table !== 'sessions' && mine(DB[table]).find(s => s.name === r.name && s.id !== r.id)) { toast('هذا الاسم مضاف بالفعل في هذا البرنامج لهذا العام', 'err'); return; }
+  if (table === 'people' && !r.status) r.status = 'نشط';
+  let rows = [r];
+  if (table === 'sessions') {
+    if (!r.status) r.status = 'مجدولة';
+    if (!r.id && $('#rep') && $('#rep').checked) {
+      const until = $('#repUntil').value;
+      if (!until || until <= r.date) { toast('اختر تاريخ نهاية التكرار بعد تاريخ الجلسة', 'err'); return; }
+      rows = []; let d = new Date(r.date + 'T12:00:00');
+      while (d.toISOString().slice(0, 10) <= until && rows.length < 40) { rows.push(Object.assign({}, r, { date: d.toISOString().slice(0, 10) })); d = new Date(+d + 7 * 864e5); }
+    }
+  }
+  const b = $('#save'); b.disabled = true; b.textContent = 'جارٍ الحفظ…';
+  try {
+    const old = EDIT.row;
+    const res = await API.progSave(table, rows);
+    rows.forEach((x, i) => { const oid = x.id; x.id = res.ids[i]; const T = DB[table], j = T.findIndex(y => y.id === oid || y.id === x.id); if (j >= 0) T[j] = x; else T.push(x); });
+    /* تغيير اسم عضو في الفريق: تحديثه عند المشاركين والجلسات */
+    if (table === 'staff' && old.id && old.name && old.name !== r.name) {
+      const pe = mine(DB.people).filter(s => s.lead === old.name).map(s => Object.assign(s, { lead: r.name }));
+      const se = mine(DB.sessions).filter(s => s.lead === old.name).map(s => Object.assign(s, { lead: r.name }));
+      if (pe.length) await API.progSave('people', pe); if (se.length) await API.progSave('sessions', se);
+    }
+    toast(rows.length > 1 ? `تم حفظ ${rows.length} جلسة` : 'تم الحفظ');
+    EDIT = null; render();
+  } catch (e) { toast(e.message, 'err'); if (e.auth) showGate(); b.disabled = false; b.textContent = 'حفظ'; }
+}
+
+/* ---------- الحضور ---------- */
+function attHtml() {
+  const s = DB.sessions.find(x => x.id === ATT); if (!s) return '';
+  let names = split(s.students);
+  if (!names.length) names = mine(DB.people).filter(x => x.status !== 'متوقف' && (!s.lead || x.lead === s.lead)).map(x => x.name);
+  const att = split(s.attended), first = s.status !== 'منفذة';
+  return `<section class="att glass no-print" id="attBox"><h3><span>تسجيل الحضور</span> — ${D(s.title)}</h3>
+    <p class="sub">${esc(fmtDay(s.date))} · ${D(s.place)} · ${D(s.lead)}</p>
+    ${names.length ? `<div class="quick" style="display:flex;gap:8px;margin:8px 0"><button type="button" class="btn ghost small" data-attall="1">تحديد الكل</button><button type="button" class="btn ghost small" data-attall="0">إلغاء الكل</button></div>
+      <div class="checks" id="attChecks">${names.map(n => `<label><input type="checkbox" value="${esc(n)}"${(first && !att.length) || att.includes(n) ? ' checked' : ''}><span class="nt">${esc(n)}</span></label>`).join('')}</div>` : ''}
+    ${P.count || !names.length ? `<label class="field" style="max-width:260px;margin-top:10px">عدد الحضور (إن لم تُسجَّل الأسماء)<input type="number" min="0" id="attCount" value="${esc(s.count || '')}"></label>` : ''}
+    <div class="acts" style="display:flex;gap:8px;margin-top:12px"><button type="button" class="btn teal" id="attSave">حفظ الحضور وتعليم الجلسة «منفذة»</button><button type="button" class="btn ghost" data-cancel="1">إلغاء</button></div></section>`;
+}
+async function saveAtt() {
+  const s = DB.sessions.find(x => x.id === ATT); if (!s) return;
+  const all = $$('#attChecks input').map(i => i.value), chosen = $$('#attChecks input:checked').map(i => i.value);
+  const cnt = $('#attCount') ? $('#attCount').value.trim() : s.count;
+  const row = Object.assign({}, s, { students: s.students || join(all), attended: join(chosen), count: cnt || '', status: 'منفذة' });
+  const b = $('#attSave'); b.disabled = true;
+  try { await API.progSave('sessions', [row]); Object.assign(s, row); toast(all.length ? `تم حفظ الحضور: ${chosen.length} من ${all.length}` : 'تم الحفظ'); ATT = null; render(); }
+  catch (e) { toast(e.message, 'err'); b.disabled = false; }
+}
+
+/* ---------- الحذف (مفتاح المشرف) ---------- */
+function delHtml() {
+  const { table, row } = DEL, label = table === 'sessions' ? `${row.title} — ${fmtDay(row.date)}` : row.name;
+  return `<section class="del glass no-print"><b><span>حذف</span> «${D(label)}»<span>؟</span></b>
+    <div class="acts">${isDemo() ? '' : `<label class="field">مفتاح المشرف<input type="password" id="delKey" value="${esc(LS.get('tf_admin', ''))}"></label>`}
+      <button type="button" class="btn" id="delGo" style="background:linear-gradient(135deg,#E2386F,#B4234F)">حذف نهائي</button><button type="button" class="btn ghost" data-cancel="1">إلغاء</button></div>
+    <p class="sub" style="margin-top:6px">الحذف متاح للمشرف فقط. لإيقاف مشارك دون حذفه غيّر حالته إلى «متوقف».</p></section>`;
+}
+async function doDelete() {
+  const { table, row } = DEL, key = $('#delKey') ? $('#delKey').value.trim() : '';
+  if (!isDemo() && !key) { toast('اكتب مفتاح المشرف', 'err'); return; }
+  try {
+    await API.progDelete(table, [row.id], key);
+    if (key) LS.set('tf_admin', key);
+    DB[table] = DB[table].filter(x => x.id !== row.id); DEL = null; toast('تم الحذف'); render();
+  } catch (e) { toast(e.message, 'err'); }
+}
+
+/* ---------- تصدير ---------- */
+function csv(table) {
+  const cols = DEF(table).filter(f => f.type !== 'students').map(f => [f.k, f.l]);
+  if (table === 'sessions') cols.push(['students', 'المشاركون'], ['attended', 'الحضور']);
+  const rows = mine(DB[table]);
+  if (!rows.length) { toast('لا توجد بيانات للتصدير', 'err'); return; }
+  const cell = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+  const text = '﻿' + [cols.map(c => cell(c[1])).join(','), ...rows.map(r => cols.map(c => cell(r[c[0]])).join(','))].join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: 'text/csv;charset=utf-8' }));
+  a.download = `${P.name}-${table}-${YEAR.replace(/\//g, '-')}.csv`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+/* ---------- الأحداث ---------- */
+document.addEventListener('click', e => {
+  const t = e.target.closest('button,a'); if (!t) return;
+  if (t.dataset.prog) { e.preventDefault(); P = getProgram(t.dataset.prog); LS.set('tf_prog', P.id); history.replaceState(null, '', '?p=' + P.id); EDIT = ATT = DEL = null; Q = { q: '', lead: '', status: '' }; if ($('#gate').hidden) render(); else heroHtml(); return; }
+  if (t.dataset.tab) { TAB = t.dataset.tab; EDIT = ATT = DEL = null; Q = { q: '', lead: '', status: '' }; render(); return; }
+  if (t.dataset.add) { EDIT = { table: t.dataset.add, row: t.dataset.add === 'sessions' ? { date: todayISO(), status: 'مجدولة' } : t.dataset.add === 'people' ? { status: 'نشط', joined: todayISO() } : { role: P.staffOne } }; ATT = DEL = null; render(); $('#form').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+  if (t.dataset.edit) { const row = DB[t.dataset.edit].find(x => x.id === t.dataset.id); if (row) { EDIT = { table: t.dataset.edit, row: Object.assign({}, row) }; ATT = DEL = null; render(); $('#form').scrollIntoView({ behavior: 'smooth', block: 'start' }); } return; }
+  if (t.dataset.del) { const row = DB[t.dataset.del].find(x => x.id === t.dataset.id); if (row) { DEL = { table: t.dataset.del, row }; EDIT = ATT = null; render(); window.scrollTo({ top: $('.del').offsetTop - 100, behavior: 'smooth' }); } return; }
+  if (t.dataset.att) { ATT = t.dataset.att; EDIT = DEL = null; render(); $('#attBox').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+  if (t.dataset.cancel) { EDIT = ATT = DEL = null; render(); return; }
+  if (t.dataset.csv) { csv(t.dataset.csv); return; }
+  if (t.dataset.pick) {
+    const ld = ($('#form [data-k="lead"]') || {}).value || '';
+    const theirs = new Set(mine(DB.people).filter(s => s.lead === ld).map(s => s.name));
+    $$('#studChecks input').forEach(i => i.checked = t.dataset.pick === 'all' ? true : t.dataset.pick === 'none' ? false : theirs.has(i.value));
+    if (t.dataset.pick === 'lead' && !ld) toast('اختر المنفّذ أولاً', 'info');
+    return;
+  }
+  if (t.dataset.attall) { $$('#attChecks input').forEach(i => i.checked = t.dataset.attall === '1'); return; }
+  if (t.id === 'save') return saveForm();
+  if (t.id === 'attSave') return saveAtt();
+  if (t.id === 'delGo') return doDelete();
+});
+let qT = null;
+document.addEventListener('input', e => { const k = e.target.dataset && e.target.dataset.q; if (!k || e.target.tagName === 'SELECT') return; Q[k] = e.target.value; clearTimeout(qT); qT = setTimeout(() => { const pos = e.target.selectionStart; render(); const el = $(`[data-q="${k}"]`); if (el) { el.focus(); try { el.setSelectionRange(pos, pos); } catch (x) {} } }, 250); });
+document.addEventListener('change', e => { const k = e.target.dataset && e.target.dataset.q; if (k && e.target.tagName === 'SELECT') { Q[k] = e.target.value; render(); } });
+
+heroHtml();
+if (isDemo() || LS.get('tf_code', '')) load(); else showGate();
+</script>
+</body>
+</html>
