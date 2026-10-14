@@ -74,7 +74,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 html[lang="ar"] .lang [data-l="ar"],html[lang="en"] .lang [data-l="en"]{background:var(--ink);color:#fff}
 .burger{display:none;width:44px;height:44px;border-radius:14px;border:1px solid var(--glass-edge);background:rgba(255,255,255,.7)}
 .burger span{display:block;width:18px;height:2px;margin:4px auto;background:var(--ink);border-radius:2px}
-@media(max-width:980px){
+@media(max-width:1120px){
   .burger{display:block}
   .nav-links{position:absolute;top:calc(100% + 10px);inset-inline:0;flex-direction:column;align-items:stretch;padding:10px;display:none;
     background:var(--glass-strong);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);
@@ -450,6 +450,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
 footer b{color:var(--ink);font-weight:600}
 .staff-link{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:12px;font-family:var(--display);font-weight:600;font-size:14px;color:var(--ink);background:rgba(26,22,64,.06);transition:background .2s}
 .staff-link:hover{background:rgba(232,165,10,.18)}
+.staff-links{display:inline-flex;flex-wrap:wrap;gap:8px}
 .staff-link svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
 /* ---------- الظهور ---------- */
@@ -503,6 +504,7 @@ html.js .reveal.in{opacity:1;transform:none}
       <a href="#book" data-i18n="nav.book">الكتاب والمؤلف</a>
       <a href="#components" data-i18n="nav.components">المكونات التسعة</a>
       <a href="competitions.html" data-i18n="nav.comps">المسابقات</a>
+      <a href="mawhiba-test.html" data-i18n="nav.mtest">مقياس موهبة</a>
       <a href="kpis.html" data-i18n="nav.kpis">المؤشرات والتقارير</a>
     </nav>
     <button class="lang" id="langBtn" type="button" aria-label="Language"><span data-l="ar">ع</span><span data-l="en">EN</span></button>
@@ -802,7 +804,7 @@ html.js .reveal.in{opacity:1;transform:none}
   <div class="wrap">
     <div><b data-i18n="brand">منصة الموهبة</b> — <span data-i18n="school">مدارس دار الذكر</span></div>
     <div data-i18n="footer.credit">إعداد وإشراف: مصطفى أحمد حسين — المنسق التنفيذي لبرامج الموهبة والمسابقات الأكاديمية</div>
-    <a class="staff-link" href="sijil.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg><span data-i18n="footer.sijil">للمعلمين: السجل التام</span></a>
+    <span class="staff-links"><a class="staff-link" href="sijil.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg><span data-i18n="footer.sijil">دخول المعلمين</span></a><a class="staff-link" href="sijil-reports.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.6-3 8.5-7 10-4-1.5-7-5.4-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><span data-i18n="footer.admin">دخول المشرف</span></a></span>
   </div>
 </footer>
 
@@ -816,7 +818,7 @@ let SIJIL = null;
 const I18N = {
  ar:{
   'brand':'منصة الموهبة','school':'مدارس دار الذكر',
-  'nav.home':'الرئيسية','nav.stats':'الأرقام','nav.journey':'رحلة الموهبة','nav.sections':'أقسام المنصة','nav.comps':'المسابقات','nav.kpis':'المؤشرات والتقارير',
+  'nav.home':'الرئيسية','nav.stats':'الأرقام','nav.journey':'رحلة الموهبة','nav.sections':'أقسام المنصة','nav.comps':'المسابقات','nav.mtest':'مقياس موهبة','nav.kpis':'المؤشرات والتقارير',
   'hero.chip':'النموذج التام لتطوير الموهبة TGDM','hero.sub':'Talent Platform',
   'hero.a':'نموذج تطبيقي للكشف عن الموهبة','hero.b1':'وتطويرها في','hero.b2':'المدرسة',
   'hero.lead':'المنصة الرسمية لتطبيق «النموذج التام لتطوير الموهبة» الذي صمّمه د. عادل عبدالجليل بترجي في مدارس دار الذكر: كشفٌ شامل بمعايير متعددة، وتسعة مكوّنات تحقق عنصري التمييز والتسريع، وسجلٌّ تام يتابع تطور موهبة كل طالب.',
@@ -882,12 +884,12 @@ const I18N = {
   'sections.kicker':'أقسام المنصة','sections.t1':'كل ما يخص الموهبة','sections.t2':'في مكان واحد',
   'badge.live':'متاح الآن','badge.soon':'قريباً','go':'ادخل القسم',
   'sister.t':'المنصة الشقيقة: وحدة مهارات القرن 21','sister.d':'ستة برامج تبني مهارات المستقبل لدى جميع الطلاب، وتغذي مسار الموهبة بمشاريع البحث العلمي والابتكار.','sister.go':'زيارة المنصة',
-  'footer.sijil':'للمعلمين: السجل التام',
+  'footer.sijil':'دخول المعلمين', 'footer.admin':'دخول المشرف',
   'footer.credit':'إعداد وإشراف: مصطفى أحمد حسين — المنسق التنفيذي لبرامج الموهبة والمسابقات الأكاديمية'
  },
  en:{
   'brand':'Talent Platform','school':'Dar Al-Thikr Schools',
-  'nav.home':'Home','nav.stats':'Numbers','nav.journey':'Journey','nav.sections':'Sections','nav.comps':'Competitions','nav.kpis':'KPIs & Reports',
+  'nav.home':'Home','nav.stats':'Numbers','nav.journey':'Journey','nav.sections':'Sections','nav.comps':'Competitions','nav.mtest':'Mawhiba Test','nav.kpis':'KPIs & Reports',
   'hero.chip':'Total Giftedness Development Model (TGDM)','hero.sub':'منصة الموهبة',
   'hero.a':'An applied model for identifying giftedness','hero.b1':'and developing it in','hero.b2':'school',
   'hero.lead':'The official platform for implementing the "Total Giftedness Development Model" designed by Dr. Adel A. Batterjee at Dar Al-Thikr Schools: comprehensive multi-criteria identification, nine components delivering differentiation and acceleration, and a Total Record that follows each student’s growth.',
@@ -953,7 +955,7 @@ const I18N = {
   'sections.kicker':'Platform sections','sections.t1':'Everything about talent','sections.t2':'in one place',
   'badge.live':'Live now','badge.soon':'Coming soon','go':'Open section',
   'sister.t':'Sister platform: 21st Century Skills Unit','sister.d':'Six programs building future skills for every student, feeding the talent path with research and innovation projects.','sister.go':'Visit platform',
-  'footer.sijil':'For teachers: Talent Record',
+  'footer.sijil':'Teachers’ login', 'footer.admin':'Supervisor login',
   'footer.credit':'Prepared and supervised by Moustafa Ahmed Hussein — Executive Coordinator of Talent Programs and Academic Competitions'
  }
 };
@@ -989,7 +991,7 @@ const CARDS = [
    ar:['المؤشرات والتقارير','لوحة مؤشرات الأداء ومقارنة الأعوام ومسار المسابقات والتقارير الدورية والسنوية.'],
    en:['KPIs & Reports','Performance indicators, year-over-year comparison, competition pipeline and periodic and annual reports.']},
   {k:'model', href:'#components', live:true, c:'#7B4DFF', ic:'model', ar:['النموذج ومكوناته التسعة','النموذج التام لتطوير الموهبة: تعريفه، والكتاب والمؤلف، ومكوناته التسعة، ومستويات الموهبة، وصفحة تفصيلية لكل مكوّن.'], en:['The Model & its nine components','The Total Giftedness Development Model: definition, book and author, nine components, levels, and a detailed page for each component.']},
-  {k:'identify', c:'#0EA5D6', ic:'search', ar:['الكشف الشامل والقياس','الأسلوب الشامل للكشف بمعاييره المتعددة، ومقياس موهبة للقدرات العقلية المتعددة، ودور ولي الأمر.'], en:['Identification','The Mawhiba Multiple Mental Abilities test, nomination criteria and the parent’s role.']},
+  {k:'identify', href:'mawhiba-test.html', live:true, c:'#0EA5D6', ic:'search', ar:['مقياس موهبة','الاستعداد لمقياس موهبة للقدرات العقلية المتعددة: دليل التسجيل، والأدلة والمواعيد الرسمية، ومكتبة تدريب حسب المستويات، واختبار تشخيصي بتغذية راجعة تفصيلية.'], en:['Mawhiba Test','Preparing for the Mawhiba Multiple Mental Abilities Test: registration guide, official guides and dates, a training library by level, and a diagnostic test with detailed feedback.']},
   {k:'care', c:'#0E9F76', ic:'heart', ar:['الرعاية الخاصة والإثراء','برنامج الرعاية الخاصة والإثراء المتخصص، وفصول موهبة ومنحة دروب، والبرامج الإثرائية مع الجامعات.'], en:['Care Programs','Mawhiba classes, the Duroob grant, and enrichment programs with Mawhiba and universities.']},
   {k:'comp', href:'competitions.html', live:true, c:'#E2386F', ic:'cal', ar:['المسابقات والتقويم','كل المسابقات بملخص لكل منها، وصفحة خاصة بالشروط والتسجيل والمخطط الزمني والمصادر والتدريب والنتائج.'], en:['Competitions & Calendar','Every competition with a summary and its own page: conditions, registration, timeline, resources, training and results.']},
   {k:'research', c:'#6D4BFF', ic:'flask', ar:['المشاريع الهادفة','برنامج المشاريع الهادفة: من الاهتمام إلى البحث العلمي المتقدم… وصولاً إلى إبداع وISEF.'], en:['Research & Innovation','From interest to idea to project… all the way to Ibdaa and ISEF.']},

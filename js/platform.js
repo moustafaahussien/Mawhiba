@@ -19,11 +19,11 @@
   TP.t = k => (TP.dict[lang] && TP.dict[lang][k] != null) ? TP.dict[lang][k] : ((TP.dict.ar && TP.dict.ar[k]) || k);
   TP.addDict = d => { ['ar', 'en'].forEach(l => { TP.dict[l] = Object.assign(TP.dict[l] || {}, d[l] || {}); }); };
   TP.addDict({
-    ar: { brand:'منصة الموهبة', school:'مدارس دار الذكر', 'alt.logo':'شعار مدارس دار الذكر', 'aria.menu':'القائمة', 'aria.lang':'اللغة', 'nav.home':'الرئيسية', 'nav.model':'مكونات النموذج', 'nav.comps':'المسابقات', 'nav.kpis':'المؤشرات والتقارير',
-          'footer.sijil':'للمعلمين: السجل التام', 'footer.credit':'إعداد وإشراف: مصطفى أحمد حسين — المنسق التنفيذي لبرامج الموهبة والمسابقات الأكاديمية',
+    ar: { brand:'منصة الموهبة', school:'مدارس دار الذكر', 'alt.logo':'شعار مدارس دار الذكر', 'aria.menu':'القائمة', 'aria.lang':'اللغة', 'nav.home':'الرئيسية', 'nav.model':'مكونات النموذج', 'nav.comps':'المسابقات', 'nav.mtest':'مقياس موهبة', 'nav.kpis':'المؤشرات والتقارير',
+          'footer.sijil':'دخول المعلمين', 'footer.admin':'دخول المشرف', 'footer.credit':'إعداد وإشراف: مصطفى أحمد حسين — المنسق التنفيذي لبرامج الموهبة والمسابقات الأكاديمية',
           'st.open':'التسجيل مفتوح', 'st.soon':'يفتح قريباً', 'st.closed':'التسجيل مغلق' },
-    en: { brand:'Talent Platform', school:'Dar Al-Thikr Schools', 'alt.logo':'Dar Al-Thikr Schools logo', 'aria.menu':'Menu', 'aria.lang':'Language', 'nav.home':'Home', 'nav.model':'Model components', 'nav.comps':'Competitions', 'nav.kpis':'KPIs & Reports',
-          'footer.sijil':'For teachers: Talent Record', 'footer.credit':'Prepared and supervised by Moustafa Ahmed Hussein — Executive Coordinator of Talent Programs and Academic Competitions',
+    en: { brand:'Talent Platform', school:'Dar Al-Thikr Schools', 'alt.logo':'Dar Al-Thikr Schools logo', 'aria.menu':'Menu', 'aria.lang':'Language', 'nav.home':'Home', 'nav.model':'Model components', 'nav.comps':'Competitions', 'nav.mtest':'Mawhiba Test', 'nav.kpis':'KPIs & Reports',
+          'footer.sijil':'Teachers’ login', 'footer.admin':'Supervisor login', 'footer.credit':'Prepared and supervised by Moustafa Ahmed Hussein — Executive Coordinator of Talent Programs and Academic Competitions',
           'st.open':'Registration open', 'st.soon':'Opening soon', 'st.closed':'Registration closed' }
   });
   TP.applyLang = function () {

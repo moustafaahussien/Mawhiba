@@ -46,6 +46,11 @@ html[dir=rtl] .hs{padding:10px 12px 10px 18px}
 .c-orb::after{content:"";position:absolute;top:9%;left:16%;width:34%;height:20%;border-radius:50%;background:linear-gradient(180deg,rgba(255,255,255,.88),transparent);transform:rotate(-24deg)}
 .c-orb svg{position:relative;z-index:1;width:46%;height:46%;stroke:#fff;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .c-orb:hover{transform:scale(1.15)}
+.c-pill{position:absolute;top:calc(100% + 1cqw);left:50%;transform:translateX(-50%);width:max-content;max-width:30cqw;padding:2px 9px;z-index:2;text-align:center;
+  font-family:var(--display);font-weight:600;font-size:clamp(9.5px,2.7cqw,13px);line-height:1.4;color:var(--ink);
+  background:rgba(255,255,255,.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--glass-edge);border-radius:12px;box-shadow:0 6px 16px -8px rgba(120,70,10,.45);transition:background .2s,color .2s}
+.constellation{margin-bottom:9cqw}
+.c-orb:hover .c-pill{background:var(--c);color:#fff;border-color:transparent}
 .constellation:hover .c-orbit,.constellation:hover .c-up2{animation-play-state:paused}
 @media(max-width:900px){.hero-grid{grid-template-columns:1fr}.constellation{max-width:320px;order:-1}.hero{padding-top:104px}}
 
@@ -119,6 +124,7 @@ html[dir=rtl] .hs{padding:10px 12px 10px 18px}
       <a href="index.html" data-i18n="nav.home">الرئيسية</a>
       <a href="index.html#components" data-i18n="nav.model">مكونات النموذج</a>
       <a href="competitions.html" class="cur" data-i18n="nav.comps">المسابقات</a>
+      <a href="mawhiba-test.html" data-i18n="nav.mtest">مقياس موهبة</a>
       <a href="kpis.html" data-i18n="nav.kpis">المؤشرات والتقارير</a>
     </nav>
     <button class="lang" id="langBtn" type="button" aria-label="Language"><span data-l="ar">ع</span><span data-l="en">EN</span></button>
@@ -165,7 +171,7 @@ html[dir=rtl] .hs{padding:10px 12px 10px 18px}
   <div class="wrap">
     <div><b data-i18n="brand">منصة الموهبة</b> — <span data-i18n="school">مدارس دار الذكر</span></div>
     <div data-i18n="footer.credit">إعداد وإشراف: مصطفى أحمد حسين — المنسق التنفيذي لبرامج الموهبة والمسابقات الأكاديمية</div>
-    <a class="staff-link" href="sijil.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg><span data-i18n="footer.sijil">للمعلمين: السجل التام</span></a>
+    <span class="staff-links"><a class="staff-link" href="sijil.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg><span data-i18n="footer.sijil">دخول المعلمين</span></a><a class="staff-link" href="sijil-reports.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.6-3 8.5-7 10-4-1.5-7-5.4-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><span data-i18n="footer.admin">دخول المشرف</span></a></span>
   </div>
 </footer>
 
@@ -208,7 +214,7 @@ function renderStatic(){
   const n = COMPS.length;
   document.getElementById('constellation').innerHTML = `<div class="halo"></div><div class="ring"></div><div class="ring r2"></div><div class="c-pulse"></div>
     <div class="c-core">${TP.icon('trophy')}</div>
-    <div class="c-orbit">${COMPS.map((c, i) => `<div class="c-slot" style="--a:${-90 + i * 360 / n}deg"><div class="c-up"><div class="c-up2"><a class="c-orb" style="--c:${c.color}" href="competition.html?c=${c.id}" title="${TP.esc(TP.tx(c.short))}">${TP.icon(c.icon)}</a></div></div></div>`).join('')}</div>`;
+    <div class="c-orbit">${COMPS.map((c, i) => `<div class="c-slot" style="--a:${-90 + i * 360 / n}deg"><div class="c-up"><div class="c-up2"><a class="c-orb" style="--c:${c.color}" href="competition.html?c=${c.id}" aria-label="${TP.esc(TP.tx(c.name))}">${TP.icon(c.icon)}<span class="c-pill">${TP.esc(TP.tx(c.short))}</span></a></div></div></div>`).join('')}</div>`;
 
   document.getElementById('fieldSeg').innerHTML = [['all', TP.t('f.all'), '#E8A50A'], ...fieldsUsed.map(f => [f, TP.tx(FIELDS[f]), FIELDS[f].c])]
     .map(([k, l, c]) => `<button type="button" class="${k === F_FIELD ? 'on' : ''}" data-field="${k}" data-c style="--c:${c}">${TP.esc(l)}</button>`).join('');

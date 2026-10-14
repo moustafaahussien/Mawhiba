@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مقياس موهبة – منصة الموهبة</title>
+<meta name="description" content="الاستعداد لمقياس موهبة للقدرات العقلية المتعددة: دليل التسجيل، والأدلة والمواعيد الرسمية، ومكتبة تدريب حسب المستويات، واختبار تشخيصي بتغذية راجعة تفصيلية.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Noto+Kufi+Arabic:wght@300;600;900&family=Sora:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/platform.css">
+<script src="js/config.js"></script>
+<script src="js/mawhiba-test-data.js"></script>
+<script src="js/mawhiba-bank.js"></script>
+<script src="js/platform.js"></script>
+<style>
+section{padding:56px 0 10px}
+.sec-head{margin-bottom:24px}
+.sec-sub{color:var(--muted);max-width:46em;margin-top:6px}
+.card{border-radius:28px;padding:24px}
+.h3{font-family:var(--display);font-weight:900;font-size:19px;line-height:1.6;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.h3 .gorb{--sz:40px}
+.mini{font-size:13.5px;color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.four{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+@media(max-width:1000px){.four{grid-template-columns:1fr 1fr}.three{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.two,.three,.four{grid-template-columns:1fr}}
+.stack{display:grid;gap:22px}
+
+/* ---------- الهيرو ---------- */
+.hero{padding:128px 0 20px}
+.hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:30px;align-items:center}
+.hero h1{font-size:clamp(44px,7vw,88px);margin-bottom:8px}
+.hero .lead{color:var(--muted);font-size:clamp(16px,1.5vw,18.5px);max-width:38em}
+.hero .chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 22px}
+.hero .cta{display:flex;flex-wrap:wrap;gap:12px}
+.reg-card{border-radius:30px;padding:24px;--c:#0E9F76}
+.reg-card .top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.reg-card h3{font-family:var(--display);font-weight:900;font-size:18px}
+.reg-card .when{font-size:14.5px;color:var(--muted);margin:2px 0 14px}
+.reg-card .fee{display:flex;align-items:center;gap:10px;margin-top:16px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.65);font-size:14px}
+.reg-card .fee svg{width:20px;height:20px;stroke:var(--c);fill:none;stroke-width:2;flex:none}
+.reg-card .btn{width:100%;justify-content:center;margin-top:14px}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.hero{padding-top:104px}}
+
+/* شريط الأقسام */
+.jump{position:sticky;top:88px;z-index:30;display:flex;justify-content:center;margin:14px 0 0}
+.jump .seg{overflow-x:auto;flex-wrap:nowrap;max-width:100%;scrollbar-width:none}
+.jump .seg a{white-space:nowrap;padding:7px 15px;border-radius:12px;font-family:var(--display);font-weight:600;font-size:14px;color:var(--muted)}
+.jump .seg a.on{color:#fff;background:linear-gradient(135deg,#F2B705,#F07B0F 60%,#E2386F)}
+@media(max-width:900px){.jump{top:80px}}
+
+/* المجالات */
+.dom{border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:8px}
+.dom .gorb{--sz:50px}
+.dom b{font-family:var(--display);font-weight:900;font-size:16px;line-height:1.6}
+.dom p{font-size:14.5px;color:var(--muted);line-height:1.8}
+
+/* اعرف مستواك */
+.finder{display:grid;grid-template-columns:1fr 1.2fr;gap:22px;align-items:center}
+.finder select{width:100%;height:50px;border-radius:14px;border:1px solid var(--glass-edge);background:rgba(255,255,255,.85);padding-inline:14px;font-size:16px}
+.lvl-res{display:flex;gap:16px;align-items:center;padding:16px;border-radius:20px;background:color-mix(in srgb,var(--c) 10%,rgba(255,255,255,.7));border:1px solid color-mix(in srgb,var(--c) 26%,#fff)}
+.lvl-res .gorb{--sz:64px}
+.lvl-res h4{font-family:var(--display);font-weight:900;font-size:18px}
+.lvl-res p{font-size:14.5px;color:var(--muted)}
+.lvl-res .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.btn.sm{padding:8px 14px;font-size:14px;border-radius:12px}
+@media(max-width:760px){.finder{grid-template-columns:1fr}}
+
+/* الخطوات */
+.steps{list-style:none;display:grid;gap:4px;counter-reset:s}
+.steps li{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start;padding:12px;border-radius:18px;transition:background .2s}
+.steps li:hover{background:rgba(255,255,255,.6)}
+.steps .n{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#fff;font-family:'Sora',sans-serif;font-weight:800;
+  background:radial-gradient(circle at 32% 26%,#9ff0d2,#0E9F76 55%,#07583f);box-shadow:0 10px 18px -10px #0E9F76}
+.steps b{font-family:var(--display);font-weight:600;display:block}
+.steps span{font-size:14.5px;color:var(--muted)}
+.checks{list-style:none;display:grid;gap:10px}
+.checks li{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.checks svg{width:20px;height:20px;flex:none;margin-top:4px;stroke:var(--c,#0E9F76);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.warn{--c:#E2386F}
+.ofc{font-size:11.5px;font-weight:600;padding:0 8px;border-radius:999px;background:rgba(14,159,118,.12);color:#0b7a5b;margin-inline-start:6px;white-space:nowrap}
+
+/* المواعيد */
+.tl{display:grid;gap:12px}
+.tl .it{display:grid;grid-template-columns:56px 1fr;gap:14px;align-items:start;padding:16px;border-radius:22px}
+.tl .it .gorb{--sz:52px}
+.tl h4{font-family:var(--display);font-weight:900;font-size:16px;line-height:1.6}
+.tl .d{font-weight:600;color:color-mix(in srgb,var(--c) 70%,#1A1640)}
+.tl p{font-size:14px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.stat{border-radius:20px;padding:16px 12px;text-align:center}
+.stat b{display:block;font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(20px,2.4vw,28px);background:var(--gold-foil);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat span{font-size:13px;color:var(--muted);font-weight:600}
+@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}
+.src{font-size:12.5px;color:var(--muted);margin-top:8px}
+.src a{text-decoration:underline}
+table.lv{width:100%;border-collapse:collapse;font-size:15px}
+table.lv th,table.lv td{text-align:start;padding:11px 12px;border-bottom:1px solid var(--line)}
+table.lv th{font-family:var(--display);font-weight:600;font-size:13.5px;color:var(--muted)}
+table.lv td b{font-family:'Sora',sans-serif}
+.links{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.lnk{display:flex;gap:12px;align-items:center;padding:14px;border-radius:20px;transition:transform .2s}
+.lnk:hover{transform:translateY(-4px)}
+.lnk .gorb{--sz:44px}
+.lnk b{font-family:var(--display);font-weight:600;font-size:14.5px;line-height:1.6;display:block}
+.lnk small{font-size:12.5px;color:var(--muted)}
+.lnk .ext{width:16px;height:16px;flex:none;margin-inline-start:auto;stroke:var(--muted);fill:none;stroke-width:2}
+.fact{display:flex;gap:12px;align-items:flex-start;padding:16px;border-radius:20px}
+.fact .gorb{--sz:42px}
+.fact b{font-family:var(--display);font-weight:900;display:block}
+.fact p{font-size:14px;color:var(--muted)}
+
+/* المكتبة */
+.lib-top{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin-bottom:18px}
+.dpanel{border-radius:28px;padding:22px}
+.dpanel .hd{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px}
+.dpanel .hd .gorb{--sz:56px}
+.dpanel .hd b{font-family:var(--display);font-weight:900;font-size:18px;display:block;line-height:1.6}
+.dpanel .hd p{font-size:14.5px;color:var(--muted)}
+details.ty{border-radius:16px;background:rgba(255,255,255,.55);border:1px solid var(--glass-edge);margin-top:8px}
+details.ty summary{cursor:pointer;list-style:none;padding:11px 14px;font-family:var(--display);font-weight:600;font-size:15px;display:flex;justify-content:space-between;gap:10px}
+details.ty summary::-webkit-details-marker{display:none}
+details.ty summary::after{content:"+";font-family:'Sora';font-weight:800;color:var(--c)}
+details.ty[open] summary::after{content:"−"}
+details.ty .bd{padding:0 14px 14px;font-size:14.5px}
+details.ty .bd ul{margin:8px 0 0;padding-inline-start:20px;color:var(--muted)}
+.dpanel .go{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.tipcard ul{padding-inline-start:20px;color:var(--muted);display:grid;gap:6px;font-size:15px}
+
+/* الأسئلة */
+.qcard{border-radius:26px;padding:22px}
+.qmeta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.passage{white-space:pre-line;background:rgba(255,255,255,.7);border:1px solid var(--glass-edge);border-radius:16px;padding:14px 16px;margin-bottom:14px;font-size:15.5px;line-height:1.95}
+.fig{display:flex;justify-content:center;margin:6px 0 14px;overflow-x:auto}
+.fig .mwfig{max-width:100%;height:auto}
+.qtext{font-family:var(--display);font-weight:600;font-size:17px;line-height:1.9;margin-bottom:14px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opts.figs{grid-template-columns:repeat(4,1fr)}
+@media(max-width:620px){.opts{grid-template-columns:1fr}.opts.figs{grid-template-columns:1fr 1fr}}
+.opt{display:flex;align-items:center;gap:12px;text-align:start;padding:12px 14px;border-radius:16px;border:2px solid var(--glass-edge);background:rgba(255,255,255,.8);font-size:16px;transition:border-color .2s,background .2s,transform .15s}
+.opt:hover:not([disabled]){border-color:color-mix(in srgb,var(--violet) 40%,#fff);transform:translateY(-2px)}
+.opt .l{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-family:'Sora','Noto Kufi Arabic',sans-serif;font-weight:800;font-size:14px;background:rgba(26,22,64,.07)}
+.opt.sel{border-color:var(--violet);background:color-mix(in srgb,var(--violet) 9%,#fff)}
+.opt.sel .l{background:var(--violet);color:#fff}
+.opt.ok{border-color:var(--green);background:color-mix(in srgb,var(--green) 10%,#fff)}
+.opt.ok .l{background:var(--green);color:#fff}
+.opt.bad{border-color:var(--ruby);background:color-mix(in srgb,var(--ruby) 8%,#fff)}
+.opt.bad .l{background:var(--ruby);color:#fff}
+.opt[disabled]{cursor:default}
+.opts.figs .opt{flex-direction:column;justify-content:center}
+.opt .mwfig{width:84px;height:84px}
+.fb{margin-top:14px;padding:14px 16px;border-radius:18px;font-size:15px;line-height:1.9}
+.fb.good{background:color-mix(in srgb,var(--green) 10%,#fff);border:1px solid color-mix(in srgb,var(--green) 30%,#fff)}
+.fb.bad{background:color-mix(in srgb,var(--ruby) 7%,#fff);border:1px solid color-mix(in srgb,var(--ruby) 26%,#fff)}
+.fb h5{font-family:var(--display);font-weight:900;font-size:15.5px;margin-bottom:4px}
+.fb .row{margin-top:6px}
+.fb .row b{font-family:var(--display);font-weight:600}
+.fb details{margin-top:8px}
+.fb summary{cursor:pointer;font-weight:600;color:var(--muted);font-size:14px}
+.fb details ul{padding-inline-start:20px;margin-top:6px;color:var(--muted);font-size:14px}
+
+/* المحاكاة */
+.dstart{display:grid;grid-template-columns:1.1fr .9fr;gap:22px}
+@media(max-width:900px){.dstart{grid-template-columns:1fr}}
+.lvpick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.lvpick button{border:2px solid var(--glass-edge);background:rgba(255,255,255,.75);border-radius:18px;padding:12px 8px;font-family:var(--display);font-weight:600;font-size:14px;line-height:1.5;transition:border-color .2s}
+.lvpick button b{display:block;font-family:'Sora','Noto Kufi Arabic',sans-serif;font-size:18px;color:var(--c)}
+.lvpick button.on{border-color:var(--c);background:color-mix(in srgb,var(--c) 10%,#fff)}
+.runbar{position:sticky;top:146px;z-index:25;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:20px;margin-bottom:14px}
+.timer{display:inline-flex;align-items:center;gap:8px;font-family:'Sora',sans-serif;font-weight:800;font-size:20px;font-variant-numeric:tabular-nums;direction:ltr}
+.timer svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
+.timer.low{color:var(--ruby)}
+.prog{flex:1;min-width:140px;height:8px;border-radius:8px;background:rgba(26,22,64,.08);overflow:hidden}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,#F2B705,#E2386F);transition:width .3s}
+.qnav{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.qnav button{width:36px;height:36px;border-radius:11px;border:1px solid var(--glass-edge);background:rgba(255,255,255,.75);font-family:'Sora',sans-serif;font-weight:700;font-size:13px;position:relative}
+.qnav button.ans{background:color-mix(in srgb,var(--violet) 16%,#fff);border-color:color-mix(in srgb,var(--violet) 35%,#fff)}
+.qnav button.cur{outline:2px solid var(--ink)}
+.qnav button.flg::after{content:"";position:absolute;top:-3px;inset-inline-end:-3px;width:10px;height:10px;border-radius:50%;background:var(--amber);border:2px solid #fff}
+.qctl{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-top:16px}
+.flag.on{background:color-mix(in srgb,var(--amber) 18%,#fff)}
+.confirm{margin-top:14px;padding:14px 16px;border-radius:18px;background:color-mix(in srgb,var(--amber) 12%,#fff);border:1px solid color-mix(in srgb,var(--amber) 30%,#fff)}
+.confirm .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+
+/* النتيجة */
+.res-top{display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:center}
+.ring{--p:0;width:150px;height:150px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--c) calc(var(--p) * 1%),rgba(26,22,64,.08) 0)}
+.ring div{width:118px;height:118px;border-radius:50%;background:#fff;display:grid;place-items:center;text-align:center}
+.ring b{font-family:'Sora',sans-serif;font-weight:800;font-size:32px;line-height:1}
+.ring span{font-size:12.5px;color:var(--muted)}
+@media(max-width:620px){.res-top{grid-template-columns:1fr;justify-items:center;text-align:center}}
+.dbar{display:grid;grid-template-columns:minmax(150px,1fr) 2fr auto;gap:12px;align-items:center;padding:8px 0}
+.dbar .t{font-family:var(--display);font-weight:600;font-size:14.5px}
+.dbar .tr{height:12px;border-radius:12px;background:rgba(26,22,64,.08);overflow:hidden}
+.dbar .tr i{display:block;height:100%;border-radius:12px;background:var(--c)}
+.dbar .v{font-family:'Sora',sans-serif;font-weight:800;font-size:14px;white-space:nowrap}
+@media(max-width:620px){.dbar{grid-template-columns:1fr auto}.dbar .tr{grid-column:1/-1;grid-row:2}}
+.lvl-tag{font-size:12px;font-weight:600;padding:1px 9px;border-radius:999px;margin-inline-start:6px;color:#fff;background:var(--c)}
+.recs{display:grid;gap:10px}
+.rec{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.65)}
+.review-item{margin-top:14px}
+.note-box{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.6);font-size:13.5px;color:var(--muted);margin-top:14px}
+.note-box svg{width:18px;height:18px;flex:none;stroke:var(--gold);fill:none;stroke-width:2;margin-top:3px}
+.last{margin-top:12px;font-size:14px;color:var(--muted)}
+
+/* نافذة التدريب */
+.ov{position:fixed;inset:0;z-index:90;background:rgba(26,22,64,.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:90px 12px 30px}
+.ov.open{display:flex}
+.ov .panel{width:min(820px,100%);border-radius:30px;padding:22px;background:var(--glass-strong)}
+.ov .ph{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.ov .x{width:40px;height:40px;border-radius:12px;border:1px solid var(--glass-edge);background:#fff;font-size:22px;line-height:1}
+
+/* الرسوم */
+.mwfig{color:var(--ink);overflow:visible}
+.mwfig .st{fill:none;stroke:currentColor;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.mwfig .thin{stroke-width:1.6}
+.mwfig .bx{fill:#fff;stroke:rgba(26,22,64,.22);stroke-width:1.5}
+.mwfig .qm{font:800 30px Sora,sans-serif;fill:var(--violet)}
+.mwfig .gr{fill:color-mix(in srgb,var(--violet) 16%,#fff);stroke:currentColor;stroke-width:2}
+.mwfig .hub,.mwfig .fl{fill:currentColor}
+.mwfig .lb{font:800 16px Sora,sans-serif;fill:currentColor}
+.mwfig .inv{fill:#fff}
+.mwfig .ac{stroke:var(--ruby)}
+.mwfig .ac.fl{fill:var(--ruby);stroke:none}
+.mwfig .ac2{fill:var(--ruby)}
+.mwfig .bk{fill:var(--violet)}
+.mwfig .tk{font:600 13px Sora,sans-serif;fill:var(--muted)}
+.mwfig .sym{font:700 22px 'Segoe UI Symbol','Noto Sans Symbols 2',sans-serif;fill:currentColor}
+.mwfig .sh>*{fill:none;stroke:currentColor;stroke-width:3}
+.mwfig .sh.full>*{fill:currentColor}
+.mwfig .fc{fill:#fff;stroke:currentColor;stroke-width:2}
+.mwfig .f2{fill:#EFEAFB}.mwfig .f3{fill:#E1D8F7}
+.mwfig .hatch{stroke:currentColor;stroke-width:1.5;fill:none}
+.mwfig .dash{stroke:rgba(26,22,64,.25);stroke-dasharray:4 4;fill:none}
+
+@media print{
+  body *{visibility:hidden}
+  #diagRes,#diagRes *{visibility:visible}
+  #diagRes{position:absolute;inset:0 0 auto 0}
+  .no-print{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav">
+  <a href="index.html" class="brand">
+    <img class="brand-logo" src="assets/school-emblem.png" alt="شعار مدارس دار الذكر" data-i18n-alt="alt.logo" width="48" height="48">
+    <span><b data-i18n="brand">منصة الموهبة</b><small data-i18n="school">مدارس دار الذكر</small></span>
+  </a>
+  <div class="nav-right">
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html" data-i18n="nav.home">الرئيسية</a>
+      <a href="index.html#components" data-i18n="nav.model">مكونات النموذج</a>
+      <a href="competitions.html" data-i18n="nav.comps">المسابقات</a>
+      <a href="mawhiba-test.html" class="cur" data-i18n="nav.mtest">مقياس موهبة</a>
+      <a href="kpis.html" data-i18n="nav.kpis">المؤشرات والتقارير</a>
+    </nav>
+    <button class="lang" id="langBtn" type="button" aria-label="Language"><span data-l="ar">ع</span><span data-l="en">EN</span></button>
+    <button class="burger" id="burger" type="button" aria-label="القائمة" data-i18n-aria="aria.menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main class="wrap" id="top">
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <div class="kicker" data-i18n="kicker">البرنامج الوطني للكشف عن الموهوبين</div>
+        <h1 class="foil-title" data-i18n="title">مقياس موهبة</h1>
+        <p class="lead" data-i18n="lead">نهيّئ طلابنا للمشاركة الواعية في البرنامج الوطني للكشف عن الموهوبين، وللاستعداد الأمثل لمقياس موهبة للقدرات العقلية المتعددة.</p>
+        <div class="chips" id="heroChips"></div>
+        <div class="cta">
+          <a class="btn primary" href="#diag"><span data-i18n="cta.diag">ابدأ الاختبار التشخيصي</span><svg class="arr" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></a>
+          <a class="btn ghost" href="#guide" data-i18n="cta.guide">دليل التسجيل</a>
+        </div>
+      </div>
+      <aside class="reg-card glass" id="regCard"></aside>
+    </div>
+  </section>
+
+  <div class="jump no-print"><div class="seg glass" id="jump">
+    <a href="#guide" data-i18n="j.guide">دليل التسجيل</a>
+    <a href="#dates" data-i18n="j.dates">الأدلة والمواعيد</a>
+    <a href="#library" data-i18n="j.library">مكتبة التدريب</a>
+    <a href="#diag" data-i18n="j.diag">الاختبار التشخيصي</a>
+  </div></div>
+
+  <!-- ============ دليل التسجيل ============ -->
+  <section id="guide">
+    <div class="sec-head reveal">
+      <div class="kicker" data-i18n="g.kicker">دليل التسجيل</div>
+      <h2 class="sec-title"><span data-i18n="g.t1">من التسجيل</span> <em data-i18n="g.t2">إلى يوم الاختبار</em></h2>
+      <p class="sec-sub" data-i18n="g.sub">خطوات مبسطة ومحدّثة وفق المصادر الرسمية لموهبة وهيئة تقويم التعليم والتدريب.</p>
+    </div>
+    <div class="stack">
+      <div class="card glass finder reveal" style="--c:#0EA5D6">
+        <div>
+          <div class="h3"><span class="gorb" style="--c:#0EA5D6" id="finderIc"></span><span data-i18n="f.t">اعرف مستواك في المقياس</span></div>
+          <label class="mini" for="gradeSel" data-i18n="f.lbl">اختر صفك الدراسي الحالي</label>
+          <select id="gradeSel"></select>
+        </div>
+        <div id="finderRes"></div>
+      </div>
+      <div class="two">
+        <div class="card glass reveal" style="--c:#0E9F76">
+          <div class="h3"><span class="gorb" style="--c:#0E9F76" data-ic="list"></span><span data-i18n="g.steps">خطوات التسجيل</span></div>
+          <ol class="steps" id="steps"></ol>
+        </div>
+        <div class="stack">
+          <div class="card glass reveal" style="--c:#7B4DFF">
+            <div class="h3"><span class="gorb" style="--c:#7B4DFF" data-ic="users"></span><span data-i18n="g.who">من يحق له التسجيل؟</span></div>
+            <ul class="checks" id="who"></ul>
+          </div>
+          <div class="card glass reveal" style="--c:#E8A50A">
+            <div class="h3"><span class="gorb" style="--c:#E8A50A" data-ic="star"></span><span data-i18n="g.fee">المساهمة المالية والترشيح المدعوم</span></div>
+            <p id="feeTxt"></p>
+          </div>
+        </div>
+      </div>
+      <div class="two">
+        <div class="card glass reveal warn" style="--c:#E2386F">
+          <div class="h3"><span class="gorb" style="--c:#E2386F" data-ic="info"></span><span data-i18n="g.rules">تنبيهات مهمة</span></div>
+          <ul class="checks" id="rules"></ul>
+        </div>
+        <div class="card glass reveal" style="--c:#0EA5D6">
+          <div class="h3"><span class="gorb" style="--c:#0EA5D6" data-ic="clock"></span><span data-i18n="g.day">يوم الاختبار</span></div>
+          <ul class="checks" id="day"></ul>
+        </div>
+      </div>
+      <div>
+        <h3 class="h3 reveal" data-i18n="g.after">بعد الاختبار</h3>
+        <div class="three" id="after"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ الأدلة والمواعيد ============ -->
+  <section id="dates">
+    <div class="sec-head reveal">
+      <div class="kicker" data-i18n="d.kicker">الأدلة والمواعيد الرسمية</div>
+      <h2 class="sec-title"><span data-i18n="d.t1">مواعيد</span> <em id="edTitle"></em></h2>
+    </div>
+    <div class="stack">
+      <div class="two">
+        <div class="tl" id="timeline"></div>
+        <div class="card glass reveal" style="--c:#7B4DFF">
+          <div class="h3"><span class="gorb" style="--c:#7B4DFF" data-ic="layers"></span><span data-i18n="d.levels">مستويات المقياس</span></div>
+          <table class="lv"><thead><tr><th data-i18n="d.lv">المستوى</th><th data-i18n="d.grades">الصفوف</th><th data-i18n="d.q">عدد الأسئلة</th></tr></thead><tbody id="lvTable"></tbody></table>
+          <p class="src" data-i18n="d.lvsrc">عدد الأسئلة وفق هيئة تقويم التعليم والتدريب (سعوديبيديا).</p>
+        </div>
+      </div>
+      <div>
+        <h3 class="h3 reveal" data-i18n="d.domains">ماذا يقيس المقياس؟ المجالات الأربعة</h3>
+        <div class="four" id="domains"></div>
+        <p class="src reveal" data-i18n="d.domsrc">التعريفات وفق صفحة البرنامج الوطني للكشف عن الموهوبين على موقع موهبة.</p>
+      </div>
+      <div class="four" id="facts"></div>
+      <div class="card glass reveal" style="--c:#E8A50A">
+        <div class="h3"><span class="gorb" style="--c:#E8A50A" data-ic="chart"></span><span id="leTitle"></span></div>
+        <div class="stats" id="leStats"></div>
+        <p class="src"><span data-i18n="d.source">المصدر:</span> <a id="leSrc" target="_blank" rel="noopener" data-i18n="d.spa">وكالة الأنباء السعودية</a></p>
+      </div>
+      <div>
+        <h3 class="h3 reveal" data-i18n="d.links">الأدلة والروابط الرسمية</h3>
+        <div class="links" id="links"></div>
+        <p class="src" id="reviewed"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ مكتبة التدريب ============ -->
+  <section id="library">
+    <div class="sec-head reveal">
+      <div class="kicker" data-i18n="l.kicker">مكتبة التدريب</div>
+      <h2 class="sec-title"><span data-i18n="l.t1">تدرّب حسب</span> <em data-i18n="l.t2">مستواك</em></h2>
+      <p class="sec-sub" data-i18n="l.sub">لكل مجال: ماذا يقيس، وأنواع أسئلته، واستراتيجيات حلها، ثم أسئلة تدريبية بتغذية راجعة فورية تشرح الإجابة الصحيحة وسبب خطأ كل بديل.</p>
+    </div>
+    <div class="lib-top">
+      <div class="seg" id="libLv"></div>
+      <span class="mini" data-i18n="l.orig">الأسئلة أصلية من إعداد المنصة للتدريب، وليست من المقياس الرسمي.</span>
+    </div>
+    <div class="two" id="libGrid"></div>
+    <div class="card glass tipcard reveal" style="margin-top:22px;--c:#0E9F76">
+      <div class="h3"><span class="gorb" style="--c:#0E9F76" data-ic="target"></span><span data-i18n="l.gen">استراتيجيات عامة للمقياس</span></div>
+      <ul id="genTips"></ul>
+    </div>
+  </section>
+
+  <!-- ============ الاختبار التشخيصي ============ -->
+  <section id="diag">
+    <div class="sec-head reveal">
+      <div class="kicker" data-i18n="x.kicker">الاختبار التشخيصي المحاكي</div>
+      <h2 class="sec-title"><span data-i18n="x.t1">اعرف نقاط قوتك</span> <em data-i18n="x.t2">قبل يوم الاختبار</em></h2>
+    </div>
+    <div id="diagApp"></div>
+  </section>
+</main>
+
+<div class="ov no-print" id="ov" role="dialog" aria-modal="true" aria-labelledby="ovTitle"><div class="panel glass" id="ovPanel"></div></div>
+
+<footer>
+  <div class="wrap">
+    <div><b data-i18n="brand">منصة الموهبة</b> — <span data-i18n="school">مدارس دار الذكر</span></div>
+    <div data-i18n="footer.credit">إعداد وإشراف: مصطفى أحمد حسين — المنسق التنفيذي لبرامج الموهبة والمسابقات الأكاديمية</div>
+    <span class="staff-links"><a class="staff-link" href="sijil.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg><span data-i18n="footer.sijil">دخول المعلمين</span></a><a class="staff-link" href="sijil-reports.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.6-3 8.5-7 10-4-1.5-7-5.4-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><span data-i18n="footer.admin">دخول المشرف</span></a></span>
+  </div>
+</footer>
+
+<script>
+TP.addDict({
+  ar: {
+    'nav.mtest': 'مقياس موهبة',
+    kicker: 'البرنامج الوطني للكشف عن الموهوبين', title: 'مقياس موهبة', title2: 'مقياس موهبة – منصة الموهبة',
+    lead: 'نهيّئ طلابنا للمشاركة الواعية في البرنامج الوطني للكشف عن الموهوبين، وللاستعداد الأمثل لمقياس موهبة للقدرات العقلية المتعددة: دليل تسجيل مبسّط ومحدّث، والأدلة والمواعيد الرسمية، ومكتبة تدريب حسب المستويات، واختبار تشخيصي محاكٍ بتغذية راجعة تفصيلية.',
+    'cta.diag': 'ابدأ الاختبار التشخيصي', 'cta.guide': 'دليل التسجيل',
+    'chip.grades': 'من الثالث الابتدائي إلى الأول الثانوي', 'chip.levels': '3 مستويات', 'chip.domains': '4 مجالات', 'chip.lang': 'عربي أو إنجليزي',
+    'reg.t': 'التسجيل في المقياس', 'reg.open': 'مفتوح', 'reg.soon': 'قريباً', 'reg.closed': 'مغلق', 'reg.btn': 'سجّل عبر منصة سديد', 'reg.over': 'انتهى التسجيل لهذه النسخة. تابع موقع موهبة لمواعيد النسخة القادمة.',
+    'j.guide': 'دليل التسجيل', 'j.dates': 'الأدلة والمواعيد', 'j.library': 'مكتبة التدريب', 'j.diag': 'الاختبار التشخيصي',
+    'g.kicker': 'دليل التسجيل', 'g.t1': 'من التسجيل', 'g.t2': 'إلى يوم الاختبار', 'g.sub': 'خطوات مبسطة ومحدّثة وفق المصادر الرسمية لموهبة وهيئة تقويم التعليم والتدريب.',
+    'f.t': 'اعرف مستواك في المقياس', 'f.lbl': 'اختر صفك الدراسي الحالي', 'f.pick': '— اختر الصف —', 'f.hint': 'اختر صفك لتعرف مستواك في المقياس وعدد أسئلته.',
+    'f.lv': 'المستوى {n}', 'f.q': '{q} سؤالاً في المقياس الرسمي', 'f.lib': 'التدريب لهذا المستوى', 'f.diag': 'الاختبار التشخيصي لهذا المستوى',
+    'g.steps': 'خطوات التسجيل', 'g.who': 'من يحق له التسجيل؟', 'g.fee': 'المساهمة المالية والترشيح المدعوم', 'g.rules': 'تنبيهات مهمة', 'g.day': 'يوم الاختبار', 'g.after': 'بعد الاختبار',
+    'who.1': 'طلاب الصفوف من الثالث الابتدائي حتى الأول الثانوي.', 'who.2': 'في المدارس الحكومية والأهلية والعالمية، والمدارس السعودية في الخارج.', 'who.3': 'مرة واحدة لكل مستوى من المستويات الثلاثة.', 'who.4': 'الالتزام بضوابط البرنامج وسياساته.',
+    'fee.txt': 'المساهمة {fee}. أما الطلبة المرشحون عبر «الترشيح المدعوم» فيُعفون منها، ويلزمهم التسجيل في موقع قياس وتأكيد الحضور واختيار المقر والموعد خلال فترة الترشيح.',
+    official: 'رسمي',
+    'd.kicker': 'الأدلة والمواعيد الرسمية', 'd.t1': 'مواعيد', 'd.levels': 'مستويات المقياس', 'd.lv': 'المستوى', 'd.grades': 'الصفوف', 'd.q': 'عدد الأسئلة',
+    'd.lvsrc': 'عدد الأسئلة وفق هيئة تقويم التعليم والتدريب (سعوديبيديا).', 'd.domains': 'ماذا يقيس المقياس؟ المجالات الأربعة', 'd.domsrc': 'التعريفات وفق صفحة البرنامج الوطني للكشف عن الموهوبين على موقع موهبة.',
+    'd.source': 'المصدر:', 'd.spa': 'وكالة الأنباء السعودية', 'd.links': 'الأدلة والروابط الرسمية', 'd.reviewed': 'آخر مراجعة لهذه المعلومات: {d}. المواعيد قد تتغير؛ تأكد دائماً من موقع موهبة.',
+    'l.kicker': 'مكتبة التدريب', 'l.t1': 'تدرّب حسب', 'l.t2': 'مستواك', 'l.sub': 'لكل مجال: ماذا يقيس، وأنواع أسئلته، واستراتيجيات حلها، ثم أسئلة تدريبية بتغذية راجعة فورية تشرح الإجابة الصحيحة وسبب خطأ كل بديل.',
+    'l.orig': 'الأسئلة أصلية من إعداد المنصة للتدريب، وليست من المقياس الرسمي.', 'l.lv': 'المستوى {n}', 'l.types': 'أنواع الأسئلة واستراتيجياتها', 'l.practice': 'تدرّب ({n} أسئلة)', 'l.gen': 'استراتيجيات عامة للمقياس',
+    'tips.1': 'اقرأ السؤال كاملاً قبل النظر إلى البدائل، وحدّد المطلوب بدقة.', 'tips.2': 'استبعد البدائل الخاطئة واحداً واحداً؛ كل بديل تستبعده يرفع فرصتك.',
+    'tips.3': 'البدائل الخاطئة غالباً مبنية على خطأ شائع (نسيان خطوة، قلب العلاقة)؛ راجع خطوتك الأخيرة.', 'tips.4': 'لا تعلق طويلاً عند سؤال واحد؛ انتقل وارجع إليه إن سمح الوقت.',
+    'tips.5': 'تدرّب على القراءة بتركيز يومياً، وعلى الألغاز والأنماط؛ فالمقياس يقيس طريقة التفكير لا الحفظ.', 'tips.6': 'جرّب الاختبار التشخيصي، ثم ركّز تدريبك على المجال الأضعف.',
+    'q.of': 'السؤال {i} من {n}', 'q.ok': 'إجابة صحيحة', 'q.bad': 'إجابة غير صحيحة', 'q.none': 'لم تُجب عن هذا السؤال', 'q.why': 'التعليل:', 'q.whyWrong': 'لماذا «{o}» غير صحيحة؟',
+    'q.correct': 'الإجابة الصحيحة:', 'q.others': 'لماذا البدائل الأخرى غير صحيحة؟', 'q.next': 'السؤال التالي', 'q.prev': 'السابق', 'q.finish': 'إنهاء', 'q.check': 'تحقّق',
+    'p.title': 'تدريب: {d} — المستوى {n}', 'p.done': 'أنهيت التدريب: {s} من {n}', 'p.again': 'أعد التدريب', 'p.diag': 'انتقل إلى الاختبار التشخيصي', 'p.close': 'إغلاق',
+    'x.kicker': 'الاختبار التشخيصي المحاكي', 'x.t1': 'اعرف نقاط قوتك', 'x.t2': 'قبل يوم الاختبار',
+    'x.about': 'اختبار قصير يحاكي طبيعة المقياس: أسئلة اختيار من متعدد في المجالات الأربعة، بزمن محدد. بعد التسليم تحصل على تقرير لكل مجال، ومراجعة لكل سؤال تبيّن سبب الخطأ والإجابة الصحيحة وتعليلها، وتوصيات للتدريب.',
+    'x.pick': 'اختر مستواك', 'x.count': '{n} سؤالاً — {m} في كل مجال', 'x.time': 'الزمن المقترح: {t} دقيقة', 'x.start': 'ابدأ الاختبار',
+    'x.rules': 'تعليمات', 'x.r1': 'أجب عن كل الأسئلة؛ لا تُخصم درجات على الإجابة الخاطئة في هذا التدريب.', 'x.r2': 'يمكنك التنقل بين الأسئلة وتعليم أي سؤال للمراجعة.', 'x.r3': 'عند انتهاء الوقت يُسلَّم الاختبار تلقائياً.', 'x.r4': 'في المقياس الرسمي اتبع التعليمات التي تظهر على الشاشة في كل جزء.',
+    'x.disclaimer': 'هذا اختبار تدريبي من إعداد المنصة، ونتيجته تقديرية للتدريب فقط؛ وليست درجة المقياس الرسمية (1000–2000) ولا تتنبأ بها.',
+    'x.flag': 'علّم للمراجعة', 'x.flagged': 'معلّم للمراجعة', 'x.submit': 'تسليم الاختبار', 'x.left': 'لديك {n} سؤال دون إجابة. هل تريد التسليم الآن؟', 'x.yes': 'نعم، سلّم', 'x.back': 'العودة إلى الأسئلة',
+    'x.answered': 'أُجيب عن {a} من {n}', 'x.timeup': 'انتهى الوقت وسُلّم الاختبار تلقائياً.', 'x.last': 'آخر محاولة لك في هذا المستوى: {s} من {n} ({p}%) — {d}',
+    'r.title': 'نتيجة الاختبار التشخيصي — المستوى {n}', 'r.score': 'الإجابات الصحيحة', 'r.time': 'الزمن المستغرق: {t}', 'r.byDom': 'الأداء في كل مجال',
+    'r.strong': 'نقطة قوة', 'r.mid': 'متوسط', 'r.weak': 'يحتاج تدريباً', 'r.recs': 'توصيات التدريب', 'r.recWeak': 'ركّز على: {d}', 'r.recMid': 'عزّز: {d}', 'r.recAll': 'أداء ممتاز في كل المجالات؛ جرّب مستوى أعلى أو أعد التدريب لتثبيت مهاراتك.',
+    'r.types': 'أنواع أسئلة أخطأت فيها: {t}', 'r.train': 'تدرّب الآن', 'r.review': 'مراجعة الأسئلة', 'r.all': 'الكل', 'r.wrong': 'الأخطاء', 'r.flagged': 'المعلّمة',
+    'r.noneWrong': 'لا توجد أسئلة في هذا التصنيف.', 'r.print': 'طباعة التقرير', 'r.retry': 'أعد الاختبار', 'r.other': 'اختر مستوى آخر',
+    'r.sum': 'أجبت إجابة صحيحة عن {s} من {n} أسئلة ({p}%).',
+    min: 'دقيقة', sec: 'ثانية'
+  },
+  en: {
+    'nav.mtest': 'Mawhiba Test',
+    kicker: 'National Program for Gifted Identification', title: 'Mawhiba Test', title2: 'Mawhiba Test – Talent Platform',
+    lead: 'We prepare our students to take part in the National Program for Gifted Identification with full awareness, and to be at their best for the Mawhiba Multiple Mental Abilities Test: a simple, up-to-date registration guide, the official guides and dates, a training library by level, and a simulated diagnostic test with detailed feedback.',
+    'cta.diag': 'Start the diagnostic test', 'cta.guide': 'Registration guide',
+    'chip.grades': 'Grade 3 to grade 10', 'chip.levels': '3 levels', 'chip.domains': '4 domains', 'chip.lang': 'Arabic or English',
+    'reg.t': 'Test registration', 'reg.open': 'Open', 'reg.soon': 'Soon', 'reg.closed': 'Closed', 'reg.btn': 'Register on Sadeed', 'reg.over': 'Registration for this edition has closed. Follow the Mawhiba website for next edition’s dates.',
+    'j.guide': 'Registration', 'j.dates': 'Guides & dates', 'j.library': 'Training library', 'j.diag': 'Diagnostic test',
+    'g.kicker': 'Registration guide', 'g.t1': 'From registration', 'g.t2': 'to test day', 'g.sub': 'Simple, up-to-date steps based on the official sources of Mawhiba and the Education & Training Evaluation Commission.',
+    'f.t': 'Find your test level', 'f.lbl': 'Choose your current grade', 'f.pick': '— Choose your grade —', 'f.hint': 'Choose your grade to see your level and its number of questions.',
+    'f.lv': 'Level {n}', 'f.q': '{q} questions in the official test', 'f.lib': 'Training for this level', 'f.diag': 'Diagnostic test for this level',
+    'g.steps': 'Registration steps', 'g.who': 'Who can register?', 'g.fee': 'Fee & supported nomination', 'g.rules': 'Important notes', 'g.day': 'Test day', 'g.after': 'After the test',
+    'who.1': 'Students from grade 3 (primary) to grade 10 (1st secondary).', 'who.2': 'In public, private and international schools, and Saudi schools abroad.', 'who.3': 'Once per level, across the three levels.', 'who.4': 'Following the program’s rules and policies.',
+    'fee.txt': 'The contribution is {fee}. Students nominated through “supported nomination” are exempt; they must register on the Qiyas site, confirm attendance and choose a venue and date within the nomination window.',
+    official: 'official',
+    'd.kicker': 'Official guides & dates', 'd.t1': 'Dates —', 'd.levels': 'Test levels', 'd.lv': 'Level', 'd.grades': 'Grades', 'd.q': 'Questions',
+    'd.lvsrc': 'Question counts per the Education & Training Evaluation Commission (Saudipedia).', 'd.domains': 'What does the test measure? The four domains', 'd.domsrc': 'Definitions from the National Program for Gifted Identification page on the Mawhiba website.',
+    'd.source': 'Source:', 'd.spa': 'Saudi Press Agency', 'd.links': 'Official guides & links', 'd.reviewed': 'Last reviewed: {d}. Dates may change; always confirm on the Mawhiba website.',
+    'l.kicker': 'Training library', 'l.t1': 'Train for', 'l.t2': 'your level', 'l.sub': 'For each domain: what it measures, its question types and how to tackle them, then practice questions with instant feedback that explains the right answer and why each other option is wrong.',
+    'l.orig': 'Questions are original practice items written by the platform, not taken from the official test.', 'l.lv': 'Level {n}', 'l.types': 'Question types & strategies', 'l.practice': 'Practise ({n} questions)', 'l.gen': 'General strategies for the test',
+    'tips.1': 'Read the whole question before looking at the options, and pin down exactly what is asked.', 'tips.2': 'Eliminate wrong options one by one; every option you rule out raises your chances.',
+    'tips.3': 'Wrong options are often built on a common slip (a forgotten step, a reversed relation); re-check your last step.', 'tips.4': 'Do not get stuck on one question; move on and come back if time allows.',
+    'tips.5': 'Practise focused reading every day, plus puzzles and patterns: the test measures how you think, not what you memorise.', 'tips.6': 'Try the diagnostic test, then focus your training on your weakest domain.',
+    'q.of': 'Question {i} of {n}', 'q.ok': 'Correct', 'q.bad': 'Not correct', 'q.none': 'You did not answer this question', 'q.why': 'Explanation:', 'q.whyWrong': 'Why is “{o}” wrong?',
+    'q.correct': 'Correct answer:', 'q.others': 'Why are the other options wrong?', 'q.next': 'Next question', 'q.prev': 'Previous', 'q.finish': 'Finish', 'q.check': 'Check',
+    'p.title': 'Practice: {d} — Level {n}', 'p.done': 'Practice complete: {s} of {n}', 'p.again': 'Practise again', 'p.diag': 'Go to the diagnostic test', 'p.close': 'Close',
+    'x.kicker': 'Simulated diagnostic test', 'x.t1': 'Know your strengths', 'x.t2': 'before test day',
+    'x.about': 'A short test that mirrors the nature of the real one: timed multiple-choice questions across the four domains. When you submit, you get a report for each domain, a review of every question showing why an answer is wrong and the right answer with its reasoning, and training recommendations.',
+    'x.pick': 'Choose your level', 'x.count': '{n} questions — {m} per domain', 'x.time': 'Suggested time: {t} minutes', 'x.start': 'Start the test',
+    'x.rules': 'Instructions', 'x.r1': 'Answer every question; wrong answers lose no marks in this practice test.', 'x.r2': 'You can move between questions and flag any question for review.', 'x.r3': 'When time runs out, the test is submitted automatically.', 'x.r4': 'In the official test, follow the on-screen instructions for each part.',
+    'x.disclaimer': 'This is a practice test written by the platform; its result is only a training estimate. It is not the official test score (1000–2000) and does not predict it.',
+    'x.flag': 'Flag for review', 'x.flagged': 'Flagged', 'x.submit': 'Submit test', 'x.left': 'You have {n} unanswered question(s). Submit now?', 'x.yes': 'Yes, submit', 'x.back': 'Back to the questions',
+    'x.answered': '{a} of {n} answered', 'x.timeup': 'Time is up; the test was submitted automatically.', 'x.last': 'Your last attempt at this level: {s} of {n} ({p}%) — {d}',
+    'r.title': 'Diagnostic result — Level {n}', 'r.score': 'correct answers', 'r.time': 'Time taken: {t}', 'r.byDom': 'Performance by domain',
+    'r.strong': 'Strength', 'r.mid': 'Average', 'r.weak': 'Needs practice', 'r.recs': 'Training recommendations', 'r.recWeak': 'Focus on: {d}', 'r.recMid': 'Strengthen: {d}', 'r.recAll': 'Excellent in every domain; try a higher level or practise again to lock in your skills.',
+    'r.types': 'Question types you missed: {t}', 'r.train': 'Practise now', 'r.review': 'Question review', 'r.all': 'All', 'r.wrong': 'Mistakes', 'r.flagged': 'Flagged',
+    'r.noneWrong': 'No questions in this view.', 'r.print': 'Print report', 'r.retry': 'Retake the test', 'r.other': 'Choose another level',
+    'r.sum': 'You answered {s} of {n} questions correctly ({p}%).',
+    min: 'min', sec: 'sec'
+  }
+});
+
+const I = window.MW_INFO, BANK = (typeof MW_BANK !== 'undefined' ? MW_BANK : []);
+const DOMS = I.domains, DOM = Object.fromEntries(DOMS.map(d => [d.id, d]));
+const EN = () => TP.lang() === 'en';
+const L = v => v == null ? '' : Array.isArray(v) ? v[EN() ? 1 : 0] : (typeof v === 'object' ? TP.tx(v) : v);
+const F = (k, o) => TP.t(k).replace(/\{(\w+)\}/g, (m, p) => o && o[p] != null ? o[p] : m);
+const $ = s => document.querySelector(s);
+const esc = TP.esc;
+/* عزل التعابير الرياضية حتى لا ينقلب ترتيبها داخل النص العربي */
+const MATH = /\(?\d[\d\s.,/%²√×÷+\-−=:()]*[\d)%²]|\d/g;
+const T = v => EN() ? esc(v) : esc(v).replace(MATH, m => /[+\-−×÷=/:]/.test(m) && /\d\D+\d/.test(m) ? `<bdi dir="ltr">${m}</bdi>` : m);
+const LETTERS = { ar: ['أ', 'ب', 'ج', 'د'], en: ['A', 'B', 'C', 'D'] };
+const store = { get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} } };
+const typeOf = (d, t) => (I.types[d] || []).find(x => x.id === t);
+const lvColor = n => (I.levels.find(l => l.n === n) || {}).c || '#7B4DFF';
+
+/* ترتيب ثابت للبدائل لكل سؤال (حتى لا يكون موضع الإجابة الصحيحة متوقعاً) */
+function order(q) {
+  const n = optsOf(q).length, idx = [...Array(n).keys()];
+  let h = 0; for (const ch of q.id) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  for (let i = n - 1; i > 0; i--) { h = (h * 1103515245 + 12345) >>> 0; const j = h % (i + 1); [idx[i], idx[j]] = [idx[j], idx[i]]; }
+  return idx;
+}
+const optsOf = q => Array.isArray(q.o) ? q.o : q.o[EN() ? 'en' : 'ar'];
+const optText = (q, i) => { const o = optsOf(q)[i]; return o.f ? L(o) : L(o); };
+const optHtml = (q, i) => { const o = optsOf(q)[i]; return o.f ? `${o.f}<span class="mini">${esc(L(o))}</span>` : `<span>${T(L(o))}</span>`; };
+
+/* ---------- عرض سؤال ---------- */
+function qHTML(q, st) {
+  /* st: { pick: index أصلي أو undefined, reveal: bool, name: للاستدعاء } */
+  const ord = order(q), isFig = optsOf(q).some(o => o.f), lt = LETTERS[EN() ? 'en' : 'ar'], d = DOM[q.d];
+  const typ = typeOf(q.d, q.t);
+  let h = `<div class="qmeta"><span class="tag" style="--c:${d.c}">${esc(L(d.name))}</span>${typ ? `<span class="tag" style="--c:#8A86A6">${esc(L(typ.name))}</span>` : ''}${st.head || ''}</div>`;
+  if (q.p) h += `<div class="passage">${T(L(q.p))}</div>`;
+  if (q.f) h += `<div class="fig">${q.f}</div>`;
+  h += `<div class="qtext" id="qt-${q.id}">${T(L(q.q))}</div><div class="opts${isFig ? ' figs' : ''}" role="radiogroup" aria-labelledby="qt-${q.id}">`;
+  ord.forEach((oi, k) => {
+    let cls = '';
+    if (st.reveal) cls = oi === q.a ? ' ok' : (oi === st.pick ? ' bad' : '');
+    else if (oi === st.pick) cls = ' sel';
+    h += `<button type="button" class="opt${cls}" role="radio" aria-checked="${oi === st.pick}" data-act="${st.act || ''}" data-q="${q.id}" data-o="${oi}"${st.reveal ? ' disabled' : ''}><span class="l">${lt[k]}</span>${optHtml(q, oi)}</button>`;
+  });
+  h += '</div>';
+  if (st.reveal) h += fbHTML(q, st.pick);
+  return h;
+}
+function fbHTML(q, pick) {
+  const ok = pick === q.a, none = pick == null;
+  let h = `<div class="fb ${ok ? 'good' : 'bad'}"><h5>${ok ? '✓ ' + TP.t('q.ok') : none ? TP.t('q.none') : '✗ ' + TP.t('q.bad')}</h5>`;
+  if (!ok && !none) h += `<div class="row"><b>${T(F('q.whyWrong', { o: optText(q, pick) }))}</b> ${T(L(q.x[pick]))}</div>`;
+  if (!ok) h += `<div class="row"><b>${TP.t('q.correct')}</b> «${T(optText(q, q.a))}»</div>`;
+  h += `<div class="row"><b>${TP.t('q.why')}</b> ${T(L(q.w))}</div>`;
+  const others = optsOf(q).map((o, i) => i).filter(i => i !== q.a && i !== pick);
+  if (others.length) h += `<details><summary>${TP.t('q.others')}</summary><ul>${others.map(i => `<li><b>«${T(optText(q, i))}»</b>: ${T(L(q.x[i]))}</li>`).join('')}</ul></details>`;
+  return h + '</div>';
+}
+
+/* ---------- الهيرو وبطاقة التسجيل ---------- */
+const REG = I.dates.find(d => d.id === 'reg');
+function regItem() { return REG ? { d: TP.parseDate(REG.date), e: TP.parseDate(REG.end), ar: REG.ar, en: REG.en } : null; }
+function renderHero() {
+  document.title = TP.t('title2');
+  $('#heroChips').innerHTML = [['chip.grades', '#0EA5D6'], ['chip.levels', '#7B4DFF'], ['chip.domains', '#E2386F'], ['chip.lang', '#0E9F76']].map(([k, c]) => `<span class="tag" style="--c:${c}">${TP.t(k)}</span>`).join('') +
+    `<span class="tag solid" style="--c:#E8A50A">${esc(L(I.edition))}</span>`;
+  const it = regItem(), ph = it ? TP.phase(it) : 'undated';
+  const st = ph === 'cur' ? 'open' : ph === 'future' ? 'soon' : 'closed';
+  $('#regCard').innerHTML = `<div class="top"><h3>${TP.t('reg.t')}</h3><span class="tag status-${st}"><span class="dot"></span>${TP.t('reg.' + st)}</span></div>
+    <div class="when">${it ? esc(TP.fmtRange(it.d, it.e)) : ''}</div>
+    ${ph === 'past' ? `<p class="mini">${TP.t('reg.over')}</p>` : TP.countdown(it)}
+    <div class="fee">${TP.icon('star')}<span>${esc(L(I.fee))}</span></div>
+    <a class="btn tint" style="--c:#0E9F76" href="${(I.links[0] || {}).url}" target="_blank" rel="noopener"><span>${TP.t('reg.btn')}</span>${TP.icon('ext')}</a>`;
+}
+
+/* ---------- دليل التسجيل ---------- */
+let LEVEL = store.get('mw-level', 1);
+function setLevel(n) { LEVEL = n; store.set('mw-level', n); renderLibrary(); if (!RUN) renderDiag(); }
+function renderGuide() {
+  document.querySelectorAll('[data-ic]').forEach(e => e.innerHTML = TP.icon(e.dataset.ic));
+  $('#finderIc').innerHTML = TP.icon('target');
+  const g = store.get('mw-grade', '');
+  $('#gradeSel').innerHTML = `<option value="">${TP.t('f.pick')}</option>` + I.gradeMap.map((r, i) => `<option value="${i}"${String(i) === String(g) ? ' selected' : ''}>${esc(EN() ? r[1] : r[0])}</option>`).join('');
+  renderFinder();
+  $('#steps').innerHTML = I.steps.map((s, i) => `<li><span class="n">${i + 1}</span><div><b>${esc(L(s))}</b><span>${esc(L(s.d))}</span></div></li>`).join('');
+  const chk = TP.icon('check');
+  $('#who').innerHTML = ['who.1', 'who.2', 'who.3', 'who.4'].map(k => `<li>${chk}<span>${TP.t(k)}</span></li>`).join('');
+  $('#feeTxt').textContent = F('fee.txt', { fee: L(I.fee) });
+  $('#rules').innerHTML = I.rules.map(r => `<li>${TP.icon('info')}<span>${esc(L(r))}</span></li>`).join('');
+  $('#day').innerHTML = I.testDay.map(r => `<li>${chk}<span>${esc(L(r))}${r.official ? `<span class="ofc">${TP.t('official')}</span>` : ''}</span></li>`).join('');
+  $('#after').innerHTML = I.after.map((a, i) => `<div class="card glass reveal" style="--c:${['#0EA5D6', '#7B4DFF', '#E8A50A'][i % 3]}"><div class="h3"><span class="gorb" style="--c:${['#0EA5D6', '#7B4DFF', '#E8A50A'][i % 3]}">${TP.icon(a.ic)}</span><span>${esc(L(a))}</span></div><p class="mini" style="font-size:14.5px">${esc(L(a.d))}</p></div>`).join('');
+}
+function renderFinder() {
+  const v = $('#gradeSel').value, box = $('#finderRes');
+  if (v === '') { box.innerHTML = `<p class="mini">${TP.t('f.hint')}</p>`; return; }
+  const r = I.gradeMap[+v], lv = I.levels.find(l => l.n === r[2]);
+  box.innerHTML = `<div class="lvl-res" style="--c:${lv.c}"><span class="gorb" style="--c:${lv.c}"><b>${lv.n}</b></span><div>
+    <h4>${F('f.lv', { n: lv.n })}</h4><p>${esc(L(lv.grades))} · ${F('f.q', { q: lv.q })}</p>
+    <div class="acts"><a class="btn ghost sm" href="#library" data-setlv="${lv.n}">${TP.t('f.lib')}</a><a class="btn tint sm" style="--c:${lv.c}" href="#diag" data-setlv="${lv.n}">${TP.t('f.diag')}</a></div></div></div>`;
+}
+
+/* ---------- الأدلة والمواعيد ---------- */
+function renderDates() {
+  $('#edTitle').textContent = L(I.edition);
+  const now = Date.now();
+  $('#timeline').innerHTML = I.dates.map(dt => {
+    const it = dt.date ? { d: TP.parseDate(dt.date), e: TP.parseDate(dt.end) } : null, ph = it ? TP.phase(it, now) : '';
+    return `<div class="it glass reveal" style="--c:${dt.c}"><span class="gorb" style="--c:${dt.c}">${TP.icon(dt.ic)}</span><div>
+      <h4>${esc(L(dt))}</h4><div class="d">${it ? esc(TP.fmtRange(it.d, it.e)) : esc(L(dt.when))}${ph === 'cur' ? ` <span class="tag status-open"><span class="dot"></span>${TP.t('reg.open')}</span>` : ''}</div>
+      ${it && ph !== 'past' ? `<div style="margin-top:6px">${TP.countdown(it, { compact: true })}</div>` : ''}
+      ${dt.note ? `<p>${esc(L(dt.note))}</p>` : ''}</div></div>`;
+  }).join('');
+  $('#lvTable').innerHTML = I.levels.map(l => `<tr><td><span class="tag solid" style="--c:${l.c}">${F('f.lv', { n: l.n })}</span></td><td>${esc(L(l.grades))}</td><td><b>${TP.fmt(l.q)}</b></td></tr>`).join('');
+  $('#domains').innerHTML = DOMS.map(d => `<div class="dom glass reveal" style="--c:${d.c}"><span class="gorb" style="--c:${d.c}">${TP.icon(d.ic)}</span><b>${esc(L(d.name))}</b><p>${esc(L(d.def))}</p></div>`).join('');
+  $('#facts').innerHTML = I.facts.map((f, i) => `<div class="fact glass reveal" style="--c:${['#0EA5D6', '#0E9F76', '#E2386F', '#7B4DFF'][i % 4]}"><span class="gorb" style="--c:${['#0EA5D6', '#0E9F76', '#E2386F', '#7B4DFF'][i % 4]}">${TP.icon(f.ic)}</span><div><b>${esc(L(f))}</b><p>${esc(L(f.d))}</p></div></div>`).join('');
+  $('#leTitle').textContent = L(I.lastEdition.title);
+  $('#leStats').innerHTML = I.lastEdition.items.map(s => `<div class="stat glass"><b>${TP.fmt(s.n)}</b><span>${esc(L(s))}</span></div>`).join('');
+  $('#leSrc').href = I.lastEdition.src;
+  $('#links').innerHTML = I.links.map(k => `<a class="lnk glass" style="--c:${k.c}" href="${esc(k.url)}" target="_blank" rel="noopener"><span class="gorb" style="--c:${k.c}">${TP.icon(k.ic)}</span><span><b>${esc(L(k))}</b><small>${esc(L(k.d))}</small></span>${TP.icon('ext', 'ext')}</a>`).join('');
+  $('#reviewed').textContent = F('d.reviewed', { d: TP.fmtDate(TP.parseDate(I.reviewed)) });
+}
+
+/* ---------- المكتبة ---------- */
+function renderLibrary() {
+  $('#libLv').innerHTML = I.levels.map(l => `<button type="button" class="${l.n === LEVEL ? 'on' : ''}" data-lib="${l.n}">${F('l.lv', { n: l.n })}</button>`).join('');
+  $('#libGrid').innerHTML = DOMS.map(d => {
+    const n = BANK.filter(q => q.lv === LEVEL && q.d === d.id && q.s === 'prac').length;
+    return `<div class="dpanel glass" style="--c:${d.c}" id="lib-${d.id}">
+      <div class="hd"><span class="gorb" style="--c:${d.c}">${TP.icon(d.ic)}</span><div><b>${esc(L(d.name))}</b><p>${esc(L(d.def))}</p></div></div>
+      <div class="mini" style="font-weight:600">${TP.t('l.types')}</div>
+      ${(I.types[d.id] || []).map(t => `<details class="ty"><summary>${esc(L(t.name))}</summary><div class="bd">${esc(L(t.what))}<ul>${(EN() ? t.tips.en : t.tips.ar).map(x => `<li>${esc(x)}</li>`).join('')}</ul></div></details>`).join('')}
+      <div class="go"><button type="button" class="btn tint" style="--c:${d.c}" data-prac="${d.id}">${TP.icon('target')}<span>${F('l.practice', { n })}</span></button></div>
+    </div>`;
+  }).join('');
+  $('#genTips').innerHTML = [1, 2, 3, 4, 5, 6].map(i => `<li>${TP.t('tips.' + i)}</li>`).join('');
+}
+
+/* ---------- نافذة التدريب ---------- */
+let PR = null; // { d, lv, qs, i, picks:{}, score }
+function openPractice(dId, lv) {
+  PR = { d: dId, lv, qs: BANK.filter(q => q.lv === lv && q.d === dId && q.s === 'prac'), i: 0, picks: {} };
+  $('#ov').classList.add('open'); document.body.style.overflow = 'hidden'; renderPractice();
+  setTimeout(() => { const b = $('#ovPanel .opt'); if (b) b.focus(); }, 50);
+}
+function closePractice() { $('#ov').classList.remove('open'); document.body.style.overflow = ''; PR = null; }
+function renderPractice() {
+  if (!PR) return;
+  const d = DOM[PR.d], n = PR.qs.length, p = $('#ovPanel');
+  p.style.setProperty('--c', d.c);
+  let body;
+  if (PR.i >= n) {
+    const s = PR.qs.filter(q => PR.picks[q.id] === q.a).length;
+    body = `<div class="empty" style="font-size:17px"><span class="gorb" style="--c:${d.c};--sz:70px;margin:0 auto 12px"><b>${s}/${n}</b></span>${F('p.done', { s, n })}</div>
+      <div class="qctl" style="justify-content:center"><button class="btn ghost" data-pr="again">${TP.t('p.again')}</button><a class="btn primary" href="#diag" data-pr="diag" data-setlv="${PR.lv}">${TP.t('p.diag')}</a></div>`;
+  } else {
+    const q = PR.qs[PR.i], pick = PR.picks[q.id];
+    body = `<div class="qcard">${qHTML(q, { pick, reveal: pick != null, act: 'pr', head: `<span class="mini">${F('q.of', { i: PR.i + 1, n })}</span>` })}</div>
+      ${pick != null ? `<div class="qctl"><span></span><button class="btn primary" data-pr="next">${PR.i + 1 < n ? TP.t('q.next') : TP.t('q.finish')}</button></div>` : ''}`;
+  }
+  p.innerHTML = `<div class="ph"><h3 class="h3" id="ovTitle" style="margin:0"><span class="gorb" style="--c:${d.c}">${TP.icon(d.ic)}</span><span>${esc(F('p.title', { d: L(d.name), n: PR.lv }))}</span></h3>
+    <button class="x" type="button" data-pr="close" aria-label="${TP.t('p.close')}">×</button></div>${body}`;
+}
+
+/* ---------- الاختبار التشخيصي ---------- */
+const PER_DOM = 4, MINUTES = 20;
+let RUN = null, DIAG_LV = null, TIMER = null, LAST_RES = null, RV_FILTER = 'all';
+function diagQs(lv) { return DOMS.flatMap(d => BANK.filter(q => q.lv === lv && q.d === d.id && q.s === 'diag').slice(0, PER_DOM)); }
+function fmtDur(s) { const m = Math.floor(s / 60), r = s % 60; return `${m} ${TP.t('min')} ${r ? r + ' ' + TP.t('sec') : ''}`.trim(); }
+function renderDiag() {
+  const app = $('#diagApp');
+  if (RUN) return renderRun();
+  if (LAST_RES) return renderResult();
+  const lv = DIAG_LV || LEVEL, n = diagQs(lv).length, last = store.get('mw-last-' + lv, null);
+  app.innerHTML = `<div class="dstart">
+    <div class="card glass" style="--c:${lvColor(lv)}">
+      <p>${TP.t('x.about')}</p>
+      <div class="h3" style="margin-top:16px">${TP.t('x.pick')}</div>
+      <div class="lvpick">${I.levels.map(l => `<button type="button" style="--c:${l.c}" class="${l.n === lv ? 'on' : ''}" data-dlv="${l.n}"><b>${l.n}</b>${esc(L(l.grades))}</button>`).join('')}</div>
+      <p class="mini">${F('x.count', { n, m: PER_DOM })} · ${F('x.time', { t: MINUTES })}</p>
+      ${last ? `<p class="last">${esc(F('x.last', { s: last.s, n: last.n, p: Math.round(last.s / last.n * 100), d: TP.fmtDate(new Date(last.t)) }))}</p>` : ''}
+      <button type="button" class="btn primary" style="margin-top:16px" data-run="start">${TP.icon('clock')}<span>${TP.t('x.start')}</span></button>
+    </div>
+    <div class="card glass" style="--c:#0EA5D6">
+      <div class="h3"><span class="gorb" style="--c:#0EA5D6">${TP.icon('info')}</span><span>${TP.t('x.rules')}</span></div>
+      <ul class="checks">${['x.r1', 'x.r2', 'x.r3', 'x.r4'].map(k => `<li>${TP.icon('check')}<span>${TP.t(k)}</span></li>`).join('')}</ul>
+      <div class="note-box">${TP.icon('info')}<span>${TP.t('x.disclaimer')}</span></div>
+    </div></div>`;
+}
+function startRun() {
+  const lv = DIAG_LV || LEVEL;
+  RUN = { lv, qs: diagQs(lv), i: 0, picks: {}, flags: {}, t0: Date.now(), limit: MINUTES * 60, confirm: false };
+  LAST_RES = null; renderRun(); clearInterval(TIMER); TIMER = setInterval(tickRun, 1000);
+  $('#diag').scrollIntoView({ behavior: 'smooth' });
+}
+function left() { return RUN ? Math.max(0, RUN.limit - Math.floor((Date.now() - RUN.t0) / 1000)) : 0; }
+function tickRun() {
+  if (!RUN) return clearInterval(TIMER);
+  const s = left(), el = $('#runTimer');
+  if (el) { el.querySelector('span').textContent = `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; el.classList.toggle('low', s <= 120); }
+  if (s <= 0) finishRun(true);
+}
+function renderRun() {
+  const R = RUN, n = R.qs.length, q = R.qs[R.i], answered = Object.keys(R.picks).length, d = DOM[q.d];
+  const sec = DOMS.findIndex(x => x.id === q.d) + 1;
+  $('#diagApp').innerHTML = `<div class="runbar glass no-print">
+      <span class="tag solid" style="--c:${lvColor(R.lv)}">${F('f.lv', { n: R.lv })}</span>
+      <div class="prog" aria-hidden="true"><i style="width:${answered / n * 100}%"></i></div>
+      <span class="mini">${F('x.answered', { a: answered, n })}</span>
+      <span class="timer" id="runTimer">${TP.icon('clock')}<span>--:--</span></span>
+    </div>
+    <div class="qcard glass" style="--c:${d.c}">
+      ${qHTML(q, { pick: R.picks[q.id], reveal: false, act: 'run', head: `<span class="mini">${F('q.of', { i: R.i + 1, n })} · ${sec}/4</span>` })}
+      <div class="qctl">
+        <button type="button" class="btn ghost flag${R.flags[q.id] ? ' on' : ''}" data-run="flag">${TP.icon('star')}<span>${R.flags[q.id] ? TP.t('x.flagged') : TP.t('x.flag')}</span></button>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button type="button" class="btn ghost" data-run="prev"${R.i === 0 ? ' disabled style="opacity:.5"' : ''}>${TP.t('q.prev')}</button>
+          ${R.i < n - 1 ? `<button type="button" class="btn primary" data-run="next">${TP.t('q.next')}</button>` : `<button type="button" class="btn primary" data-run="submit">${TP.t('x.submit')}</button>`}
+        </div>
+      </div>
+      <div class="qnav" aria-label="${TP.t('j.diag')}">${R.qs.map((x, k) => `<button type="button" data-goto="${k}" class="${R.picks[x.id] != null ? 'ans' : ''}${k === R.i ? ' cur' : ''}${R.flags[x.id] ? ' flg' : ''}" aria-label="${F('q.of', { i: k + 1, n })}">${k + 1}</button>`).join('')}</div>
+      ${R.i < n - 1 ? `<div style="margin-top:12px"><button type="button" class="btn ghost sm" data-run="submit">${TP.t('x.submit')}</button></div>` : ''}
+      ${R.confirm ? `<div class="confirm" role="alert">${F('x.left', { n: n - answered })}<div class="acts"><button type="button" class="btn primary sm" data-run="really">${TP.t('x.yes')}</button><button type="button" class="btn ghost sm" data-run="cancel">${TP.t('x.back')}</button></div></div>` : ''}
+    </div>`;
+  tickRun();
+}
+function finishRun(timeUp) {
+  const R = RUN; if (!R) return;
+  clearInterval(TIMER);
+  const used = Math.min(R.limit, Math.floor((Date.now() - R.t0) / 1000));
+  const s = R.qs.filter(q => R.picks[q.id] === q.a).length;
+  LAST_RES = { lv: R.lv, qs: R.qs.map(q => q.id), picks: R.picks, flags: R.flags, used, s, n: R.qs.length, timeUp: !!timeUp };
+  store.set('mw-last-' + R.lv, { s, n: R.qs.length, t: Date.now() });
+  RUN = null; RV_FILTER = 'all'; renderResult();
+  $('#diag').scrollIntoView({ behavior: 'smooth' });
+}
+function band(c, n) { const r = c / n; return r >= .75 ? 'strong' : r >= .5 ? 'mid' : 'weak'; }
+const BAND_C = { strong: '#0E9F76', mid: '#E8A50A', weak: '#E2386F' };
+function renderResult() {
+  const R = LAST_RES, qs = R.qs.map(id => BANK.find(q => q.id === id)), p = Math.round(R.s / R.n * 100);
+  const by = DOMS.map(d => { const list = qs.filter(q => q.d === d.id); const c = list.filter(q => R.picks[q.id] === q.a).length; return { d, c, n: list.length, b: band(c, list.length || 1) }; });
+  const weak = by.filter(x => x.b === 'weak'), mid = by.filter(x => x.b === 'mid');
+  const missedTypes = [...new Set(qs.filter(q => R.picks[q.id] !== q.a).map(q => q.d + '|' + q.t))].map(k => { const [d, t] = k.split('|'); const ty = typeOf(d, t); return ty ? L(ty.name) : t; });
+  const ringC = p >= 75 ? BAND_C.strong : p >= 50 ? BAND_C.mid : BAND_C.weak;
+  const recs = [...weak.map(x => ['r.recWeak', x]), ...mid.map(x => ['r.recMid', x])];
+  const view = qs.filter(q => RV_FILTER === 'all' || (RV_FILTER === 'wrong' && R.picks[q.id] !== q.a) || (RV_FILTER === 'flag' && R.flags[q.id]));
+  $('#diagApp').innerHTML = `<div id="diagRes" class="stack">
+    <div class="card glass" style="--c:${ringC}">
+      <div class="h3">${esc(F('r.title', { n: R.lv }))}</div>
+      ${R.timeUp ? `<p class="mini" style="color:var(--ruby)">${TP.t('x.timeup')}</p>` : ''}
+      <div class="res-top">
+        <div class="ring" style="--p:${p}"><div><span><b>${R.s}/${R.n}</b><br>${TP.t('r.score')}</span></div></div>
+        <div><p style="font-size:17px">${esc(F('r.sum', { s: R.s, n: R.n, p }))}</p><p class="mini">${esc(F('r.time', { t: fmtDur(R.used) }))}</p>
+          <div class="note-box">${TP.icon('info')}<span>${TP.t('x.disclaimer')}</span></div></div>
+      </div>
+    </div>
+    <div class="two">
+      <div class="card glass"><div class="h3">${TP.t('r.byDom')}</div>
+        ${by.map(x => `<div class="dbar" style="--c:${BAND_C[x.b]}"><span class="t">${esc(L(x.d.name))}</span><span class="tr"><i style="width:${x.n ? x.c / x.n * 100 : 0}%"></i></span><span class="v">${x.c}/${x.n}<span class="lvl-tag">${TP.t('r.' + x.b)}</span></span></div>`).join('')}
+      </div>
+      <div class="card glass"><div class="h3">${TP.t('r.recs')}</div>
+        <div class="recs">${recs.length ? recs.map(([k, x]) => `<div class="rec" style="--c:${x.d.c}"><span>${esc(F(k, { d: L(x.d.name) }))}</span><button type="button" class="btn tint sm no-print" style="--c:${x.d.c}" data-prac="${x.d.id}" data-plv="${R.lv}">${TP.t('r.train')}</button></div>`).join('') : `<p>${TP.t('r.recAll')}</p>`}</div>
+        ${missedTypes.length ? `<p class="mini" style="margin-top:12px">${esc(F('r.types', { t: missedTypes.join(EN() ? ', ' : '، ') }))}</p>` : ''}
+        <div class="qctl no-print"><button type="button" class="btn ghost sm" data-res="print">${TP.t('r.print')}</button><button type="button" class="btn ghost sm" data-res="retry">${TP.t('r.retry')}</button><button type="button" class="btn ghost sm" data-res="other">${TP.t('r.other')}</button></div>
+      </div>
+    </div>
+    <div class="card glass">
+      <div class="lib-top" style="margin-bottom:6px"><div class="h3" style="margin:0">${TP.t('r.review')}</div>
+        <div class="seg no-print">${[['all', 'r.all'], ['wrong', 'r.wrong'], ['flag', 'r.flagged']].map(([k, t]) => `<button type="button" class="${RV_FILTER === k ? 'on' : ''}" data-rv="${k}">${TP.t(t)}</button>`).join('')}</div></div>
+      ${view.length ? view.map(q => `<div class="qcard glass review-item" style="--c:${DOM[q.d].c}">${qHTML(q, { pick: R.picks[q.id], reveal: true, head: `<span class="mini">${F('q.of', { i: R.qs.indexOf(q.id) + 1, n: R.n })}${R.flags[q.id] ? ' · ★ ' + TP.t('x.flagged') : ''}</span>` })}</div>`).join('') : `<p class="empty">${TP.t('r.noneWrong')}</p>`}
+    </div>
+  </div>`;
+}
+
+/* ---------- الأحداث ---------- */
+document.addEventListener('click', e => {
+  const t = e.target.closest('button,a'); if (!t) return;
+  if (t.dataset.setlv) { const n = +t.dataset.setlv; DIAG_LV = n; if (!RUN) LAST_RES = null; setLevel(n); if (t.dataset.pr === 'diag') closePractice(); return; }
+  if (t.dataset.lib) { setLevel(+t.dataset.lib); return; }
+  if (t.dataset.prac) { openPractice(t.dataset.prac, t.dataset.plv ? +t.dataset.plv : LEVEL); return; }
+  if (t.dataset.pr) {
+    const a = t.dataset.pr;
+    if (a === 'close') closePractice();
+    else if (a === 'next') { PR.i++; renderPractice(); const b = $('#ovPanel .opt'); if (b) b.focus(); }
+    else if (a === 'again') { PR.i = 0; PR.picks = {}; renderPractice(); }
+    return;
+  }
+  if (t.classList.contains('opt') && !t.disabled) {
+    const q = BANK.find(x => x.id === t.dataset.q), o = +t.dataset.o;
+    if (t.dataset.act === 'pr' && PR) { PR.picks[q.id] = o; renderPractice(); const fb = $('#ovPanel .fb'); if (fb) fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+    else if (t.dataset.act === 'run' && RUN) { RUN.picks[q.id] = o; RUN.confirm = false; renderRun(); }
+    return;
+  }
+  if (t.dataset.dlv) { DIAG_LV = +t.dataset.dlv; renderDiag(); return; }
+  if (t.dataset.goto != null && RUN) { RUN.i = +t.dataset.goto; RUN.confirm = false; renderRun(); return; }
+  if (t.dataset.run) {
+    const a = t.dataset.run;
+    if (a === 'start') return startRun();
+    if (!RUN) return;
+    if (a === 'next') RUN.i = Math.min(RUN.qs.length - 1, RUN.i + 1);
+    if (a === 'prev') RUN.i = Math.max(0, RUN.i - 1);
+    if (a === 'flag') RUN.flags[RUN.qs[RUN.i].id] = !RUN.flags[RUN.qs[RUN.i].id];
+    if (a === 'submit') { const un = RUN.qs.length - Object.keys(RUN.picks).length; if (un > 0) RUN.confirm = true; else return finishRun(false); }
+    if (a === 'cancel') RUN.confirm = false;
+    if (a === 'really') return finishRun(false);
+    if (a === 'next' || a === 'prev') RUN.confirm = false;
+    renderRun(); return;
+  }
+  if (t.dataset.res) {
+    const a = t.dataset.res;
+    if (a === 'print') window.print();
+    if (a === 'retry') { DIAG_LV = LAST_RES.lv; startRun(); }
+    if (a === 'other') { LAST_RES = null; renderDiag(); }
+    return;
+  }
+  if (t.dataset.rv) { RV_FILTER = t.dataset.rv; renderResult(); return; }
+});
+$('#ov').addEventListener('click', e => { if (e.target.id === 'ov') closePractice(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && PR) closePractice(); });
+$('#gradeSel').addEventListener('change', e => {
+  store.set('mw-grade', e.target.value); renderFinder();
+  if (e.target.value !== '') { const n = I.gradeMap[+e.target.value][2]; DIAG_LV = n; setLevel(n); }
+});
+/* إبراز القسم الحالي في شريط الأقسام */
+const secs = ['guide', 'dates', 'library', 'diag'].map(id => document.getElementById(id));
+(function () { if (!('IntersectionObserver' in window)) return; const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) document.querySelectorAll('#jump a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + en.target.id)); }), { rootMargin: '-45% 0px -50% 0px' }); secs.forEach(s => s && io.observe(s)); })();
+
+function renderAll() { renderHero(); renderGuide(); renderDates(); renderLibrary(); renderDiag(); renderPractice(); TP.observe(); TP.tick(); }
+TP.onCountdownEnd(renderAll);
+TP.onLang(renderAll);
+TP.applyLang();
+</script>
+</body>
+</html>
