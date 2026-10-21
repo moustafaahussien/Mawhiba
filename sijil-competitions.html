@@ -35,8 +35,24 @@ html[dir=rtl] .sumc{padding:6px 12px 6px 8px}
 .sumc:hover{border-color:#7B4DFF}
 .sumc.on{background:linear-gradient(135deg,#8E6BFF,#6D4BFF);color:#fff;border-color:transparent}
 .sumc.on b{background:rgba(255,255,255,.25);color:#fff}
+.pform{padding:18px 20px;margin-bottom:16px;border:2px solid rgba(123,77,255,.3)}
+.pform h3{margin:0 0 6px;font-size:1.05rem}
+.pform .grid4 .wide{grid-column:1/-1}
+.pform textarea{min-height:150px;line-height:1.9}
+.pform .acts{margin-top:14px;align-items:center}
+.pdel{padding:14px 16px;margin-bottom:16px;border:2px solid rgba(226,56,111,.35)}
+.pdel .acts{align-items:end;margin-top:10px}
+.field input,.field select,.field textarea{font:inherit}
+.rowacts{display:flex;gap:6px;flex-wrap:nowrap}
+.rowacts .btn{margin:0;padding:5px 10px;font-size:.8rem}
+.btn.red{background:linear-gradient(135deg,#E2386F,#B4234F)}
+td.cls{color:var(--muted);font-family:'Sora',sans-serif;font-weight:600}
+.subj{display:inline-block;padding:2px 10px;border-radius:999px;font-weight:700;font-size:.82rem;background:rgba(123,77,255,.1);color:#5B33D6}
+#formBox{scroll-margin-top:110px}
+.addbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.addbar .btn{margin:0}
 @media(max-width:640px){.summary .srow{grid-template-columns:1fr}}
-@media print{.privacy{display:none}.panel{break-inside:auto}}
+@media print{.privacy,.pform,.pdel,.rowacts,th.ra,td.ra{display:none!important}.panel{break-inside:auto}}
 </style>
 </head>
 <body class="sj">
@@ -71,6 +87,13 @@ html[dir=rtl] .sumc{padding:6px 12px 6px 8px}
     </div>
   </section>
 
+  <section class="panel glass no-print" id="addBar" hidden>
+    <div class="sch"><h3>✍️ إدخال الطلاب يدوياً</h3>
+      <div class="addbar"><button class="btn" type="button" id="addOne">＋ إضافة طالب</button><button class="btn ghost" type="button" id="addMany">＋ إضافة عدة طلاب</button></div></div>
+    <p class="sub" style="margin:0">لإضافة طالب واحد أو قائمة أسماء (مثل كشوف المرشحين من المعلمين) دون ملف Excel. ولتعديل بيانات طالب أو ترقية مرحلته اضغط «تعديل» بجوار اسمه في الجدول.</p>
+  </section>
+  <div id="formBox"></div>
+
   <div id="app"></div>
 </main>
 <div id="ftr"></div>
@@ -92,7 +115,7 @@ const stageIx = s => Math.max(0, STAGES.indexOf(String(s || '').trim()));
 const gradeRank = g => gradeOrder(g);
 const collator = new Intl.Collator('ar');
 
-let ROWS = [], COMP = '', F = { year: '', stage: '', level: '', school: '', grade: '', q: '' };
+let ROWS = [], COMP = '', F = { year: '', stage: '', level: '', school: '', grade: '', subject: '', q: '' };
 
 async function load() {
   $('#app').innerHTML = '<div class="empty">جارٍ تحميل القوائم…</div>';
@@ -103,10 +126,10 @@ async function load() {
       throw new Error((d && d.error) || 'تعذر التحميل');
     }
     $('#gate').hidden = true;
-    $('#up').hidden = false;
+    $('#up').hidden = false; $('#addBar').hidden = false;
     ROWS = d.rows || [];
     if (!ROWS.length) {
-      $('#app').innerHTML = `<div class="panel glass empty">لا توجد أسماء بعد — ارفع ملفات التسجيل من «رفع ملفات التسجيل» أعلاه.</div>`;
+      $('#app').innerHTML = `<div class="panel glass empty">لا توجد أسماء بعد — ارفع ملفات التسجيل أو أضف الطلاب يدوياً من الأعلى.</div>`;
       return;
     }
     const comps = [...new Set(ROWS.map(r => r.comp))];
@@ -129,7 +152,7 @@ $('#open').onclick = async () => {
   try {
     const d = await API.check(c);
     if (!d || !d.ok) { toast((d && d.error) || 'رمز المعلمين غير صحيح', 'err'); return; }
-    LS.set('tf_code', c); load();
+    LS.set('tf_code', c); if (d.admin) LS.set('tf_admin', c); load();
   } catch (e) { toast('تعذر التحقق: ' + e.message, 'err'); }
   finally { b.disabled = false; b.textContent = 'عرض القوائم'; }
 };
@@ -138,7 +161,7 @@ function filtered() {
   const q = normKey(F.q);
   return ROWS.filter(r => r.comp === COMP && (!F.year || r.year === F.year) &&
     (!F.stage || stageIx(r.stage) >= stageIx(F.stage)) && (!F.level || r.level === F.level) && (!F.school || r.school === F.school) &&
-    (!F.grade || r.grade === F.grade) && (!q || normKey(r.name).includes(q)));
+    (!F.grade || r.grade === F.grade) && (!F.subject || r.subject === F.subject) && (!q || normKey(r.name).includes(q)));
 }
 
 function render() {
@@ -153,7 +176,9 @@ function render() {
   const countBy = (arr, k) => arr.reduce((o, r) => (o[r[k]] = (o[r[k]] || 0) + 1, o), {});
   const grades = [...new Set(inComp.map(r => r.grade))].sort((a, b) => gradeRank(a) - gradeRank(b));
   const list = filtered();
-  const cL = countBy(list, 'level'), cS = countBy(list, 'school'), cG = countBy(list, 'grade');
+  const cL = countBy(list, 'level'), cS = countBy(list, 'school'), cG = countBy(list, 'grade'), cT = countBy(list, 'subject');
+  const subjects = [...new Set(inComp.map(r => r.subject).filter(Boolean))].sort(collator.compare);
+  const hasSubj = subjects.length > 0, hasCls = list.some(r => r.cls);
   const sumChips = (obj, key, order) => Object.keys(obj).filter(Boolean).sort(order).map(v =>
     `<button type="button" class="sumc${F[key] === v ? ' on' : ''}" data-sum="${key}" data-v="${esc(v)}"><span>${esc(v)}</span><b>${obj[v]}</b></button>`).join('');
   const atLeast = i => inComp.filter(r => stageIx(r.stage) >= i).length;
@@ -168,8 +193,9 @@ function render() {
     return `<section class="panel glass">
       <div class="sch"><h3>${esc(sc || 'مدرسة غير محددة')}</h3><span class="cnt">${rs.length} طالباً</span></div>
       <div class="gradebar">${Object.keys(gc).sort((a, b) => gradeRank(a) - gradeRank(b)).map(g => `<span class="chip">${esc(g)}: ${gc[g]}</span>`).join('')}</div>
-      <div class="tbl"><table><thead><tr><th>م</th><th>اسم الطالب</th><th>الصف</th><th>المرحلة في المسابقة</th><th>تاريخ التسجيل</th><th>ملاحظة</th></tr></thead><tbody>
-      ${rs.map((r, i) => `<tr><td class="n">${i + 1}</td><td class="nm">${esc(r.name)}</td><td>${esc(r.grade)}</td><td><span class="stg s${stageIx(r.stage)}">${esc(r.stage || 'مسجّل')}</span></td><td>${esc(r.date || '—')}</td><td>${esc(r.note || '')}</td></tr>`).join('')}
+      <div class="tbl"><table><thead><tr><th>م</th><th>اسم الطالب</th><th>الصف</th>${hasCls ? '<th>الفصل</th>' : ''}${hasSubj ? '<th>التخصص / المادة</th>' : ''}<th>المرحلة في المسابقة</th><th>تاريخ التسجيل</th><th>ملاحظة</th><th class="ra"></th></tr></thead><tbody>
+      ${rs.map((r, i) => `<tr><td class="n">${i + 1}</td><td class="nm">${esc(r.name)}</td><td>${esc(r.grade)}</td>${hasCls ? `<td class="cls nt">${esc(r.cls || '')}</td>` : ''}${hasSubj ? `<td>${r.subject ? `<span class="subj">${esc(r.subject)}</span>` : ''}</td>` : ''}<td><span class="stg s${stageIx(r.stage)}">${esc(r.stage || 'مسجّل')}</span></td><td>${esc(r.date || '—')}</td><td><span class="nt">${esc(r.note || '')}</span></td>
+        <td class="ra"><div class="rowacts"><button type="button" class="btn ghost" data-ed="${ROWS.indexOf(r)}">تعديل</button><button type="button" class="btn ghost" data-del="${ROWS.indexOf(r)}">حذف</button></div></td></tr>`).join('')}
       </tbody></table></div></section>`;
   }).join('');
 
@@ -186,6 +212,7 @@ function render() {
       <div class="srow"><h4>حسب المرحلة الدراسية</h4><div class="sums">${sumChips(cL, 'level', (a, b) => levelRank(a) - levelRank(b))}</div></div>
       <div class="srow"><h4>حسب المدرسة</h4><div class="sums">${sumChips(cS, 'school', collator.compare)}</div></div>
       <div class="srow"><h4>حسب الصف</h4><div class="sums">${sumChips(cG, 'grade', (a, b) => gradeRank(a) - gradeRank(b))}</div></div>
+      ${hasSubj ? `<div class="srow"><h4>حسب التخصص / المادة</h4><div class="sums">${sumChips(cT, 'subject', collator.compare)}</div></div>` : ''}
       <p class="note no-print">اضغط على أي بند لعرض طلابه فقط، واضغط عليه مرة أخرى للإلغاء.</p>
     </section>
     <div class="filters glass no-print">
@@ -194,13 +221,16 @@ function render() {
       <label class="field">المرحلة الدراسية<select data-f="level">${opt('', F.level, 'كل المراحل')}${levels.map(l => opt(l, F.level)).join('')}</select></label>
       <label class="field">المدرسة<select data-f="school">${opt('', F.school, 'كل المدارس')}${schools.map(s => opt(s, F.school)).join('')}</select></label>
       <label class="field">الصف<select data-f="grade">${opt('', F.grade, 'كل الصفوف')}${grades.map(g => opt(g, F.grade)).join('')}</select></label>
+      ${hasSubj ? `<label class="field">التخصص / المادة<select data-f="subject">${opt('', F.subject, 'كل التخصصات')}${subjects.map(x => opt(x, F.subject)).join('')}</select></label>` : ''}
       <label class="field">بحث بالاسم<input data-f="q" value="${esc(F.q)}" placeholder="اكتب جزءاً من الاسم"></label>
       <div class="acts"><button class="btn ghost" type="button" id="csv">تنزيل Excel</button><button class="btn ghost" type="button" onclick="print()">طباعة</button></div>
     </div>
     <p class="note">يظهر ${list.length} من ${inComp.length} طالباً في «${esc(COMP_NAMES[COMP] || COMP)}»${F.year ? ' — <bdi dir="ltr">' + esc(F.year) + '</bdi>' : ''}.</p>
     ${blocks || '<div class="panel glass empty">لا توجد أسماء تطابق التصفية.</div>'}`;
 
-  $$('[data-comp]').forEach(b => b.onclick = () => { COMP = b.dataset.comp; F.level = F.school = F.grade = ''; render(); });
+  $$('[data-comp]').forEach(b => b.onclick = () => { COMP = b.dataset.comp; F.level = F.school = F.grade = F.subject = ''; render(); });
+  $$('[data-ed]').forEach(b => b.onclick = () => openForm('one', ROWS[+b.dataset.ed]));
+  $$('[data-del]').forEach(b => b.onclick = () => openDel(ROWS[+b.dataset.del]));
   $$('[data-sum]').forEach(b => b.onclick = () => { const k = b.dataset.sum; F[k] = F[k] === b.dataset.v ? '' : b.dataset.v; render(); });
   $$('select[data-f]').forEach(s => s.onchange = () => { F[s.dataset.f] = s.value; render(); });
   const qi = $('input[data-f="q"]');
@@ -210,9 +240,9 @@ function render() {
 
 /* تنزيل القائمة الظاهرة كملف يفتحه Excel بالعربية */
 function downloadCsv(list) {
-  const head = ['المسابقة', 'العام', 'اسم الطالب', 'المدرسة', 'المرحلة الدراسية', 'الصف', 'المرحلة في المسابقة', 'تاريخ التسجيل', 'ملاحظة'];
+  const head = ['المسابقة', 'العام', 'اسم الطالب', 'المدرسة', 'المرحلة الدراسية', 'الصف', 'الفصل', 'التخصص / المادة', 'المرحلة في المسابقة', 'تاريخ التسجيل', 'ملاحظة'];
   const cell = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
-  const lines = [head.map(cell).join(',')].concat(list.map(r => [COMP_NAMES[r.comp] || r.comp, r.year, r.name, r.school, r.level, r.grade, r.stage, r.date, r.note].map(cell).join(',')));
+  const lines = [head.map(cell).join(',')].concat(list.map(r => [COMP_NAMES[r.comp] || r.comp, r.year, r.name, r.school, r.level, r.grade, r.cls, r.subject, r.stage, r.date, r.note].map(cell).join(',')));
   const blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = `المشاركون-${COMP_NAMES[COMP] || COMP}-${F.year || ''}.csv`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
@@ -226,7 +256,8 @@ $('#upToggle').onclick = () => { const b = $('#upBody'); b.hidden = !b.hidden; $
 let PARSED = [];
 
 /* يقرأ ملف التصدير: يبحث عن سطر العناوين الذي فيه «الاسم» ويأخذ ما تحته */
-const COLS = { name: ['الاسم', 'اسم الطالب'], school: ['المدرسة'], level: ['المرحلة', 'المرحلة الدراسية'], grade: ['الصف الدراسي', 'الصف'], date: ['تاريخ طلب المشاركة', 'تاريخ التسجيل'] };
+const COLS = { name: ['الاسم', 'اسم الطالب'], school: ['المدرسة'], level: ['المرحلة', 'المرحلة الدراسية'], grade: ['الصف الدراسي', 'الصف'], date: ['تاريخ طلب المشاركة', 'تاريخ التسجيل'],
+  cls: ['الفصل', 'الشعبة'], subject: ['المادة', 'التخصص', 'التخصص / المادة', 'المسار'], note: ['ملاحظة', 'ملاحظات'] };
 function parseSheet(rows) {
   const hi = rows.findIndex(r => r.some(c => COLS.name.includes(String(c || '').trim())));
   if (hi < 0) return [];
@@ -234,7 +265,7 @@ function parseSheet(rows) {
   const ix = Object.fromEntries(Object.entries(COLS).map(([k, names]) => [k, head.findIndex(h => names.includes(h))]));
   return rows.slice(hi + 1).map(r => {
     const g = k => ix[k] >= 0 ? normKey(r[ix[k]]) : '';
-    return { name: g('name'), school: g('school'), level: g('level'), grade: g('grade'), date: g('date') };
+    return { name: g('name'), school: g('school'), level: g('level'), grade: g('grade'), date: g('date'), cls: g('cls'), subject: g('subject'), note: g('note') };
   }).filter(r => r.name && !/^عدد|^المجموع/.test(r.name));
 }
 $('#upFiles').onchange = async e => {
@@ -271,6 +302,107 @@ async function saveImport() {
     if (e.auth) showGate();
   } finally { b.disabled = false; b.textContent = 'حفظ الأسماء في الصفحة'; }
 }
+
+/* ---------- الإدخال اليدوي: إضافة طالب، أو عدة طلاب، أو تعديل ---------- */
+const LEVELS = ['المرحلة الابتدائية', 'المرحلة المتوسطة', 'المرحلة الثانوية'];
+const SUBJECTS = { nsmo: ['الرياضيات', 'الفيزياء', 'الكيمياء', 'الأحياء', 'العلوم', 'المعلوماتية'] };
+const levelOf = g => /متوسط/.test(g) ? 'المرحلة المتوسطة' : /ثانوي/.test(g) ? 'المرحلة الثانوية' : /ابتدائي/.test(g) ? 'المرحلة الابتدائية' : '';
+const uniqVals = (k, extra) => [...new Set([...(extra || []), ...ROWS.map(r => r[k]).filter(Boolean)])];
+let FORM = null;
+
+function openForm(mode, row) {
+  const comp = row ? row.comp : (COMP || $('#upComp').value), year = row ? row.year : (F.year || curYear);
+  FORM = { mode, orig: row ? { comp: row.comp, year: row.year, name: row.name } : null,
+    row: Object.assign({ comp, year, name: '', school: F.school || '', level: F.level || '', grade: F.grade || '', cls: '', subject: F.subject || '', stage: 'مسجّل', date: '', note: '' }, row || {}) };
+  renderForm(); $('#formBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function renderForm() {
+  if (!FORM) { $('#formBox').innerHTML = ''; return; }
+  const { mode, row, orig } = FORM, many = mode === 'many';
+  const o = (v, cur, l) => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(l || v)}</option>`;
+  const usedGrades = uniqVals('grade').filter(g => !GRADES.includes(g)).sort((a, b) => gradeRank(a) - gradeRank(b));
+  const subjList = uniqVals('subject', SUBJECTS[row.comp] || []);
+  $('#formBox').innerHTML = `<section class="pform glass no-print" id="pform">
+    <h3>${orig ? '<span>تعديل بيانات طالب</span>' : many ? '<span>إضافة عدة طلاب</span>' : '<span>إضافة طالب</span>'}</h3>
+    ${many ? '<p class="sub">اكتب اسماً في كل سطر (أو الصقها من كشف). الحقول الأخرى تُطبَّق على كل الأسماء، فأضف كل صف أو تخصص في دفعة مستقلة. يُتجاهل الاسم الموجود من قبل.</p>' : ''}
+    <div class="grid4">
+      <label class="field">المسابقة<select data-k="comp">${(window.TP_COMPETITIONS || []).map(c => o(c.id, row.comp, COMP_NAMES[c.id])).join('')}</select></label>
+      <label class="field">العام<input data-k="year" value="${esc(row.year)}"></label>
+      ${many ? `<label class="field wide">أسماء الطلاب (اسم في كل سطر) *<textarea data-k="names" placeholder="${document.documentElement.lang === 'en' ? 'One name per line' : 'اسم في كل سطر'}"></textarea></label>`
+        : `<label class="field wide">اسم الطالب *<input data-k="name" value="${esc(row.name)}"></label>`}
+      <label class="field">المدرسة<input data-k="school" list="dlSchools" value="${esc(row.school)}"></label>
+      <label class="field">الصف<select data-k="grade"><option value="">— اختر —</option>${usedGrades.length ? `<optgroup label="المستخدمة في القوائم">${usedGrades.map(g => o(g, row.grade)).join('')}</optgroup>` : ''}${gradeOptions(row.grade)}</select></label>
+      <label class="field">المرحلة الدراسية<input data-k="level" list="dlLevels" value="${esc(row.level)}"></label>
+      <label class="field">الفصل<input data-k="cls" value="${esc(row.cls)}" placeholder="مثل: 4"></label>
+      <label class="field">التخصص / المادة<input data-k="subject" list="dlSubjects" value="${esc(row.subject)}"></label>
+      <label class="field">المرحلة في المسابقة<select data-k="stage">${STAGES.map(x => o(x, row.stage || 'مسجّل')).join('')}</select></label>
+      <label class="field">تاريخ التسجيل<input data-k="date" value="${esc(row.date)}" placeholder="اختياري"></label>
+      <label class="field${many ? '' : ' wide'}">ملاحظة<input data-k="note" value="${esc(row.note)}" placeholder="مثل: اسم المدرب"></label>
+    </div>
+    <datalist id="dlSchools">${uniqVals('school').map(x => `<option value="${esc(x)}">`).join('')}</datalist>
+    <datalist id="dlLevels">${uniqVals('level', LEVELS).map(x => `<option value="${esc(x)}">`).join('')}</datalist>
+    <datalist id="dlSubjects">${subjList.map(x => `<option value="${esc(x)}">`).join('')}</datalist>
+    <div class="acts"><button type="button" class="btn" id="pSave">حفظ</button><button type="button" class="btn ghost" id="pCancel">إلغاء</button><span class="note" id="pCount"></span></div>
+  </section>`;
+  const g = $('#pform [data-k="grade"]'), lv = $('#pform [data-k="level"]');
+  g.onchange = () => { const l = levelOf(g.value); if (l && !lv.value) lv.value = l; };
+  $('#pform [data-k="comp"]').onchange = e => { FORM.row = readForm(); renderForm(); };
+  const ta = $('#pform [data-k="names"]');
+  if (ta) { const cnt = () => $('#pCount').innerHTML = `<b>${namesOf(ta.value).length}</b> <span>اسماً</span>`; ta.oninput = cnt; cnt(); }
+  $('#pCancel').onclick = () => { FORM = null; renderForm(); };
+  $('#pSave').onclick = saveForm;
+}
+const namesOf = t => [...new Set(String(t || '').split(/\r?\n/).map(x => normKey(x.replace(/^[\s\d٠-٩.\-–)(]+/, ''))).filter(Boolean))];
+function readForm() {
+  const r = Object.assign({}, FORM.row);
+  $$('#pform [data-k]').forEach(el => r[el.dataset.k] = el.tagName === 'TEXTAREA' ? el.value : normKey(el.value));
+  return r;
+}
+async function saveForm() {
+  const r = readForm(); FORM.row = r;
+  if (!r.year) { toast('اكتب العام', 'err'); return; }
+  let rows;
+  if (FORM.mode === 'many') {
+    const names = namesOf(r.names);
+    if (!names.length) { toast('اكتب اسماً واحداً على الأقل', 'err'); return; }
+    rows = names.map(n => { const x = Object.assign({}, r, { name: n }); delete x.names; return x; });
+  } else {
+    if (!r.name) { toast('اكتب اسم الطالب', 'err'); return; }
+    rows = [Object.assign({}, r, FORM.orig ? { orig: FORM.orig } : {})];
+  }
+  if (!r.level && r.grade) rows.forEach(x => x.level = levelOf(r.grade));
+  const b = $('#pSave'); b.disabled = true; b.textContent = 'جارٍ الحفظ…';
+  try {
+    const d = await API.saveParticipants(rows);
+    const msg = [d.added ? `أُضيف ${d.added}` : '', d.updated ? 'تم التعديل' : '', d.dup ? `${d.dup} ${FORM.mode === 'many' ? 'موجودون من قبل' : 'الاسم موجود من قبل في هذه المسابقة والعام'}` : ''].filter(Boolean).join(' · ');
+    toast(msg || 'لم يتغير شيء', d.added || d.updated ? '' : 'err');
+    if (!d.added && !d.updated) { b.disabled = false; b.textContent = 'حفظ'; return; }
+    COMP = r.comp; F.year = r.year; FORM = null; renderForm(); load();
+  } catch (e) {
+    toast(e.auth ? 'رمز المعلمين غير صحيح — أعد الدخول' : 'تعذر الحفظ: ' + e.message, 'err');
+    if (e.auth) showGate(); b.disabled = false; b.textContent = 'حفظ';
+  }
+}
+function openDel(row) {
+  FORM = null;
+  $('#formBox').innerHTML = `<section class="pdel glass no-print"><b><span>حذف</span> «<span class="nt">${esc(row.name)}</span>» <span>من قائمة</span> «${esc(COMP_NAMES[row.comp] || row.comp)}»<span>؟</span></b>
+    <div class="acts">${isDemo() ? '' : `<label class="field">مفتاح المشرف<input type="password" id="delKey" value="${esc(LS.get('tf_admin', ''))}"></label>`}
+      <button type="button" class="btn red" id="delGo">حذف نهائي</button><button type="button" class="btn ghost" id="delNo">إلغاء</button></div>
+    <p class="sub" style="margin-top:6px">الحذف متاح للمشرف فقط. لتصحيح اسم أو صف استخدم «تعديل» بدلاً من الحذف.</p></section>`;
+  $('#formBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  $('#delNo').onclick = () => { $('#formBox').innerHTML = ''; };
+  $('#delGo').onclick = async () => {
+    const key = $('#delKey') ? $('#delKey').value.trim() : '';
+    if (!isDemo() && !key) { toast('اكتب مفتاح المشرف', 'err'); return; }
+    try {
+      await API.deleteParticipants([{ comp: row.comp, year: row.year, name: row.name }], key);
+      if (key) LS.set('tf_admin', key);
+      $('#formBox').innerHTML = ''; toast('تم الحذف'); load();
+    } catch (e) { toast(e.message, 'err'); }
+  };
+}
+$('#addOne').onclick = () => openForm('one');
+$('#addMany').onclick = () => openForm('many');
 
 if (isDemo() || LS.get('tf_code', '')) load(); else showGate();
 </script>

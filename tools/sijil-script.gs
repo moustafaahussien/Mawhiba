@@ -19,7 +19,7 @@ const MASTER = 'السجل';
 const STUDENTS = 'الطلاب';
 /* قوائم المشاركين في المسابقات (بالأسماء) — تظهر للمعلمين فقط، وللجمهور الأعداد فقط */
 const PARTICIPANTS = 'المشاركون في المسابقات';
-const PARTICIPANTS_HEADERS = ['المسابقة', 'العام', 'اسم الطالب', 'المدرسة', 'المرحلة الدراسية', 'الصف', 'المرحلة في المسابقة', 'تاريخ التسجيل', 'ملاحظة'];
+const PARTICIPANTS_HEADERS = ['المسابقة', 'العام', 'اسم الطالب', 'المدرسة', 'المرحلة الدراسية', 'الصف', 'المرحلة في المسابقة', 'تاريخ التسجيل', 'ملاحظة', 'التخصص / المادة', 'الفصل'];
 const COMP_STAGES = ['مسجّل', 'متأهل', 'نهائي', 'فائز'];
 /* إدارة برامج النموذج (المكونات 2 – 9): الفريق والمشاركون والجلسات — عمود «البرنامج» يحدد المكوّن */
 const PROG = {
@@ -45,6 +45,7 @@ function setupSheet() {
   ensureSheet_(ss, MASTER, MASTER_HEADERS, true);
   ensureSheet_(ss, STUDENTS, ['رقم الطالب', 'اسم الطالب', 'الصف', 'الفصل'], true);
   const ps = ensureSheet_(ss, PARTICIPANTS, PARTICIPANTS_HEADERS, true);
+  ensureHeaders_(ps, PARTICIPANTS_HEADERS);
   ps.getRange('A2:A3000').setDataValidation(SpreadsheetApp.newDataValidation()
     .requireValueInList(['kangaroo', 'bebras', 'nsmo', 'ibdaa', 'isef'], true).setAllowInvalid(true).build());
   ps.getRange('G2:G3000').setDataValidation(SpreadsheetApp.newDataValidation()
@@ -58,6 +59,14 @@ function setupSheet() {
   ss.getSheetByName(PROG.sessions.sheet).getRange('P2:P8000').setDataValidation(SpreadsheetApp.newDataValidation()
     .requireValueInList(SESSION_STATUS, true).setAllowInvalid(true).build());
   SpreadsheetApp.flush();
+}
+
+/* يضيف عناوين الأعمدة الجديدة في آخر ورقة موجودة من قبل (دون المساس بالبيانات) */
+function ensureHeaders_(sh, headers) {
+  const n = sh.getLastColumn();
+  const cur = n ? sh.getRange(1, 1, 1, n).getValues()[0].map(String) : [];
+  if (cur.length < headers.length) sh.getRange(1, cur.length + 1, 1, headers.length - cur.length)
+    .setValues([headers.slice(cur.length)]).setFontWeight('bold').setBackground('#EDE8FF');
 }
 
 function ensureSheet_(ss, name, headers, asText) {
@@ -78,6 +87,8 @@ function doPost(e) {
     const body = JSON.parse(e.postData.contents);
     if (body.action === 'submit') return out_(saveRecord_(body.record));
     if (body.action === 'importParticipants') return out_(importParticipants_(body));
+    if (body.action === 'saveParticipants') return out_(saveParticipants_(body));
+    if (body.action === 'deleteParticipants') return out_(deleteParticipants_(body));
     if (body.action === 'progSave') return out_(progSave_(body));
     if (body.action === 'progDelete') return out_(progDelete_(body));
     return out_({ ok: false, error: 'طلب غير معروف' });
@@ -189,10 +200,12 @@ function readStudents_() {
 function readParticipants_() {
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(PARTICIPANTS);
   if (!sh || sh.getLastRow() < 2) return [];
-  return sh.getRange(2, 1, sh.getLastRow() - 1, PARTICIPANTS_HEADERS.length).getDisplayValues()
+  const w = Math.max(PARTICIPANTS_HEADERS.length, Math.min(sh.getLastColumn(), PARTICIPANTS_HEADERS.length));
+  return sh.getRange(2, 1, sh.getLastRow() - 1, w).getDisplayValues()
     .filter(v => String(v[0]).trim() && String(v[2]).trim())
     .map(v => ({ comp: String(v[0]).trim().toLowerCase(), year: String(v[1]).trim(), name: String(v[2]).trim(), school: String(v[3]).trim(),
-                 level: String(v[4]).trim(), grade: String(v[5]).trim(), stage: String(v[6]).trim() || 'مسجّل', date: v[7], note: v[8] }));
+                 level: String(v[4]).trim(), grade: String(v[5]).trim(), stage: String(v[6]).trim() || 'مسجّل', date: v[7], note: v[8],
+                 subject: String(v[9] || '').trim(), cls: String(v[10] || '').trim() }));
 }
 
 /* استيراد ملفات التسجيل المصدَّرة من موقع المسابقة (من صفحة «المشاركون في المسابقات»).
@@ -205,16 +218,67 @@ function importParticipants_(b) {
   try {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     const sh = ensureSheet_(ss, PARTICIPANTS, PARTICIPANTS_HEADERS, true);
+    ensureHeaders_(sh, PARTICIPANTS_HEADERS);
     const norm = x => String(x || '').trim().replace(/\s+/g, ' ');
     const have = {};
     readParticipants_().forEach(r => { if (r.comp === comp && r.year === year) have[norm(r.name)] = 1; });
     const add = [];
     b.rows.forEach(r => {
       const n = norm(r.name); if (!n || have[n]) return; have[n] = 1;
-      add.push([comp, year, n, norm(r.school), norm(r.level), norm(r.grade), 'مسجّل', norm(r.date), '']);
+      add.push([comp, year, n, norm(r.school), norm(r.level), norm(r.grade), 'مسجّل', norm(r.date), norm(r.note), norm(r.subject), norm(r.cls)]);
     });
     if (add.length) sh.getRange(sh.getLastRow() + 1, 1, add.length, PARTICIPANTS_HEADERS.length).setNumberFormat('@').setValues(add);
     return { ok: true, added: add.length, kept: b.rows.length - add.length, total: Object.keys(have).length };
+  } finally { lock.releaseLock(); }
+}
+
+/* إضافة طالب أو أكثر يدوياً أو تعديله (من صفحة «المشاركون في المسابقات»). يحتاج رمز المعلمين.
+   كل سطر: { comp, year, name, school, level, grade, cls, subject, stage, date, note, orig: {comp, year, name} للتعديل } */
+function saveParticipants_(b) {
+  if (!codeOk_(b.code)) return { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
+  if (!Array.isArray(b.rows) || !b.rows.length) return { ok: false, error: 'بيانات ناقصة' };
+  const lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sh = ensureSheet_(ss, PARTICIPANTS, PARTICIPANTS_HEADERS, true);
+    ensureHeaders_(sh, PARTICIPANTS_HEADERS);
+    const norm = x => String(x || '').trim().replace(/\s+/g, ' ');
+    const key = (c, y, n) => [String(c || '').trim().toLowerCase(), norm(y), norm(n)].join('|');
+    const W = PARTICIPANTS_HEADERS.length;
+    let added = 0, updated = 0, dup = 0;
+    b.rows.forEach(r => {
+      const comp = String(r.comp || '').trim().toLowerCase(), year = norm(r.year), name = norm(r.name);
+      if (!comp || !year || !name) return;
+      const last = sh.getLastRow();
+      const keys = last > 1 ? sh.getRange(2, 1, last - 1, 3).getDisplayValues().map(v => key(v[0], v[1], v[2])) : [];
+      const row = [comp, year, name, norm(r.school), norm(r.level), norm(r.grade), norm(r.stage) || 'مسجّل', norm(r.date), norm(r.note), norm(r.subject), norm(r.cls)];
+      const at = r.orig ? keys.indexOf(key(r.orig.comp, r.orig.year, r.orig.name)) : -1;
+      const clash = keys.indexOf(key(comp, year, name));
+      if (at >= 0) {
+        if (clash >= 0 && clash !== at) { dup++; return; }
+        sh.getRange(at + 2, 1, 1, W).setNumberFormat('@').setValues([row]); updated++;
+      } else if (clash >= 0) { dup++; }
+      else { sh.getRange(last + 1, 1, 1, W).setNumberFormat('@').setValues([row]); added++; }
+    });
+    return { ok: true, added: added, updated: updated, dup: dup };
+  } finally { lock.releaseLock(); }
+}
+
+/* حذف طلاب من القوائم — بمفتاح المشرف فقط. items: [{comp, year, name}] */
+function deleteParticipants_(b) {
+  if (!ADMIN_KEY || String(b.key || '') !== ADMIN_KEY) return { ok: false, auth: true, error: 'الحذف يحتاج مفتاح المشرف' };
+  if (!Array.isArray(b.items) || !b.items.length) return { ok: false, error: 'بيانات ناقصة' };
+  const lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(PARTICIPANTS);
+    if (!sh || sh.getLastRow() < 2) return { ok: true, deleted: 0 };
+    const norm = x => String(x || '').trim().replace(/\s+/g, ' ');
+    const key = (c, y, n) => [String(c || '').trim().toLowerCase(), norm(y), norm(n)].join('|');
+    const want = b.items.map(i => key(i.comp, i.year, i.name));
+    const keys = sh.getRange(2, 1, sh.getLastRow() - 1, 3).getDisplayValues().map(v => key(v[0], v[1], v[2]));
+    let n = 0;
+    for (let i = keys.length - 1; i >= 0; i--) if (want.indexOf(keys[i]) >= 0) { sh.deleteRow(i + 2); n++; }
+    return { ok: true, deleted: n };
   } finally { lock.releaseLock(); }
 }
 

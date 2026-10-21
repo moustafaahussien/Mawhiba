@@ -88,7 +88,7 @@ const API = {
       const all = LS.get('tf_participants', []), have = new Set(all.filter(r => r.comp === comp && r.year === year).map(r => normKey(r.name)));
       let added = 0;
       rows.forEach(r => { const n = normKey(r.name); if (!n || have.has(n)) return; have.add(n); added++;
-        all.push({ comp, year, name: n, school: r.school, level: r.level, grade: r.grade, stage: 'مسجّل', date: r.date, note: '' }); });
+        all.push({ comp, year, name: n, school: r.school, level: r.level, grade: r.grade, stage: 'مسجّل', date: r.date, note: r.note || '', subject: r.subject || '', cls: r.cls || '' }); });
       LS.set('tf_participants', all);
       return { ok: true, demo: true, added, kept: rows.length - added, total: have.size };
     }
@@ -97,6 +97,41 @@ const API = {
     const d = await r.json();
     if (d && d.ok) return d;
     throw authErr((d && d.error) || 'تعذر الحفظ', d);
+  },
+  /* إضافة طالب أو أكثر يدوياً أو تعديله (تحتاج رمز المعلمين). للتعديل: orig = {comp, year, name} */
+  async saveParticipants(rows) {
+    if (isDemo()) {
+      const all = LS.get('tf_participants', []), K = (c, y, n) => [c, y, normKey(n)].join('|');
+      let added = 0, updated = 0, dup = 0;
+      rows.forEach(r => {
+        const row = { comp: r.comp, year: r.year, name: normKey(r.name), school: r.school || '', level: r.level || '', grade: r.grade || '',
+          cls: r.cls || '', subject: r.subject || '', stage: r.stage || 'مسجّل', date: r.date || '', note: r.note || '' };
+        if (!row.comp || !row.year || !row.name) return;
+        const at = r.orig ? all.findIndex(x => K(x.comp, x.year, x.name) === K(r.orig.comp, r.orig.year, r.orig.name)) : -1;
+        const clash = all.findIndex(x => K(x.comp, x.year, x.name) === K(row.comp, row.year, row.name));
+        if (at >= 0) { if (clash >= 0 && clash !== at) { dup++; return; } all[at] = row; updated++; }
+        else if (clash >= 0) dup++; else { all.push(row); added++; }
+      });
+      LS.set('tf_participants', all); return { ok: true, demo: true, added, updated, dup };
+    }
+    const r = await fetch(CONFIG.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'saveParticipants', code: LS.get('tf_code', ''), rows }) });
+    const d = await r.json();
+    if (d && d.ok) return d;
+    throw authErr((d && d.error) || 'تعذر الحفظ', d);
+  },
+  /* حذف طلاب من القوائم — بمفتاح المشرف فقط. items = [{comp, year, name}] */
+  async deleteParticipants(items, key) {
+    if (isDemo()) {
+      const K = x => [x.comp, x.year, normKey(x.name)].join('|'), want = new Set(items.map(K));
+      const all = LS.get('tf_participants', []), left = all.filter(x => !want.has(K(x)));
+      LS.set('tf_participants', left); return { ok: true, demo: true, deleted: all.length - left.length };
+    }
+    const r = await fetch(CONFIG.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'deleteParticipants', key, items }) });
+    const d = await r.json();
+    if (d && d.ok) return d;
+    const e = new Error((d && d.error) || 'تعذر الحذف'); e.server = true; throw e;
   },
   /* إدارة البرامج: الفريق والمشاركون والجلسات لكل البرامج (تحتاج رمز المعلمين) */
   async programs() {
