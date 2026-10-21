@@ -10,7 +10,7 @@
    - التواريخ هنا بصيغة YYYY-MM-DD، والوقت اختياري في الحقل time
      (مثل '17:00') — كل المواعيد بتوقيت الرياض.
    - مصدر المعلومات: المواقع الرسمية للمسابقات وموهبة
-     (راجع sources في كل مسابقة). آخر مراجعة: 11 أكتوبر 2026.
+     (راجع sources في كل مسابقة). آخر مراجعة: 21 أكتوبر 2026 (من المواقع الرسمية).
    ========================================================= */
 window.TP_FIELDS = {
   math:        { ar:'الرياضيات',        en:'Mathematics',       c:'#7B4DFF' },
@@ -118,7 +118,7 @@ window.TP_COMPETITIONS = [
         'Take the trial test when the SMS arrives, then the official test via the emailed link in the grade’s session.']
   },
   timeline:{
-    label:{ ar:'مواعيد دورة 2026 — استرشادية حتى تُعلن مواعيد دورة 2027 على الموقع الرسمي', en:'2026 cycle — indicative until the 2027 dates are announced' },
+    label:{ ar:'مواعيد دورة 2026 — استرشادية؛ لم تُعلن مواعيد دورة 2027 على الموقع الرسمي حتى 21 أكتوبر 2026', en:'2026 cycle — indicative; the 2027 dates had not been announced on the official site as of 21 October 2026' },
     items:[
       { ar:'فترة التسجيل', en:'Registration period', date:'2026-02-02', end:'2026-04-07' },
       { ar:'الاختبار التجريبي', en:'Trial test', date:'2026-04-08', end:'2026-04-13', note:{ar:'يُشعَر المتقدمون برسالة نصية فور إتاحته',en:'Applicants are notified by SMS'} },
@@ -366,8 +366,8 @@ window.TP_COMPETITIONS = [
     label:{ ar:'النسخة الأولى 2026–2027', en:'First edition 2026–2027' },
     items:[
       { ar:'التسجيل والترشيح عبر المدارس', en:'Registration & school nomination', date:'2026-08-20', end:'2026-09-30' },
-      { ar:'اختبارات المرحلة الأولى عن بُعد', en:'Phase One remote tests', date:'2026-10-18', time:'17:00', end:'2026-10-22',
-        note:{ ar:'5–7 مساءً: الفيزياء والعلوم (18)، الأحياء (19)، الكيمياء (20)، الرياضيات (21)، المعلوماتية (22)', en:'5–7 pm: Physics & Science (18), Biology (19), Chemistry (20), Math (21), Informatics (22)' } },
+      { ar:'اختبارات المرحلة الأولى عن بُعد', en:'Phase One remote tests', date:'2026-10-18', time:'18:30', end:'2026-10-22',
+        note:{ ar:'6:30–8:30 مساءً: الفيزياء والعلوم (الأحد 18)، الأحياء (الاثنين 19)، الكيمياء (الثلاثاء 20)، الرياضيات 1 و2 (الأربعاء 21)، المعلوماتية 1 و2 (الخميس 22)', en:'6:30–8:30 pm: Physics & Science (Sun 18), Biology (Mon 19), Chemistry (Tue 20), Math 1 & 2 (Wed 21), Informatics 1 & 2 (Thu 22)' } },
       { ar:'تقييم المنتخبات الوطنية', en:'National teams assessment', when:{ar:'بعد المرحلة الأولى',en:'After Phase One'} },
       { ar:'التدريب والتقييمات المركزية', en:'Training & central assessments', when:{ar:'خلال الأشهر التالية',en:'Following months'} },
       { ar:'النهائيات في الرياض', en:'Finals in Riyadh', date:'2027-01-25', approx:true, when:{ar:'أواخر يناير 2027',en:'Late January 2027'} }
@@ -475,7 +475,8 @@ window.TP_COMPETITIONS = [
       { ar:'التسجيل الإلكتروني (بيانات الطالب)', en:'Online registration (student info)', date:'2026-08-20', end:'2026-09-30' },
       { ar:'المحاضرات التدريبية عن بُعد (Teams)', en:'Online training lectures (Teams)', date:'2026-09-13', end:'2026-09-22',
         note:{ ar:'كتابة البحث العلمي · أخلاقيات البحث · نموذج التسجيل ومعايير التحكيم · التحقق من أصالة الفكرة · ابدأ مشروعك من المنزل بالذكاء الاصطناعي', en:'Research writing · Research ethics · Registration form & judging criteria · Verifying originality · Start your project from home with AI' } },
-      { ar:'تسجيل معلومات المشروع', en:'Project information registration', when:{ar:'وفق إعلان موهبة',en:'As announced by Mawhiba'} },
+      { ar:'آخر موعد لتسجيل بيانات المشروع (المرحلة الثانية)', en:'Deadline for project information (Phase 2)', date:'2026-10-28',
+        note:{ ar:'وفق صفحة خدمة «أولمبياد الموهبة الوطني: التسجيل» على موقع موهبة', en:'Per the “National Gifted Olympiad: Registration” service page on the Mawhiba website' } },
       { ar:'التحكيم الإلكتروني وإعلان المرشحين للمعارض المركزية ورفع نماذج إبداع', en:'Online judging, central-fair shortlist, Ibdaa forms upload', when:{ar:'وفق إعلان موهبة',en:'As announced by Mawhiba'} },
       { ar:'المعارض المركزية وورش العمل المصاحبة وإعلان المتأهلين', en:'Central fairs, workshops and qualifiers announced', when:{ar:'وفق إعلان موهبة',en:'As announced by Mawhiba'} },
       { ar:'نهائيات أولمبياد الموهبة الوطني (معرض المسار البحثي) – الرياض', en:'National Gifted Olympiad finals (research fair) – Riyadh', date:'2027-01-25', approx:true, when:{ar:'أواخر يناير 2027',en:'Late January 2027'} },
@@ -597,6 +598,7 @@ window.TP_COMPETITIONS = [
     label:{ ar:'الطريق إلى ISEF 2027', en:'Road to ISEF 2027' },
     items:[
       { ar:'تسجيل المسار البحثي «إبداع»', en:'Ibdaa track registration', date:'2026-08-20', end:'2026-09-30' },
+      { ar:'آخر موعد لتسجيل بيانات المشروع في «إبداع»', en:'Ibdaa project information deadline', date:'2026-10-28' },
       { ar:'نهائيات أولمبياد الموهبة الوطني – الرياض', en:'National Gifted Olympiad finals – Riyadh', date:'2027-01-25', approx:true, when:{ar:'أواخر يناير 2027',en:'Late January 2027'} },
       { ar:'ورشة التأهيل للمشاركة الدولية', en:'International qualification workshop', when:{ar:'بعد النهائيات',en:'After the finals'} },
       { ar:'معرض ISEF 2027 – مركز مؤتمرات لوس أنجلوس', en:'ISEF 2027 – Los Angeles Convention Center', date:'2027-05-08', end:'2027-05-14' }
