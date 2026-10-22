@@ -12,6 +12,7 @@
 <script src="js/config.js"></script>
 <script src="js/mawhiba-test-data.js"></script>
 <script src="js/mawhiba-bank.js"></script>
+<script src="js/mawhiba-bank2.js"></script>
 <script src="js/platform.js"></script>
 <style>
 section{padding:56px 0 10px}
@@ -114,6 +115,7 @@ table.lv td b{font-family:'Sora',sans-serif}
 
 /* المكتبة */
 .lib-top{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin-bottom:18px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .dpanel{border-radius:28px;padding:22px}
 .dpanel .hd{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px}
 .dpanel .hd .gorb{--sz:56px}
@@ -127,6 +129,18 @@ details.ty[open] summary::after{content:"−"}
 details.ty .bd{padding:0 14px 14px;font-size:14.5px}
 details.ty .bd ul{margin:8px 0 0;padding-inline-start:20px;color:var(--muted)}
 .dpanel .go{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.skills{margin-top:14px}
+.skills .mini{font-weight:600;margin-bottom:6px}
+.skl{display:flex;flex-wrap:wrap;gap:7px}
+.skl button{font:inherit;font-family:var(--display);font-weight:600;font-size:13.5px;display:inline-flex;align-items:center;gap:7px;padding:6px 7px 6px 12px;border-radius:12px;border:1px solid var(--glass-edge);background:rgba(255,255,255,.7);color:var(--ink);cursor:pointer}
+html[dir=rtl] .skl button{padding:6px 12px 6px 7px}
+.skl button b{font-family:'Sora',sans-serif;font-size:12px;min-width:24px;text-align:center;padding:1px 7px;border-radius:8px;background:color-mix(in srgb,var(--c) 14%,#fff);color:var(--c)}
+.skl button:hover{border-color:var(--c)}
+.skl button:disabled{opacity:.45;cursor:default}
+.dfseg{display:inline-flex;gap:4px;padding:4px;border-radius:14px;background:rgba(255,255,255,.6);border:1px solid var(--glass-edge)}
+.dfseg button{font:inherit;font-family:var(--display);font-weight:600;font-size:13.5px;border:0;background:none;padding:6px 12px;border-radius:10px;cursor:pointer;color:var(--muted)}
+.dfseg button.on{background:var(--c,#7B4DFF);color:#fff}
+.lib-filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .tipcard ul{padding-inline-start:20px;color:var(--muted);display:grid;gap:6px;font-size:15px}
 
 /* الأسئلة */
@@ -380,7 +394,7 @@ details.ty .bd ul{margin:8px 0 0;padding-inline-start:20px;color:var(--muted)}
       <p class="sec-sub" data-i18n="l.sub">لكل مجال: ماذا يقيس، وأنواع أسئلته، واستراتيجيات حلها، ثم أسئلة تدريبية بتغذية راجعة فورية تشرح الإجابة الصحيحة وسبب خطأ كل بديل.</p>
     </div>
     <div class="lib-top">
-      <div class="seg" id="libLv"></div>
+      <div class="lib-filters"><div class="seg" id="libLv"></div><div class="dfseg" id="libDf" role="group"></div></div>
       <span class="mini" data-i18n="l.orig">الأسئلة أصلية من إعداد المنصة للتدريب، وليست من المقياس الرسمي.</span>
     </div>
     <div class="two" id="libGrid"></div>
@@ -431,7 +445,7 @@ TP.addDict({
     'd.lvsrc': 'عدد الأسئلة وفق هيئة تقويم التعليم والتدريب (سعوديبيديا).', 'd.domains': 'ماذا يقيس المقياس؟ المجالات الأربعة', 'd.domsrc': 'التعريفات وفق صفحة البرنامج الوطني للكشف عن الموهوبين على موقع موهبة.',
     'd.source': 'المصدر:', 'd.spa': 'وكالة الأنباء السعودية', 'd.links': 'الأدلة والروابط الرسمية', 'd.reviewed': 'آخر مراجعة لهذه المعلومات: {d}. المواعيد قد تتغير؛ تأكد دائماً من موقع موهبة.',
     'l.kicker': 'مكتبة التدريب', 'l.t1': 'تدرّب حسب', 'l.t2': 'مستواك', 'l.sub': 'لكل مجال: ماذا يقيس، وأنواع أسئلته، واستراتيجيات حلها، ثم أسئلة تدريبية بتغذية راجعة فورية تشرح الإجابة الصحيحة وسبب خطأ كل بديل.',
-    'l.orig': 'الأسئلة أصلية من إعداد المنصة للتدريب، وليست من المقياس الرسمي.', 'l.lv': 'المستوى {n}', 'l.types': 'أنواع الأسئلة واستراتيجياتها', 'l.practice': 'تدرّب ({n} أسئلة)', 'l.gen': 'استراتيجيات عامة للمقياس',
+    'l.orig': 'الأسئلة أصلية من إعداد المنصة للتدريب، وليست من المقياس الرسمي.', 'l.lv': 'المستوى {n}', 'l.types': 'أنواع الأسئلة واستراتيجياتها', 'l.practice': 'تدرّب ({n} أسئلة)', 'l.skills': 'تدرّب حسب المهارة', 'l.allDf': 'كل الصعوبات', 'p.skill': 'تدريب: {s} — المستوى {n}', 'l.none': 'لا توجد أسئلة بهذه الصعوبة هنا بعد.', 'l.gen': 'استراتيجيات عامة للمقياس',
     'tips.1': 'اقرأ السؤال كاملاً قبل النظر إلى البدائل، وحدّد المطلوب بدقة.', 'tips.2': 'استبعد البدائل الخاطئة واحداً واحداً؛ كل بديل تستبعده يرفع فرصتك.',
     'tips.3': 'البدائل الخاطئة غالباً مبنية على خطأ شائع (نسيان خطوة، قلب العلاقة)؛ راجع خطوتك الأخيرة.', 'tips.4': 'لا تعلق طويلاً عند سؤال واحد؛ انتقل وارجع إليه إن سمح الوقت.',
     'tips.5': 'تدرّب على القراءة بتركيز يومياً، وعلى الألغاز والأنماط؛ فالمقياس يقيس طريقة التفكير لا الحفظ.', 'tips.6': 'جرّب الاختبار التشخيصي، ثم ركّز تدريبك على المجال الأضعف.',
@@ -471,7 +485,7 @@ TP.addDict({
     'd.lvsrc': 'Question counts per the Education & Training Evaluation Commission (Saudipedia).', 'd.domains': 'What does the test measure? The four domains', 'd.domsrc': 'Definitions from the National Program for Gifted Identification page on the Mawhiba website.',
     'd.source': 'Source:', 'd.spa': 'Saudi Press Agency', 'd.links': 'Official guides & links', 'd.reviewed': 'Last reviewed: {d}. Dates may change; always confirm on the Mawhiba website.',
     'l.kicker': 'Training library', 'l.t1': 'Train for', 'l.t2': 'your level', 'l.sub': 'For each domain: what it measures, its question types and how to tackle them, then practice questions with instant feedback that explains the right answer and why each other option is wrong.',
-    'l.orig': 'Questions are original practice items written by the platform, not taken from the official test.', 'l.lv': 'Level {n}', 'l.types': 'Question types & strategies', 'l.practice': 'Practise ({n} questions)', 'l.gen': 'General strategies for the test',
+    'l.orig': 'Questions are original practice items written by the platform, not taken from the official test.', 'l.lv': 'Level {n}', 'l.types': 'Question types & strategies', 'l.practice': 'Practise ({n} questions)', 'l.skills': 'Practise by skill', 'l.allDf': 'All levels of difficulty', 'p.skill': 'Practice: {s} — Level {n}', 'l.none': 'No questions at this difficulty here yet.', 'l.gen': 'General strategies for the test',
     'tips.1': 'Read the whole question before looking at the options, and pin down exactly what is asked.', 'tips.2': 'Eliminate wrong options one by one; every option you rule out raises your chances.',
     'tips.3': 'Wrong options are often built on a common slip (a forgotten step, a reversed relation); re-check your last step.', 'tips.4': 'Do not get stuck on one question; move on and come back if time allows.',
     'tips.5': 'Practise focused reading every day, plus puzzles and patterns: the test measures how you think, not what you memorise.', 'tips.6': 'Try the diagnostic test, then focus your training on your weakest domain.',
@@ -518,14 +532,16 @@ function order(q) {
 }
 const optsOf = q => Array.isArray(q.o) ? q.o : q.o[EN() ? 'en' : 'ar'];
 const optText = (q, i) => { const o = optsOf(q)[i]; return o.f ? L(o) : L(o); };
-const optHtml = (q, i) => { const o = optsOf(q)[i]; return o.f ? `${o.f}<span class="mini">${esc(L(o))}</span>` : `<span>${T(L(o))}</span>`; };
+/* q.hl: إخفاء وصف البديل المرسوم حتى تظهر الإجابة (حين يكشف الوصفُ الحلَّ) */
+const optHtml = (q, i, rev) => { const o = optsOf(q)[i]; return o.f ? `${o.f}${q.hl && !rev ? `<span class="sr-only">${esc(L(o))}</span>` : `<span class="mini">${esc(L(o))}</span>`}` : `<span>${T(L(o))}</span>`; };
 
 /* ---------- عرض سؤال ---------- */
 function qHTML(q, st) {
   /* st: { pick: index أصلي أو undefined, reveal: bool, name: للاستدعاء } */
   const ord = order(q), isFig = optsOf(q).some(o => o.f), lt = LETTERS[EN() ? 'en' : 'ar'], d = DOM[q.d];
   const typ = typeOf(q.d, q.t);
-  let h = `<div class="qmeta"><span class="tag" style="--c:${d.c}">${esc(L(d.name))}</span>${typ ? `<span class="tag" style="--c:#8A86A6">${esc(L(typ.name))}</span>` : ''}${st.head || ''}</div>`;
+  const sk = skillOf(q.d, q.k), dfi = DIFFS.find(x => x.n === q.df);
+  let h = `<div class="qmeta"><span class="tag" style="--c:${d.c}">${esc(L(d.name))}</span>${sk ? `<span class="tag" style="--c:#8A86A6">${esc(L(sk))}</span>` : typ ? `<span class="tag" style="--c:#8A86A6">${esc(L(typ.name))}</span>` : ''}${dfi && st.act === 'pr' ? `<span class="tag" style="--c:${dfi.c}">${esc(L(dfi))}</span>` : ''}${st.head || ''}</div>`;
   if (q.p) h += `<div class="passage">${T(L(q.p))}</div>`;
   if (q.f) h += `<div class="fig">${q.f}</div>`;
   h += `<div class="qtext" id="qt-${q.id}">${T(L(q.q))}</div><div class="opts${isFig ? ' figs' : ''}" role="radiogroup" aria-labelledby="qt-${q.id}">`;
@@ -533,7 +549,7 @@ function qHTML(q, st) {
     let cls = '';
     if (st.reveal) cls = oi === q.a ? ' ok' : (oi === st.pick ? ' bad' : '');
     else if (oi === st.pick) cls = ' sel';
-    h += `<button type="button" class="opt${cls}" role="radio" aria-checked="${oi === st.pick}" data-act="${st.act || ''}" data-q="${q.id}" data-o="${oi}"${st.reveal ? ' disabled' : ''}><span class="l">${lt[k]}</span>${optHtml(q, oi)}</button>`;
+    h += `<button type="button" class="opt${cls}" role="radio" aria-checked="${oi === st.pick}" data-act="${st.act || ''}" data-q="${q.id}" data-o="${oi}"${st.reveal ? ' disabled' : ''}><span class="l">${lt[k]}</span>${optHtml(q, oi, st.reveal)}</button>`;
   });
   h += '</div>';
   if (st.reveal) h += fbHTML(q, st.pick);
@@ -614,15 +630,23 @@ function renderDates() {
 }
 
 /* ---------- المكتبة ---------- */
+let DF = 0; // 0 = كل الصعوبات
+const SKILLS = I.skills || {}, DIFFS = I.diffs || [];
+const skillOf = (d, k) => (SKILLS[d] || []).find(x => x.id === k);
+const pracPool = (d, lv, k) => BANK.filter(q => q.lv === lv && q.d === d && q.s === 'prac' && (!k || q.k === k) && (!DF || q.df === DF))
+  .sort((a, b) => (a.df || 2) - (b.df || 2));
 function renderLibrary() {
   $('#libLv').innerHTML = I.levels.map(l => `<button type="button" class="${l.n === LEVEL ? 'on' : ''}" data-lib="${l.n}">${F('l.lv', { n: l.n })}</button>`).join('');
+  $('#libDf').innerHTML = [{ n: 0, ar: TP.t('l.allDf'), en: TP.t('l.allDf'), c: '#7B4DFF' }, ...DIFFS].map(x => `<button type="button" class="${x.n === DF ? 'on' : ''}" style="--c:${x.c}" data-df="${x.n}" aria-pressed="${x.n === DF}">${esc(L(x))}</button>`).join('');
   $('#libGrid').innerHTML = DOMS.map(d => {
-    const n = BANK.filter(q => q.lv === LEVEL && q.d === d.id && q.s === 'prac').length;
+    const n = pracPool(d.id, LEVEL).length;
+    const sk = (SKILLS[d.id] || []).map(x => [x, pracPool(d.id, LEVEL, x.id).length]).filter(([, c]) => c);
     return `<div class="dpanel glass" style="--c:${d.c}" id="lib-${d.id}">
       <div class="hd"><span class="gorb" style="--c:${d.c}">${TP.icon(d.ic)}</span><div><b>${esc(L(d.name))}</b><p>${esc(L(d.def))}</p></div></div>
       <div class="mini" style="font-weight:600">${TP.t('l.types')}</div>
       ${(I.types[d.id] || []).map(t => `<details class="ty"><summary>${esc(L(t.name))}</summary><div class="bd">${esc(L(t.what))}<ul>${(EN() ? t.tips.en : t.tips.ar).map(x => `<li>${esc(x)}</li>`).join('')}</ul></div></details>`).join('')}
-      <div class="go"><button type="button" class="btn tint" style="--c:${d.c}" data-prac="${d.id}">${TP.icon('target')}<span>${F('l.practice', { n })}</span></button></div>
+      <div class="go"><button type="button" class="btn tint" style="--c:${d.c}" data-prac="${d.id}"${n ? '' : ' disabled'}>${TP.icon('target')}<span>${F('l.practice', { n })}</span></button></div>
+      ${sk.length ? `<div class="skills"><div class="mini">${TP.t('l.skills')}</div><div class="skl">${sk.map(([x, c]) => `<button type="button" data-prac="${d.id}" data-psk="${x.id}"><span>${esc(L(x))}</span><b>${c}</b></button>`).join('')}</div></div>` : (n ? '' : `<p class="mini">${TP.t('l.none')}</p>`)}
     </div>`;
   }).join('');
   $('#genTips').innerHTML = [1, 2, 3, 4, 5, 6].map(i => `<li>${TP.t('tips.' + i)}</li>`).join('');
@@ -630,8 +654,9 @@ function renderLibrary() {
 
 /* ---------- نافذة التدريب ---------- */
 let PR = null; // { d, lv, qs, i, picks:{}, score }
-function openPractice(dId, lv) {
-  PR = { d: dId, lv, qs: BANK.filter(q => q.lv === lv && q.d === dId && q.s === 'prac'), i: 0, picks: {} };
+function openPractice(dId, lv, k) {
+  PR = { d: dId, lv, k: k || '', qs: pracPool(dId, lv, k), i: 0, picks: {} };
+  if (!PR.qs.length) { const df = DF; DF = 0; PR.qs = pracPool(dId, lv, k); DF = df; }
   $('#ov').classList.add('open'); document.body.style.overflow = 'hidden'; renderPractice();
   setTimeout(() => { const b = $('#ovPanel .opt'); if (b) b.focus(); }, 50);
 }
@@ -650,7 +675,7 @@ function renderPractice() {
     body = `<div class="qcard">${qHTML(q, { pick, reveal: pick != null, act: 'pr', head: `<span class="mini">${F('q.of', { i: PR.i + 1, n })}</span>` })}</div>
       ${pick != null ? `<div class="qctl"><span></span><button class="btn primary" data-pr="next">${PR.i + 1 < n ? TP.t('q.next') : TP.t('q.finish')}</button></div>` : ''}`;
   }
-  p.innerHTML = `<div class="ph"><h3 class="h3" id="ovTitle" style="margin:0"><span class="gorb" style="--c:${d.c}">${TP.icon(d.ic)}</span><span>${esc(F('p.title', { d: L(d.name), n: PR.lv }))}</span></h3>
+  p.innerHTML = `<div class="ph"><h3 class="h3" id="ovTitle" style="margin:0"><span class="gorb" style="--c:${d.c}">${TP.icon(d.ic)}</span><span>${esc(PR.k && skillOf(PR.d, PR.k) ? F('p.skill', { s: L(skillOf(PR.d, PR.k)), n: PR.lv }) : F('p.title', { d: L(d.name), n: PR.lv }))}</span></h3>
     <button class="x" type="button" data-pr="close" aria-label="${TP.t('p.close')}">×</button></div>${body}`;
 }
 
@@ -769,7 +794,8 @@ document.addEventListener('click', e => {
   const t = e.target.closest('button,a'); if (!t) return;
   if (t.dataset.setlv) { const n = +t.dataset.setlv; DIAG_LV = n; if (!RUN) LAST_RES = null; setLevel(n); if (t.dataset.pr === 'diag') closePractice(); return; }
   if (t.dataset.lib) { setLevel(+t.dataset.lib); return; }
-  if (t.dataset.prac) { openPractice(t.dataset.prac, t.dataset.plv ? +t.dataset.plv : LEVEL); return; }
+  if (t.dataset.prac) { openPractice(t.dataset.prac, t.dataset.plv ? +t.dataset.plv : LEVEL, t.dataset.psk); return; }
+  if (t.dataset.df != null) { DF = +t.dataset.df; renderLibrary(); return; }
   if (t.dataset.pr) {
     const a = t.dataset.pr;
     if (a === 'close') closePractice();

@@ -77,7 +77,11 @@ window.MW_INFO = {
       { id: 'odd', name: { ar: 'المفردة المختلفة', en: 'Odd one out' },
         what: { ar: 'مجموعة كلمات تشترك كلها في صفة إلا واحدة.', en: 'A group of words that all share a feature except one.' },
         tips: { ar: ['ابحث عن الصفة المشتركة الأقوى أولاً (النوع، المعنى، الوظيفة).', 'إذا وجدت أكثر من معيار، اختر المعيار الذي يجعل كلمة واحدة فقط مختلفة.'],
-                en: ['Find the strongest shared feature first (type, meaning, function).', 'If several rules seem possible, choose the one that leaves exactly one word out.'] } }
+                en: ['Find the strongest shared feature first (type, meaning, function).', 'If several rules seem possible, choose the one that leaves exactly one word out.'] } },
+      { id: 'vocab', name: { ar: 'المفردات والتضاد', en: 'Vocabulary & opposites' },
+        what: { ar: 'معنى كلمة منفردة أو في سياق جملة، أو عكسها.', en: 'The meaning of a word on its own or in a sentence, or its opposite.' },
+        tips: { ar: ['ضع كل بديل مكان الكلمة في جملة قصيرة، واختر ما يستقيم به المعنى.', 'الكلمة الواحدة قد يتغير معناها بتغير السياق؛ اقرأ الجملة كلها.', 'في التضاد: ابحث عن العكس الدقيق لا عن كلمة مختلفة فقط.'],
+                en: ['Put each option in place of the word in a short sentence and keep the one that makes sense.', 'One word can change meaning with context, so read the whole sentence.', 'For opposites, look for the exact reverse, not just a different word.'] } }
     ],
     math: [
       { id: 'arith', name: { ar: 'الاستدلال الحسابي', en: 'Arithmetic reasoning' },
@@ -103,7 +107,15 @@ window.MW_INFO = {
       { id: 'geometry', name: { ar: 'القياس والهندسة', en: 'Measurement & geometry' },
         what: { ar: 'المساحة والمحيط والزوايا في أشكال مركبة.', en: 'Area, perimeter and angles in combined shapes.' },
         tips: { ar: ['فرّق بين المساحة (داخل الشكل) والمحيط (حوله).', 'جزّئ الشكل المركب إلى مستطيلات ومثلثات.'],
-                en: ['Keep area (inside the shape) and perimeter (around it) apart.', 'Split a combined shape into rectangles and triangles.'] } }
+                en: ['Keep area (inside the shape) and perimeter (around it) apart.', 'Split a combined shape into rectangles and triangles.'] } },
+      { id: 'visual', name: { ar: 'الأنماط البصرية والمصفوفات', en: 'Visual patterns & matrices' },
+        what: { ar: 'أشكال متتالية أو جدول أشكال تتغير بقاعدة: العدد، الأضلاع، التظليل، الموضع.', en: 'A row of figures or a grid of figures that changes by a rule: number, sides, shading, position.' },
+        tips: { ar: ['حوّل الشكل إلى عدد: عدد الأضلاع أو النقاط أو الخانات المظللة.', 'افحص خاصية واحدة في كل مرة حتى تكتشف ما يتغير.', 'في المصفوفة: تحقّق من الصف ومن العمود معاً.'],
+                en: ['Turn each figure into a number: sides, dots or shaded cells.', 'Check one feature at a time until you find what changes.', 'In a matrix, check both the row and the column.'] } },
+      { id: 'graphs', name: { ar: 'الجداول والرسوم البيانية', en: 'Tables & graphs' },
+        what: { ar: 'قراءة بيانات من جدول أو أعمدة بيانية، والمقارنة والحساب منها.', en: 'Reading data from a table or bar chart, then comparing and calculating with it.' },
+        tips: { ar: ['اقرأ عنوان الرسم ووحدة المحور قبل الأرقام.', 'حدّد الأعمدة التي يسأل عنها السؤال فقط.', 'انتبه: «كم يزيد» فرق، و«كم المجموع» جمع.'],
+                en: ['Read the chart title and the axis unit before the numbers.', 'Pick out only the bars the question asks about.', 'Careful: “how many more” is a difference; “how many altogether” is a sum.'] } }
     ],
     science: [
       { id: 'mech', name: { ar: 'الاستدلال الميكانيكي', en: 'Mechanical reasoning' },
@@ -139,9 +151,80 @@ window.MW_INFO = {
       { id: 'perspective', name: { ar: 'تعدد الزوايا والاحتمالات', en: 'Perspectives & possibilities' },
         what: { ar: 'النظر إلى الموقف من زاوية أخرى (مرآة، قلب، ترتيب) أو عدّ الاحتمالات.', en: 'Seeing a situation from another angle (mirror, flip, order) or counting possibilities.' },
         tips: { ar: ['تخيّل الحركة فعلياً: اقلب الورقة في ذهنك أو بيدك أثناء التدريب.', 'في العدّ: اعرف كم خياراً لكل مكان ثم اضربها.'],
-                en: ['Picture the movement: turn the paper in your mind, or with your hands while practising.', 'For counting, find the number of choices for each place, then multiply.'] } }
+                en: ['Picture the movement: turn the paper in your mind, or with your hands while practising.', 'For counting, find the number of choices for each place, then multiply.'] } },
+      { id: 'imagine', name: { ar: 'التخيّل المكاني', en: 'Spatial visualisation' },
+        what: { ar: 'تدوير الأشكال وقلبها في الذهن، وعدّ المكعبات، وتخيّل المجسمات من زوايا مختلفة.', en: 'Rotating and flipping shapes in your head, counting cubes, and picturing solids from different sides.' },
+        tips: { ar: ['تتبّع جزءاً مميزاً واحداً من الشكل أثناء الدوران.', 'الانعكاس في المرآة يقلب اليمين واليسار، والدوران لا يقلبهما.', 'في عدّ المكعبات: عُدّ طبقة طبقة، ولا تنسَ المكعبات المخفية التي تحمل غيرها.'],
+                en: ['Follow one distinctive part of the shape while it turns.', 'A mirror swaps left and right; a rotation does not.', 'When counting cubes, go layer by layer and remember hidden cubes that hold others up.'] } }
     ]
   },
+
+
+  /* المهارات: تصنيف أدق داخل كل نوع (المجال ← النوع ← المهارة) */
+  skills: {
+    verbal: [
+      { id: 'meaning', t: 'vocab', ar: 'معنى المفردة', en: 'Word meaning' },
+      { id: 'incontext', t: 'vocab', ar: 'المفردة في سياقها', en: 'Word in context' },
+      { id: 'antonym', t: 'vocab', ar: 'التضاد اللفظي', en: 'Opposites' },
+      { id: 'analogy', t: 'analogy', ar: 'التناظر اللفظي', en: 'Verbal analogy' },
+      { id: 'assoc', t: 'analogy', ar: 'الارتباط الدلالي المشترك', en: 'Common link' },
+      { id: 'odd-func', t: 'odd', ar: 'الكلمة الشاذة — معيار وظيفي', en: 'Odd one out — by use' },
+      { id: 'odd-class', t: 'odd', ar: 'الكلمة الشاذة — معيار تصنيفي', en: 'Odd one out — by category' },
+      { id: 'complete', t: 'completion', ar: 'إكمال الجملة', en: 'Sentence completion' },
+      { id: 'context', t: 'context', ar: 'الخطأ السياقي', en: 'Contextual error' },
+      { id: 'reading', t: 'reading', ar: 'فهم المقروء', en: 'Reading comprehension' },
+      { id: 'moral', t: 'reading', ar: 'استخلاص العبرة', en: 'Finding the lesson' }
+    ],
+    math: [
+      { id: 'ops', t: 'arith', ar: 'العمليات الحسابية', en: 'Operations' },
+      { id: 'fractions', t: 'arith', ar: 'الكسور', en: 'Fractions' },
+      { id: 'percent', t: 'arith', ar: 'النسبة المئوية', en: 'Percentages' },
+      { id: 'ratio', t: 'arith', ar: 'التناسب', en: 'Proportion' },
+      { id: 'wordp', t: 'word', ar: 'المسائل اللفظية', en: 'Word problems' },
+      { id: 'ages', t: 'word', ar: 'الأعمار', en: 'Ages' },
+      { id: 'time', t: 'word', ar: 'الوقت', en: 'Time' },
+      { id: 'prob', t: 'word', ar: 'الاحتمال', en: 'Probability' },
+      { id: 'area', t: 'geometry', ar: 'المساحة', en: 'Area' },
+      { id: 'perim', t: 'geometry', ar: 'المحيط', en: 'Perimeter' },
+      { id: 'numseq', t: 'sequence', ar: 'المتتابعات العددية', en: 'Number sequences' },
+      { id: 'visseq', t: 'visual', ar: 'المتتابعة البصرية', en: 'Visual sequences' },
+      { id: 'mmatrix', t: 'visual', ar: 'المصفوفات', en: 'Matrices' },
+      { id: 'graph', t: 'graphs', ar: 'قراءة الرسم البياني', en: 'Reading graphs' },
+      { id: 'order', t: 'logic', ar: 'الترتيب المنطقي', en: 'Logical ordering' },
+      { id: 'mspatial', t: 'spatial', ar: 'الدوران والطيّ والعدّ', en: 'Turning, folding & counting' }
+    ],
+    science: [
+      { id: 'organisms', t: 'concept', ar: 'تصنيف الكائنات', en: 'Classifying living things' },
+      { id: 'lifecycle', t: 'concept', ar: 'دورات الحياة', en: 'Life cycles' },
+      { id: 'body', t: 'concept', ar: 'أجهزة الجسم', en: 'Body systems' },
+      { id: 'foodchain', t: 'concept', ar: 'السلاسل الغذائية', en: 'Food chains' },
+      { id: 'matter', t: 'concept', ar: 'تحولات المادة', en: 'Changes of matter' },
+      { id: 'light', t: 'concept', ar: 'خصائص الضوء', en: 'Properties of light' },
+      { id: 'sound', t: 'concept', ar: 'الصوت', en: 'Sound' },
+      { id: 'gravity', t: 'concept', ar: 'الجاذبية', en: 'Gravity' },
+      { id: 'magnet', t: 'concept', ar: 'المغناطيسية', en: 'Magnetism' },
+      { id: 'heat', t: 'concept', ar: 'انتقال الحرارة', en: 'Heat transfer' },
+      { id: 'electric', t: 'concept', ar: 'الكهرباء', en: 'Electricity' },
+      { id: 'method', t: 'data', ar: 'منهج العلم والتجارب', en: 'Scientific method' },
+      { id: 'friction', t: 'mech', ar: 'الاحتكاك', en: 'Friction' },
+      { id: 'gears', t: 'mech', ar: 'التروس', en: 'Gears' },
+      { id: 'pulleys', t: 'mech', ar: 'البكرات', en: 'Pulleys' },
+      { id: 'lever', t: 'mech', ar: 'الرافعة والتوازن', en: 'Levers & balance' }
+    ],
+    flex: [
+      { id: 'counterfact', t: 'rules', ar: 'المقدمة غير الواقعية', en: 'Unreal premises' },
+      { id: 'switch', t: 'rules', ar: 'تبديل القواعد', en: 'Switching rules' },
+      { id: 'coding', t: 'codes', ar: 'الترميز', en: 'Coding' },
+      { id: 'hidden', t: 'codes', ar: 'القاعدة الخفية', en: 'Hidden rule' },
+      { id: 'direction', t: 'perspective', ar: 'أنماط الاتجاه', en: 'Direction patterns' },
+      { id: 'persp', t: 'perspective', ar: 'تعدد الزوايا والاحتمالات', en: 'Perspectives & possibilities' },
+      { id: 'spatial2d', t: 'imagine', ar: 'التخيّل المكاني', en: 'Spatial visualisation' },
+      { id: 'spatial3d', t: 'imagine', ar: 'التخيّل ثلاثي الأبعاد', en: '3D visualisation' },
+      { id: 'fmatrix', t: 'matrix', ar: 'المصفوفات الشكلية', en: 'Figure matrices' },
+      { id: 'fclass', t: 'classify', ar: 'التصنيف المرن', en: 'Flexible classification' }
+    ]
+  },
+  diffs: [{ n: 1, ar: 'سهل', en: 'Easy', c: '#0E9F76' }, { n: 2, ar: 'متوسط', en: 'Medium', c: '#E8A50A' }, { n: 3, ar: 'صعب', en: 'Hard', c: '#E2386F' }],
 
   /* خطوات التسجيل — وفق صفحة الخدمة على موقع موهبة */
   steps: [
