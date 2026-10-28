@@ -135,7 +135,7 @@ const API = {
   },
   /* إدارة البرامج: الفريق والمشاركون والجلسات لكل البرامج (تحتاج رمز المعلمين) */
   async programs() {
-    if (isDemo()) { const d = LS.get('tf_programs', {}); return { ok: true, demo: true, staff: d.staff || [], people: d.people || [], sessions: d.sessions || [] }; }
+    if (isDemo()) { const d = LS.get('tf_programs', {}); return { ok: true, demo: true, staff: d.staff || [], people: d.people || [], sessions: d.sessions || [], plan: d.plan || [] }; }
     return jsonp({ mode: 'programs', code: LS.get('tf_code', '') }, 40000);
   },
   /* حفظ سطر أو أكثر: table = staff | people | sessions */

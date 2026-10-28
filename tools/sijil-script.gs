@@ -30,9 +30,14 @@ const PROG = {
               headers: ['المعرّف', 'البرنامج', 'العام الدراسي', 'الاسم', 'رقم الطالب', 'الصف', 'الفصل', 'المجال', 'المشرف', 'تاريخ الانضمام', 'الحالة', 'تفصيل 1', 'تفصيل 2', 'ملاحظة'],
               keys: ['id', 'prog', 'year', 'name', 'sid', 'grade', 'cls', 'field', 'lead', 'joined', 'status', 'x1', 'x2', 'note'] },
   sessions: { sheet: 'البرامج – الجلسات', req: 'date',
-              headers: ['المعرّف', 'البرنامج', 'العام الدراسي', 'التاريخ', 'من الساعة', 'إلى الساعة', 'العنوان', 'المجال / الفرع', 'الفئة المستهدفة', 'وسيلة التقديم', 'المنفّذ', 'المكان', 'المشاركون', 'عدد الحضور', 'الحضور', 'الحالة', 'ملاحظة'],
-              keys: ['id', 'prog', 'year', 'date', 'from', 'to', 'title', 'field', 'target', 'means', 'lead', 'place', 'students', 'count', 'attended', 'status', 'note'] }
+              headers: ['المعرّف', 'البرنامج', 'العام الدراسي', 'التاريخ', 'من الساعة', 'إلى الساعة', 'العنوان', 'المجال / الفرع', 'الفئة المستهدفة', 'وسيلة التقديم', 'المنفّذ', 'المكان', 'المشاركون', 'عدد الحضور', 'الحضور', 'الحالة', 'ملاحظة', 'تنفيذ البرنامج', 'ملاحظات المعلم'],
+              keys: ['id', 'prog', 'year', 'date', 'from', 'to', 'title', 'field', 'target', 'means', 'lead', 'place', 'students', 'count', 'attended', 'status', 'note', 'exec', 'execNote'] },
+  /* توزيع الحصص: موضوع كل أسبوع (يُربط بالحصص تلقائياً حسب التاريخ، والمجال إن حُدّد) */
+  plan:     { sheet: 'البرامج – توزيع الحصص', req: 'title',
+              headers: ['المعرّف', 'البرنامج', 'العام الدراسي', 'الأسبوع', 'من تاريخ', 'إلى تاريخ', 'عنوان الحصة', 'المجال', 'الأهداف / المحتوى', 'ملاحظة'],
+              keys: ['id', 'prog', 'year', 'week', 'start', 'end', 'title', 'field', 'goals', 'note'] }
 };
+const EXEC_OPTS = ['نعم', 'لا'];
 const PROG_IDS = ['general-enrichment', 'skills', 'clusters', 'specialty', 'projects', 'acceleration', 'mentorship', 'support'];
 const PERSON_STATUS = ['نشط', 'متوقف', 'أنهى البرنامج'];
 const SESSION_STATUS = ['مجدولة', 'منفذة', 'مؤجلة', 'ملغاة'];
@@ -52,12 +57,15 @@ function setupSheet() {
     .requireValueInList(COMP_STAGES, true).setAllowInvalid(true).build());
   Object.keys(PROG).forEach(t => {
     const sh = ensureSheet_(ss, PROG[t].sheet, PROG[t].headers, true);
+    ensureHeaders_(sh, PROG[t].headers);
     sh.getRange('B2:B5000').setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(PROG_IDS, true).setAllowInvalid(true).build());
   });
   ss.getSheetByName(PROG.people.sheet).getRange('K2:K5000').setDataValidation(SpreadsheetApp.newDataValidation()
     .requireValueInList(PERSON_STATUS, true).setAllowInvalid(true).build());
   ss.getSheetByName(PROG.sessions.sheet).getRange('P2:P8000').setDataValidation(SpreadsheetApp.newDataValidation()
     .requireValueInList(SESSION_STATUS, true).setAllowInvalid(true).build());
+  ss.getSheetByName(PROG.sessions.sheet).getRange('R2:R8000').setDataValidation(SpreadsheetApp.newDataValidation()
+    .requireValueInList(EXEC_OPTS, true).setAllowInvalid(true).build());
   SpreadsheetApp.flush();
 }
 
@@ -103,7 +111,7 @@ function doGet(e) {
     else if (p.mode === 'check') res = codeOk_(p.code) ? { ok: true, admin: p.code === ADMIN_KEY } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
     else if (p.mode === 'students') res = codeOk_(p.code) ? { ok: true, students: readStudents_() } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
     else if (p.mode === 'participants') res = codeOk_(p.code) ? { ok: true, rows: readParticipants_() } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
-    else if (p.mode === 'programs') res = codeOk_(p.code) ? { ok: true, staff: progRead_('staff'), people: progRead_('people'), sessions: progRead_('sessions') } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
+    else if (p.mode === 'programs') res = codeOk_(p.code) ? { ok: true, staff: progRead_('staff'), people: progRead_('people'), sessions: progRead_('sessions'), plan: progRead_('plan') } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
     else if (p.mode === 'public') res = publicStats_();
     else if (p.mode === 'report') {
       if (p.key !== ADMIN_KEY) res = { ok: false, error: 'مفتاح المشرف غير صحيح' };
@@ -342,6 +350,7 @@ function progSave_(b) {
   const lock = LockService.getScriptLock(); lock.waitLock(20000);
   try {
     const sh = ensureSheet_(SpreadsheetApp.getActiveSpreadsheet(), def.sheet, def.headers, true);
+    ensureHeaders_(sh, def.headers);   // يضيف عناوين الأعمدة الجديدة لورقة قديمة
     const ids = [];
     b.rows.forEach(r => {
       let id = String(r.id || '').trim();
@@ -387,16 +396,24 @@ function progPublic_() {
   const Y = (id, y) => { const p = P(id), k = y || 'غير محدد'; return p.years[k] = p.years[k] || { people: 0, active: 0, staff: 0, sessions: 0, done: 0, att: 0, seats: 0, count: 0 }; };
   progRead_('people').forEach(r => { const o = Y(r.prog, r.year); o.people++; if (r.status !== 'متوقف') o.active++; });
   progRead_('staff').forEach(r => Y(r.prog, r.year).staff++);
+  /* موضوع الأسبوع من «توزيع الحصص» للحصص التي لم يُكتب لها عنوان */
+  const plans = progRead_('plan');
+  const planTitle = r => {
+    const hit = plans.filter(p => p.prog === r.prog && p.year === r.year && p.start && r.date >= p.start && r.date <= (p.end || p.start) && (!p.field || p.field === r.field))
+      .sort((a, b) => (b.field ? 1 : 0) - (a.field ? 1 : 0))[0];
+    return hit ? hit.title : '';
+  };
   progRead_('sessions').forEach(r => {
     if (r.status === 'ملغاة') return;
     const o = Y(r.prog, r.year);
     o.sessions++;
     if (r.status === 'منفذة') {
-      o.done++;
+      if (r.exec !== 'لا') o.done++;   // حصة سُجّلت ولم يُنفَّذ فيها البرنامج لا تُحسب منفذة
+      else o.notExec = (o.notExec || 0) + 1;
       const a = split(r.attended).length, n = split(r.students).length;
       o.att += a; o.seats += n; o.count += a || (parseInt(r.count, 10) || 0);
     }
-    P(r.prog).sessions.push({ year: r.year, date: r.date, from: r.from, to: r.to, title: r.title, field: r.field, target: r.target, means: r.means,
+    P(r.prog).sessions.push({ year: r.year, date: r.date, from: r.from, to: r.to, title: r.title || planTitle(r), field: r.field, target: r.target, means: r.means,
       lead: r.lead, place: r.place, status: r.status, n: split(r.students).length });
   });
   return out;
