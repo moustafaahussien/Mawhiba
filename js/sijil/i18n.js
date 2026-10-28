@@ -1067,7 +1067,7 @@
     "المشاركون في المسابقات": "Competition participants",
     "— مدارس دار الذكر": "— Dar Al-Thikr Schools",
     "— مدارس دار الذكر · السجل التام لتطور الموهبة": "— Dar Al-Thikr Schools · Total Talent Development Record",
-    "إعداد وإشراف: مصطفى أحمد حسين — المنسق التنفيذي للنموذج التام لتطوير الموهبة والمسابقات الأكاديمية": "Prepared and supervised by: Moustafa Ahmed Hussien — Executive Coordinator of the Total Giftedness Development Model and Academic Competitions",
+    "إعداد وتصميم: مصطفى أحمد حسين": "Prepared and designed by: Moustafa Ahmed Hussien",
     "المستخدم الحالي": "Current user",
     "القائمة": "Menu",
     "شعار مدارس دار الذكر": "Dar Al-Thikr Schools logo",
