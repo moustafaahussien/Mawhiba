@@ -96,6 +96,7 @@ i.ck{font-style:normal}
 <script src="js/sijil/config.js"></script>
 <script src="js/sijil/programs.js"></script>
 <script src="js/sijil/care-curriculum.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
 <script src="js/sijil/common.js"></script>
 <script src="js/sijil/i18n.js"></script>
 <script>
@@ -109,7 +110,7 @@ const TARGETS = ['جميع الطلاب', 'المرحلة الابتدائية',
 
 let P = getProgram(new URLSearchParams(location.search).get('p')) || getProgram(LS.get('tf_prog', '')) || getProgram('mentorship');
 let DB = { staff: [], people: [], sessions: [], plan: [] }, TAB = 'people', YEAR = hijriYearNow(), OLD_SCRIPT = false;
-let EDIT = null, ATT = null, DEL = null, BULK = false, IMP = false, PG = '', Q = { q: '', lead: '', status: '' }, KNOWN = [];
+let EDIT = null, ATT = null, DEL = null, BULK = false, IMP = false, PG = '', UP = null, Q = { q: '', lead: '', status: '' }, KNOWN = [];
 
 const split = s => String(s || '').split(/[،,\n]+/).map(x => normKey(x)).filter(Boolean);
 const join = a => a.join('، ');
@@ -287,6 +288,7 @@ function render() {
   h += ATT ? attHtml() : '';
   h += BULK ? bulkHtml() : '';
   h += IMP ? impHtml() : '';
+  h += UP ? upHtml() : '';
   h += TAB === 'people' ? peopleHtml() : TAB === 'staff' ? staffHtml() : TAB === 'plan' ? planHtml() : sessionsHtml();
   $('#app').innerHTML = h;
   $('#yearSel').onchange = e => { YEAR = e.target.value; EDIT = ATT = DEL = null; BULK = IMP = false; render(); };
@@ -300,7 +302,7 @@ function toolsHtml(table, extra) {
     <label class="field">بحث<input data-q="q" value="${esc(Q.q)}" placeholder="اكتب جزءاً من الاسم أو العنوان"></label>
     ${table !== 'staff' && table !== 'plan' ? `<label class="field">${esc(P.lead)}<select data-q="lead"><option value="">الكل</option>${mine(DB.staff).map(m => `<option${m.name === Q.lead ? ' selected' : ''}>${esc(m.name)}</option>`).join('')}</select></label>` : ''}
     ${extra || ''}
-    <div class="rowacts"><button type="button" class="btn" data-add="${table}">+ <span>إضافة</span> <span>${esc(one)}</span></button>${table === 'plan' ? `<button type="button" class="btn ghost" data-bulk="1">+ إضافة عدة أسابيع</button>${CUR() ? '<button type="button" class="btn ghost" data-imp="1">⇩ استيراد منهج الرعاية الخاصة</button>' : ''}` : ''}
+    <div class="rowacts"><button type="button" class="btn" data-add="${table}">+ <span>إضافة</span> <span>${esc(one)}</span></button>${table === 'people' ? '<button type="button" class="btn ghost" data-up="1">⇧ رفع من Excel</button>' : ''}${table === 'plan' ? `<button type="button" class="btn ghost" data-bulk="1">+ إضافة عدة أسابيع</button>${CUR() ? '<button type="button" class="btn ghost" data-imp="1">⇩ استيراد منهج الرعاية الخاصة</button>' : ''}` : ''}
       <button type="button" class="btn ghost" data-csv="${table}">تصدير CSV</button><button type="button" class="btn ghost" onclick="window.print()">طباعة</button></div>
   </div>`;
 }
@@ -502,6 +504,86 @@ async function saveImport() {
   } catch (e) { toast(planErr(e), 'err'); if (e.auth) showGate(); b.disabled = false; b.textContent = 'استيراد الحصص'; if (total) render(); }
 }
 
+/* ---------- رفع الطلاب من ملف Excel (تبويب المشاركين) ----------
+   يقرأ كل أوراق الملف: عمود الاسم، والصف الدراسي، والحالة (لا يُقرأ رقم الهوية ولا يُحفظ).
+   إن تكرر الطالب في أكثر من ورقة يُدمج في سطر واحد. إن خلا الصف وكان اسم الورقة رقماً (4 – 12) فهو صف الورقة،
+   وإن اختلفت الحالة بين الأوراق تُعتمد حالة ورقة صفه. */
+const BOYS = (GRADE_GROUPS.find(g => g.label === 'البنين') || { grades: [] }).grades;
+function normGrade(g, sheet) {
+  let s = normKey(g).replace(/^الصف\s*/, '').replace(/^ال?اول/, 'الأول').replace(/\s+(ثانوي|متوسط|ابتدائي)$/, ' ال$1').replace(/الالأ/, 'الأ');
+  if (!s) { const n = parseInt(sheet, 10); return n >= 1 && n <= 12 ? BOYS[n - 1] || '' : ''; }
+  if (GRADES.includes(s)) return s;
+  const n = gNum(s); return n && BOYS[n - 1] && !/بنات|grade/i.test(s) ? BOYS[n - 1] : s;
+}
+function parseUp(wb) {
+  const by = new Map(), src = [];
+  wb.SheetNames.forEach(sn => {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header: 1, raw: false, defval: '' });
+    const hi = rows.findIndex(r => r.some(c => /^(الاسم|اسم الطالب|الاسم العربي)$/.test(normKey(c))));
+    if (hi < 0) return;
+    const head = rows[hi].map(normKey), col = re => head.findIndex(h => re.test(h));
+    const ci = { name: col(/^(الاسم|اسم الطالب|الاسم العربي)$/), grade: col(/الصف/), status: col(/^الحالة$/), cls: col(/^الفصل$/), sid: col(/رقم الطالب/) };
+    /* ورقة بلا عنوان «الحالة»: أول عمود بلا عنوان بعد عمود الصف */
+    if (ci.status < 0 && ci.grade >= 0) { const j = head.findIndex((h, i) => i > ci.grade && !h); if (j >= 0) ci.status = j; }
+    let n = 0;
+    rows.slice(hi + 1).forEach(r => {
+      const name = normKey(r[ci.name]); if (!name || /^عدد|^المجموع/.test(name)) return;
+      const grade = normGrade(ci.grade >= 0 ? r[ci.grade] : '', sn), status = ci.status >= 0 ? normKey(r[ci.status]) : '';
+      const k = name, o = by.get(k) || { name, grade: '', status: '', cls: '', sid: '', from: '' };
+      if (!o.grade && grade) o.grade = grade;
+      const own = gNum(sn) && gNum(sn) === gNum(grade || o.grade);   // ورقة صف الطالب
+      if (own) o.own = true;
+      if (status && (!o.status || own)) { o.status = status.replace('اضافتهم', 'إضافته').replace(/^في انتظار إضافته.*$/, 'في انتظار إضافته على بوابة موهبة'); o.from = sn; }
+      if (ci.cls >= 0 && !o.cls) o.cls = normKey(r[ci.cls]);
+      if (ci.sid >= 0 && !o.sid) o.sid = normKey(r[ci.sid]);
+      by.set(k, o); n++;
+    });
+    src.push({ sheet: sn, n });
+  });
+  /* ملف بأوراق مسماة بالصفوف (4، 5، …): ورقة كل صف هي قائمته المعتمدة، فمن حُذف من ورقة صفه لا يُضاف */
+  const sheetNums = new Set(src.map(x => /^\d{1,2}$/.test(String(x.sheet).trim()) ? +x.sheet : 0).filter(Boolean));
+  const all = [...by.values()], out = all.filter(o => o.grade && sheetNums.has(gNum(o.grade)) && !o.own && !o.status);
+  return { list: all.filter(o => !out.includes(o)), out, src };
+}
+function upHtml() {
+  const st = P.fileStatus ? P[P.fileStatus].l : 'ملاحظة';
+  let body = `<p class="sub">ملف Excel فيه عمود «الاسم» (أو «الاسم العربي») و«الصف الدراسي» و«الحالة». تُقرأ كل أوراق الملف، ويُدمج الطالب المكرر في سطر واحد. رقم الهوية لا يُقرأ ولا يُحفظ.</p>
+    <label class="field" style="max-width:420px">ملف الطلاب<input type="file" id="upFile" accept=".xlsx,.xls,.csv"></label>`;
+  if (UP.list) {
+    const have = new Map(mine(DB.people).map(r => [normKey(r.name), r]));
+    const add = UP.list.filter(r => !have.has(r.name)), upd = UP.list.filter(r => { const o = have.get(r.name); return o && ((r.grade && r.grade !== o.grade) || (r.status && r.status !== (o[P.fileStatus || 'note'] || ''))); });
+    const noGrade = UP.list.filter(r => !r.grade), cnt = k => Object.entries(UP.list.reduce((m, r) => (m[r[k] || '—'] = (m[r[k] || '—'] || 0) + 1, m), {}));
+    const byGrade = cnt('grade').sort((a, b) => gradeOrder(a[0]) - gradeOrder(b[0])), bySt = cnt('status').sort((a, b) => b[1] - a[1]);
+    body += `<div class="topic"><b>${UP.list.length} <span>طالب</span></b> <span>من</span> ${UP.src.length} <span>ورقة</span> · <span>جديد:</span> <b>${add.length}</b> · <span>تحديث الصف أو الحالة:</span> <b>${upd.length}</b> · <span>موجود دون تغيير:</span> ${UP.list.length - add.length - upd.length}
+      <p><span>حسب الصف:</span> ${byGrade.map(([g, n]) => `<span class="chip">${esc(g)} · ${n}</span>`).join('')}</p>
+      <p><span>${esc(st)}:</span> ${bySt.map(([g, n]) => `<span class="chip">${esc(g)} · ${n}</span>`).join('')}</p>
+      ${UP.out && UP.out.length ? `<p><b><span>لن يُضاف</span> ${UP.out.length}</b> <span>طالباً حُذفوا من ورقة صفهم وليست لهم حالة:</span> ${UP.out.map(r => `<span class="nt">${esc(r.name)}</span> (${esc(r.grade)})`).join('، ')}</p>` : ''}
+      ${noGrade.length ? `<p style="color:#B4234F;font-weight:700"><span>بدون صف:</span> ${noGrade.map(r => `<span class="nt">${esc(r.name)}</span>`).join('، ')}</p>` : ''}</div>
+      <details><summary class="sub" style="cursor:pointer"><span>عرض الأسماء</span> (${UP.list.length})</summary><div class="tbl" style="max-height:360px;overflow:auto"><table><thead><tr><th>#</th><th>الاسم</th><th>الصف</th><th>${esc(st)}</th><th></th></tr></thead><tbody>
+      ${UP.list.slice().sort((a, b) => gradeOrder(a.grade) - gradeOrder(b.grade) || a.name.localeCompare(b.name, 'ar')).map((r, i) => `<tr><td>${i + 1}</td><td class="nt">${esc(r.name)}</td><td>${esc(r.grade || '—')}</td><td>${esc(r.status || '—')}</td><td>${have.has(r.name) ? (upd.includes(r) ? '<span class="sm">تحديث</span>' : '<span class="sm">موجود</span>') : '<span class="sm">جديد</span>'}</td></tr>`).join('')}
+      </tbody></table></div></details>`;
+    UP.add = add; UP.upd = upd;
+  }
+  return `<section class="form glass no-print" id="upBox"><h3><span>رفع</span> ${esc(P.people)} <span>من Excel</span></h3>${body}
+    <div class="acts">${UP.list ? `<button type="button" class="btn" id="upSave"${(UP.add.length + UP.upd.length) ? '' : ' disabled'}><span>حفظ</span> ${UP.add.length + UP.upd.length} <span>طالب</span></button>` : ''}<button type="button" class="btn ghost" data-cancel="1">إلغاء</button></div></section>`;
+}
+async function readUp(f) {
+  if (!window.XLSX) { toast('جارٍ تحميل قارئ ملفات Excel… أعد المحاولة بعد ثوانٍ', 'err'); return; }
+  try { const r = parseUp(XLSX.read(await f.arrayBuffer(), { type: 'array' })); if (!r.list.length) { toast('لم أجد عمود «الاسم» في الملف', 'err'); return; } UP = r; render(); $('#upBox').scrollIntoView({ block: 'start' }); }
+  catch (e) { toast('تعذرت قراءة الملف: ' + e.message, 'err'); }
+}
+async function saveUp() {
+  const key = P.fileStatus || 'note', have = new Map(mine(DB.people).map(r => [normKey(r.name), r]));
+  const rows = [...UP.add.map(r => ({ prog: P.id, year: YEAR, name: r.name, sid: r.sid, grade: r.grade, cls: r.cls, field: '', lead: '', joined: todayISO(), status: 'نشط', x1: '', x2: '', note: '', [key]: r.status })),
+    ...UP.upd.map(r => { const o = have.get(r.name); return Object.assign({}, o, r.grade ? { grade: r.grade } : {}, r.status ? { [key]: r.status } : {}); })];
+  const b = $('#upSave'); b.disabled = true; b.textContent = 'جارٍ الحفظ…';
+  try {
+    const res = await API.progSave('people', rows);
+    rows.forEach((x, i) => { const oid = x.id; x.id = res.ids[i]; const j = DB.people.findIndex(y => y.id === oid || y.id === x.id); if (j >= 0) DB.people[j] = x; else DB.people.push(x); });
+    toast(`تم حفظ ${rows.length} طالب`); UP = null; render();
+  } catch (e) { toast(e.message, 'err'); if (e.auth) showGate(); b.disabled = false; b.textContent = 'حفظ'; }
+}
+
 /* ---------- نموذج الإضافة والتعديل ---------- */
 function fieldHtml(f, v) {
   v = v == null ? '' : v;
@@ -646,15 +728,17 @@ function csv(table) {
 /* ---------- الأحداث ---------- */
 document.addEventListener('click', e => {
   const t = e.target.closest('button,a'); if (!t) return;
-  if (t.dataset.prog) { e.preventDefault(); P = getProgram(t.dataset.prog); LS.set('tf_prog', P.id); history.replaceState(null, '', '?p=' + P.id); EDIT = ATT = DEL = null; BULK = IMP = false; PG = ''; Q = { q: '', lead: '', status: '' }; if ($('#gate').hidden) render(); else heroHtml(); return; }
-  if (t.dataset.tab) { TAB = t.dataset.tab; EDIT = ATT = DEL = null; BULK = IMP = false; Q = { q: '', lead: '', status: '' }; render(); return; }
+  if (t.dataset.prog) { e.preventDefault(); P = getProgram(t.dataset.prog); LS.set('tf_prog', P.id); history.replaceState(null, '', '?p=' + P.id); EDIT = ATT = DEL = null; BULK = IMP = false; PG = ''; UP = null; Q = { q: '', lead: '', status: '' }; if ($('#gate').hidden) render(); else heroHtml(); return; }
+  if (t.dataset.tab) { TAB = t.dataset.tab; EDIT = ATT = DEL = null; BULK = IMP = false; UP = null; Q = { q: '', lead: '', status: '' }; render(); return; }
+  if (t.dataset.up) { UP = {}; EDIT = ATT = DEL = null; BULK = IMP = false; render(); $('#upBox').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+  if (t.id === 'upSave') return saveUp();
   if (t.dataset.imp) { IMP = true; BULK = false; EDIT = ATT = DEL = null; render(); $('#impBox').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
   if (t.dataset.bulk) { BULK = true; IMP = false; EDIT = ATT = DEL = null; render(); $('#bulkBox').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
   if (t.dataset.add) { const a = t.dataset.add, ns = a === 'plan' ? nextWeekStart() : ''; EDIT = { table: a, row: a === 'sessions' ? { date: todayISO(), status: 'مجدولة' } : a === 'people' ? { status: 'نشط', joined: todayISO() } : a === 'plan' ? { week: String(nextWeekNo()), start: ns, end: addDays(ns, 4) } : { role: P.staffOne } }; ATT = DEL = BULK = null; render(); $('#form').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
   if (t.dataset.edit) { const row = DB[t.dataset.edit].find(x => x.id === t.dataset.id); if (row) { EDIT = { table: t.dataset.edit, row: Object.assign({}, row) }; ATT = DEL = null; BULK = false; render(); $('#form').scrollIntoView({ behavior: 'smooth', block: 'start' }); } return; }
   if (t.dataset.del) { const row = DB[t.dataset.del].find(x => x.id === t.dataset.id); if (row) { DEL = { table: t.dataset.del, row }; EDIT = ATT = null; render(); window.scrollTo({ top: $('.del').offsetTop - 100, behavior: 'smooth' }); } return; }
   if (t.dataset.att) { ATT = t.dataset.att; EDIT = DEL = null; render(); $('#attBox').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
-  if (t.dataset.cancel) { EDIT = ATT = DEL = null; BULK = IMP = false; render(); return; }
+  if (t.dataset.cancel) { EDIT = ATT = DEL = null; BULK = IMP = false; UP = null; render(); return; }
   if (t.dataset.csv) { csv(t.dataset.csv); return; }
   if (t.dataset.pick) {
     const ld = ($('#form [data-k="lead"]') || {}).value || '';
@@ -673,6 +757,7 @@ document.addEventListener('click', e => {
 let qT = null;
 document.addEventListener('input', e => { const k = e.target.dataset && e.target.dataset.q; if (!k || e.target.tagName === 'SELECT') return; Q[k] = e.target.value; clearTimeout(qT); qT = setTimeout(() => { const pos = e.target.selectionStart; render(); const el = $(`[data-q="${k}"]`); if (el) { el.focus(); try { el.setSelectionRange(pos, pos); } catch (x) {} } }, 250); });
 document.addEventListener('input', e => { if (e.target.closest && e.target.closest('#impBox')) impPreview(); });
+document.addEventListener('change', e => { if (e.target.id === 'upFile' && e.target.files[0]) readUp(e.target.files[0]); });
 document.addEventListener('change', e => { if (e.target.closest && e.target.closest('#impBox')) impPreview(); });
 document.addEventListener('change', e => { const k = e.target.dataset && e.target.dataset.q; if (k && e.target.tagName === 'SELECT') { Q[k] = e.target.value; render(); } });
 

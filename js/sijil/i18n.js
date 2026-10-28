@@ -7,6 +7,15 @@
    ===================================================================== */
 (function () {
   const SJ_EN = {
+    "⇧ رفع من Excel": "⇧ Upload from Excel",
+    "ملف الطلاب": "Students file",
+    "الحالة (موهبة / دروب)": "Status (Mawhiba / Duroob)",
+    "لن يُضاف": "Will not add",
+    "طالباً حُذفوا من ورقة صفهم وليست لهم حالة:": "students removed from their grade’s sheet with no status:",
+    "حسب الصف:": "By grade:",
+    "جديد:": "New:",
+    "عرض الأسماء": "Show names",
+    "من Excel": "from Excel",
     "⇩ استيراد منهج الرعاية الخاصة": "⇩ Import the mentorship curriculum",
     "استيراد منهج الرعاية الخاصة": "Import the mentorship curriculum",
     "استيراد الحصص": "Import lessons",
