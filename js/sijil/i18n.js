@@ -1507,7 +1507,7 @@
     "برنامج المشاريع الهادفة": "Purposeful Projects Program",
     "برنامج التسريع الأكاديمي": "Academic Acceleration Program",
     "البرامج المساندة": "Support Programs",
-    "مشرفو الوحدات": "Unit supervisors",
+    "مدربو الوحدات": "Unit trainers",
     "مشرف وحدة": "unit supervisor",
     "الطلاب المهتمون": "Interested students",
     "طالب": "student",
