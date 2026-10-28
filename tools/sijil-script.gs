@@ -30,12 +30,12 @@ const PROG = {
               headers: ['المعرّف', 'البرنامج', 'العام الدراسي', 'الاسم', 'رقم الطالب', 'الصف', 'الفصل', 'المجال', 'المشرف', 'تاريخ الانضمام', 'الحالة', 'تفصيل 1', 'تفصيل 2', 'ملاحظة'],
               keys: ['id', 'prog', 'year', 'name', 'sid', 'grade', 'cls', 'field', 'lead', 'joined', 'status', 'x1', 'x2', 'note'] },
   sessions: { sheet: 'البرامج – الجلسات', req: 'date',
-              headers: ['المعرّف', 'البرنامج', 'العام الدراسي', 'التاريخ', 'من الساعة', 'إلى الساعة', 'العنوان', 'المجال / الفرع', 'الفئة المستهدفة', 'وسيلة التقديم', 'المنفّذ', 'المكان', 'المشاركون', 'عدد الحضور', 'الحضور', 'الحالة', 'ملاحظة', 'تنفيذ البرنامج', 'ملاحظات المعلم'],
-              keys: ['id', 'prog', 'year', 'date', 'from', 'to', 'title', 'field', 'target', 'means', 'lead', 'place', 'students', 'count', 'attended', 'status', 'note', 'exec', 'execNote'] },
+              headers: ['المعرّف', 'البرنامج', 'العام الدراسي', 'التاريخ', 'من الساعة', 'إلى الساعة', 'العنوان', 'المجال / الفرع', 'الفئة المستهدفة', 'وسيلة التقديم', 'المنفّذ', 'المكان', 'المشاركون', 'عدد الحضور', 'الحضور', 'الحالة', 'ملاحظة', 'تنفيذ البرنامج', 'ملاحظات المعلم', 'الصف'],
+              keys: ['id', 'prog', 'year', 'date', 'from', 'to', 'title', 'field', 'target', 'means', 'lead', 'place', 'students', 'count', 'attended', 'status', 'note', 'exec', 'execNote', 'grade'] },
   /* توزيع الحصص: موضوع كل أسبوع (يُربط بالحصص تلقائياً حسب التاريخ، والمجال إن حُدّد) */
   plan:     { sheet: 'البرامج – توزيع الحصص', req: 'title',
-              headers: ['المعرّف', 'البرنامج', 'العام الدراسي', 'الأسبوع', 'من تاريخ', 'إلى تاريخ', 'عنوان الحصة', 'المجال', 'الأهداف / المحتوى', 'ملاحظة'],
-              keys: ['id', 'prog', 'year', 'week', 'start', 'end', 'title', 'field', 'goals', 'note'] }
+              headers: ['المعرّف', 'البرنامج', 'العام الدراسي', 'الأسبوع', 'من تاريخ', 'إلى تاريخ', 'عنوان الحصة', 'المجال', 'الأهداف / المحتوى', 'ملاحظة', 'الصف'],
+              keys: ['id', 'prog', 'year', 'week', 'start', 'end', 'title', 'field', 'goals', 'note', 'grade'] }
 };
 const EXEC_OPTS = ['نعم', 'لا'];
 const PROG_IDS = ['general-enrichment', 'skills', 'clusters', 'specialty', 'projects', 'acceleration', 'mentorship', 'support'];
@@ -351,23 +351,24 @@ function progSave_(b) {
   try {
     const sh = ensureSheet_(SpreadsheetApp.getActiveSpreadsheet(), def.sheet, def.headers, true);
     ensureHeaders_(sh, def.headers);   // يضيف عناوين الأعمدة الجديدة لورقة قديمة
-    const ids = [];
+    const ids = [], add = [];
+    const allIds = sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, 1).getDisplayValues().map(x => String(x[0])) : [];
     b.rows.forEach(r => {
       let id = String(r.id || '').trim();
       const row = def.keys.map(k => k === 'id' ? '' : String(r[k] == null ? '' : r[k]).trim());
       if (!row[def.keys.indexOf(def.req)] || !row[1]) return;
-      const last = sh.getLastRow();
       let at = -1;
-      if (id && last > 1) {
+      if (id) {
         if (/^r\d+$/.test(id)) at = +id.slice(1) - 2;   // سطر يدوي بلا معرّف: موضعه في الجدول
-        else at = sh.getRange(2, 1, last - 1, 1).getDisplayValues().map(x => String(x[0])).indexOf(id);
+        else at = allIds.indexOf(id);
       }
       if (!id || /^r\d+$/.test(id)) id = Utilities.getUuid().slice(0, 8);
       row[0] = id;
       if (at >= 0) sh.getRange(at + 2, 1, 1, row.length).setNumberFormat('@').setValues([row]);
-      else sh.getRange(sh.getLastRow() + 1, 1, 1, row.length).setNumberFormat('@').setValues([row]);
+      else add.push(row);   // الأسطر الجديدة تُضاف دفعة واحدة (أسرع عند استيراد عشرات الحصص)
       ids.push(id);
     });
+    if (add.length) sh.getRange(sh.getLastRow() + 1, 1, add.length, add[0].length).setNumberFormat('@').setValues(add);
     return { ok: true, ids: ids };
   } finally { lock.releaseLock(); }
 }
@@ -399,8 +400,9 @@ function progPublic_() {
   /* موضوع الأسبوع من «توزيع الحصص» للحصص التي لم يُكتب لها عنوان */
   const plans = progRead_('plan');
   const planTitle = r => {
-    const hit = plans.filter(p => p.prog === r.prog && p.year === r.year && p.start && r.date >= p.start && r.date <= (p.end || p.start) && (!p.field || p.field === r.field))
-      .sort((a, b) => (b.field ? 1 : 0) - (a.field ? 1 : 0))[0];
+    const hit = plans.filter(p => p.prog === r.prog && p.year === r.year && p.start && r.date >= p.start && r.date <= (p.end || p.start) && (!p.field || p.field === r.field)
+        && (!p.grade || (r.grade && gradeNum_(p.grade) === gradeNum_(r.grade))))
+      .sort((a, b) => (b.grade ? 2 : 0) + (b.field ? 1 : 0) - (a.grade ? 2 : 0) - (a.field ? 1 : 0))[0];
     return hit ? hit.title : '';
   };
   progRead_('sessions').forEach(r => {
@@ -417,4 +419,13 @@ function progPublic_() {
       lead: r.lead, place: r.place, status: r.status, n: split(r.students).length });
   });
   return out;
+}
+
+/* رقم الصف (1 – 12) من اسمه: «الصف 4» = «الرابع الابتدائي» = «الرابع الابتدائي بنات» = «Grade 4»، و«الأول المتوسط» = 7 */
+function gradeNum_(g) {
+  g = String(g || '').trim();
+  let m = g.match(/(\d+)/); if (m) return +m[1];
+  const ORD = ['الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس', 'السادس'], k = ORD.findIndex(o => g.indexOf(o) >= 0);
+  if (k < 0) return 0;
+  return k + 1 + (/ثانوي/.test(g) ? 9 : /متوسط/.test(g) ? 6 : 0);
 }
