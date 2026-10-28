@@ -295,10 +295,10 @@ TP.addDict({
   ar:{ 'nav.model':'مكونات النموذج', model:'النموذج التام لتطوير الموهبة', comp:'المكوّن',
        's.about':'التعريف', 's.goals':'الأهداف', 's.subs':'البرامج الفرعية', 's.content':'المحتوى والمعايير', 's.content.ge':'المجالات والوسائل', 's.recs':'توصيات الدراسة', 's.how':'آلية التنفيذ', 's.eval':'التقييم',
        's.forms':'النماذج', 's.year':'هذا العام', 's.impact':'أثر البرنامج',
-       target:'الفئة المستهدفة', branches:'فروع المحتوى (مجالات الوحدات)', means:'وسائل تقديم الوحدات', circle:'حلقة النقاش: موجّهات للمشرف',
+       target:'الفئة المستهدفة', branches:'فروع المحتوى (مجالات الوحدات)', means:'وسائل تقديم الوحدات', circle:'حلقة النقاش: موجّهات للمدرب',
        'sub.goals':'أهدافه', 'sub.methods':'أساليبه', 'sub.target':'الفئة المستهدفة', crit:'المعيار', cval:'الحد المطلوب',
        resp:'المسؤول', form:'نموذج', 'f.no':'رقم النموذج', 'f.name':'اسم النموذج', 'f.use':'الاستخدام', 'f.staff':'افتح نماذج السجل (للمعلمين)',
-       'u.next':'القادم', 'u.cur':'يُقدَّم الآن', 'u.title':'الوحدة / الفعالية', 'u.branch':'الفرع / المجال', 'u.target':'الفئة', 'u.mean':'الوسيلة', 'u.date':'الموعد', 'u.sup':'المشرف', 'u.st':'الحالة',
+       'u.next':'القادم', 'u.cur':'يُقدَّم الآن', 'u.title':'الوحدة / الفعالية', 'u.branch':'الفرع / المجال', 'u.target':'الفئة', 'u.mean':'الوسيلة', 'u.date':'الموعد', 'u.sup':'المدرب', 'u.st':'الحالة',
        'u.done':'نُفّذت', 'u.up':'قادمة', 'u.tba':'يُحدَّد لاحقاً',
        'd.units':'وحدات وفعاليات هذا العام', 'd.branches':'فروع محتوى مغطّاة', 'd.means':'وسائل تقديم مستخدمة', 'd.done':'نُفّذ منها', of:'من',
        'care.staff':'إدارة البرنامج (للمعلمين)', 'care.count':'إجمالي الحضور', 'u.postponed':'مؤجلة',
@@ -314,10 +314,10 @@ TP.addDict({
   en:{ 'nav.model':'Model components', model:'Total Giftedness Development Model', comp:'Component',
        's.about':'Overview', 's.goals':'Goals', 's.subs':'Sub-programs', 's.content':'Content & criteria', 's.content.ge':'Content & media', 's.recs':'Study recommendations', 's.how':'Procedure', 's.eval':'Evaluation',
        's.forms':'Forms', 's.year':'This year', 's.impact':'Impact',
-       target:'Target group', branches:'Content branches (unit fields)', means:'Delivery media', circle:'Discussion circle: prompts for the supervisor',
+       target:'Target group', branches:'Content branches (unit fields)', means:'Delivery media', circle:'Discussion circle: prompts for the trainer',
        'sub.goals':'Goals', 'sub.methods':'Methods', 'sub.target':'Target group', crit:'Criterion', cval:'Required level',
        resp:'Lead', form:'Form', 'f.no':'Form no.', 'f.name':'Form', 'f.use':'Use', 'f.staff':'Open the record forms (teachers)',
-       'u.next':'Next', 'u.cur':'Running now', 'u.title':'Unit / activity', 'u.branch':'Branch / field', 'u.target':'Group', 'u.mean':'Medium', 'u.date':'Date', 'u.sup':'Supervisor', 'u.st':'Status',
+       'u.next':'Next', 'u.cur':'Running now', 'u.title':'Unit / activity', 'u.branch':'Branch / field', 'u.target':'Group', 'u.mean':'Medium', 'u.date':'Date', 'u.sup':'Trainer', 'u.st':'Status',
        'u.done':'Delivered', 'u.up':'Upcoming', 'u.tba':'TBA',
        'd.units':'Units & activities this year', 'd.branches':'Content branches covered', 'd.means':'Delivery media used', 'd.done':'Delivered so far', of:'of',
        'care.staff':'Manage the program (teachers)', 'care.count':'Total attendance', 'u.postponed':'Postponed',
@@ -371,7 +371,7 @@ function compState(){
   const folder = String(r[2] || '').trim().replace(/^.*\/folders\/([\w-]+).*$/, '$1').replace(/^.*[?&]id=([\w-]+).*$/, '$1');
   return { status: String(r[1] || '').trim(), folder, lead: r[3] || '', note: r[4] || '' };
 }
-/* تبويب «وحدات المكونات» ← [عنوان الوحدة, الفرع, الفئة المستهدفة, وسيلة التقديم, التاريخ, الوقت, المشرف, ملاحظة] */
+/* تبويب «وحدات المكونات» ← [عنوان الوحدة, الفرع, الفئة المستهدفة, وسيلة التقديم, التاريخ, الوقت, المدرب, ملاحظة] */
 function units(){
   const rows = DATA ? TP.rowsFor(DATA.units, C.id).filter(r => (r[0] || '').trim()) : [];
   return rows.map(r => ({ ar: r[0], en: r[0], branch: r[1] || '', target: r[2] || '', mean: r[3] || '', d: TP.parseDate(r[4], r[5]), e: null, sup: r[6] || '', note: r[7] || '' }))

@@ -218,7 +218,7 @@ function setupSheet() {
     COMPONENT_IDS.map(function (c) { return [c[0], c[1], '', '', '', '']; }));
 
   makeSheet_(ss, SHEETS.units,
-    ['المعرّف', 'عنوان الوحدة', 'الفرع', 'الفئة المستهدفة', 'وسيلة التقديم', 'التاريخ', 'الوقت', 'المشرف', 'ملاحظة'], []);
+    ['المعرّف', 'عنوان الوحدة', 'الفرع', 'الفئة المستهدفة', 'وسيلة التقديم', 'التاريخ', 'الوقت', 'المدرب', 'ملاحظة'], []);
 
   Object.keys(SHEETS).forEach(function (k) {
     const sh = ss.getSheetByName(SHEETS[k]);

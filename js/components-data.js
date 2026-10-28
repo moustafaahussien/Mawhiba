@@ -148,7 +148,7 @@ window.TP_COMPONENTS = [
         'إثراء الجوانب المعرفية والحياتية لجميع الطلاب على اختلاف أعمارهم ومستوياتهم الأكاديمية ومقدراتهم الذهنية واهتماماتهم الحياتية وخلفياتهم الاجتماعية، من خلال توسعة نطاق مجالات المعرفة خارج حدود المناهج الدراسية.',
         'إتاحة الفرصة لمواطن القوة والموهبة والاهتمام للظهور والاكتشاف، من خلال إثارة جوانب معرفية جديدة لدى الطلاب.',
         'إتاحة الفرصة لتوجيه الطلاب للمشاركة في المكونات الأخرى من النموذج.',
-        'إيجاد أرضية مناسبة يتمكن من خلالها المشرفون على تنفيذ النموذج من التعرف على رغبات الطلاب واهتماماتهم وقدراتهم الذهنية، وبالتالي استكمال بيانات ملفاتهم التطويرية وتوجيه تطورهم المعرفي والأكاديمي بطريقة أفضل وأدق.',
+        'إيجاد أرضية مناسبة يتمكن من خلالها القائمون على تنفيذ النموذج من التعرف على رغبات الطلاب واهتماماتهم وقدراتهم الذهنية، وبالتالي استكمال بيانات ملفاتهم التطويرية وتوجيه تطورهم المعرفي والأكاديمي بطريقة أفضل وأدق.',
         'توفير المعرفة في قوالب مختلفة تناسب الوسائل المتعددة التي يستخدمها الطلاب في التحصيل، في جو من المتعة والإثارة.',
         'تشجيع المشاركة الفعالة للطلاب.'
       ],
@@ -156,7 +156,7 @@ window.TP_COMPONENTS = [
         'Enrich the knowledge and life skills of all students — whatever their age, academic level, mental ability, interests and social background — by widening the fields of knowledge beyond the curriculum.',
         'Give strengths, talents and interests the chance to surface and be discovered by sparking new areas of knowledge.',
         'Create the opportunity to guide students into the model’s other components.',
-        'Provide a basis for supervisors to learn students’ wishes, interests and mental abilities, so they can complete students’ development files and guide their growth more accurately.',
+        'Provide a basis for those running the model to learn students’ wishes, interests and mental abilities, so they can complete students’ development files and guide their growth more accurately.',
         'Offer knowledge in different formats that suit the many ways students learn, in an atmosphere of enjoyment and excitement.',
         'Encourage students’ active participation.'
       ] },
@@ -194,18 +194,18 @@ window.TP_COMPONENTS = [
       { ar:'عقد حلقة نقاش للطلاب الذين أبدوا اهتماماً فوق العادة، لإثراء التجربة وتوثيق الملاحظات التي قد تقود إلى اكتشاف مواطن الموهبة والإبداع.', en:'Hold a discussion circle for students who showed unusual interest, to deepen the experience and record observations that may reveal talent and creativity.', f:['6-1','6-2'] },
       { ar:'توجيه كل طالب مشارك نحو مستوى إثرائي أعمق: برنامج إثرائي فردي، أو تطوير مهاراته في برنامج تنمية المهارات، أو المشاركة في برنامج التدريب على البحث العلمي.', en:'Guide each participant to a deeper level: an individual enrichment program, skill development, or training for scientific research.', f:['7'] },
       { ar:'مخاطبة ولي الأمر باقتراح برنامج إثرائي إضافي يلبي الحاجات المعرفية لابنه في الموضوع الذي أبدى فيه اهتماماً.', en:'Write to the parent proposing an additional enrichment program that meets the child’s needs in the topic of interest.', f:['8'] },
-      { ar:'تقييم الوحدات والمشرفين والوسائل والطلاب، وتقييم البرنامج كاملاً في نهاية كل فصل دراسي، وتوثيق أعماله.', en:'Evaluate units, supervisors, media and students, evaluate the whole program at the end of each term, and document its work.', f:['4','5','9','10'] }
+      { ar:'تقييم الوحدات والمدربين والوسائل والطلاب، وتقييم البرنامج كاملاً في نهاية كل فصل دراسي، وتوثيق أعماله.', en:'Evaluate units, trainers, media and students, evaluate the whole program at the end of each term, and document its work.', f:['4','5','9','10'] }
     ],
 
     /* موجّهات حلقة النقاش — نموذج الإثراء العام 6-1 */
     circle:{
-      goal:{ ar:'الهدف من تكوين حلقة النقاش هو توجيه الفئة المشاركة من الطلاب لاستخدام مهارات التفكير العليا وإثراء النقاش بينهم، وذلك بطرح الأسئلة التي تساعد على تحقيق الهدف. وللمشرف حرية الإضافة إلى هذه الموجّهات إذا قدّر أن ذلك مناسب.',
-             en:'The circle guides participating students to use higher-order thinking and enrich discussion among them by asking questions that serve this goal. The supervisor may add to these prompts as appropriate.' },
+      goal:{ ar:'الهدف من تكوين حلقة النقاش هو توجيه الفئة المشاركة من الطلاب لاستخدام مهارات التفكير العليا وإثراء النقاش بينهم، وذلك بطرح الأسئلة التي تساعد على تحقيق الهدف. وللمدرب حرية الإضافة إلى هذه الموجّهات إذا قدّر أن ذلك مناسب.',
+             en:'The circle guides participating students to use higher-order thinking and enrich discussion among them by asking questions that serve this goal. The trainer may add to these prompts as appropriate.' },
       q:{
         ar:['ما هو الشيء الذي أعجبك أكثر من غيره في الوحدة المقدمة؟','من يعتقد أن هذه الوحدة كانت الأفضل مما قُدّم حتى الآن؟','من لديه أفكار حول المواضيع التي يمكن بحثها كامتداد لموضوع الوحدة المقدمة؟','ما هي الأسئلة التي أثارها موضوع الوحدة لديك؟ وهل يمكن البحث عن إجابات تلك الأسئلة؟','هل فكّر أحدكم في مشروع يمكن تطويره بناءً على الفكرة الأساسية التي طُرحت في الوحدة المقدمة؟ (خدمة اجتماعية تُقدَّم، أو مجموعة صور تُعرض، أو فيلم فيديو مصوّر… إلخ)','هل فكّر أحد فيمن يمكن أن يكون ضمن فريق ذلك المشروع؟','أين يمكن أن نحصل على معلومات إضافية عن موضوع الوحدة المقدمة؟','هل هناك مكان مثل مكتبة أو جهة احترافية تمثل مصدراً للمعلومات يمكن زيارتها أو غيرها؟','هل هناك من شخص لديه معلومات إضافية يمكن زيارته أو الاتصال به؟'],
         en:['What did you like most in this unit?','Who thinks this unit was the best one so far?','Who has ideas for topics we could research as an extension of this unit?','What questions did the unit raise for you? Can we search for their answers?','Has anyone thought of a project that could grow from the unit’s main idea? (a community service, a photo exhibition, a video film… etc.)','Has anyone thought about who could join that project’s team?','Where can we get more information about the unit’s topic?','Is there a place — a library or a professional body — that is a source of information we could visit?','Is there a person with more information whom we could visit or contact?']
       },
-      end:{ ar:'في نهاية الحلقة يدوّن المشرف توجيهاته لكل طالب مشارك في «نموذج توجيه مشارك» (الإثراء العام-7).', en:'At the end of the circle the supervisor records guidance for each participant in the "Participant Guidance" form (GE-7).' }
+      end:{ ar:'في نهاية الحلقة يدوّن المدرب توجيهاته لكل طالب مشارك في «نموذج توجيه مشارك» (الإثراء العام-7).', en:'At the end of the circle the trainer records guidance for each participant in the "Participant Guidance" form (GE-7).' }
     },
 
     /* أدوات التقييم — نماذج الملحق 2 */
@@ -214,7 +214,7 @@ window.TP_COMPONENTS = [
         d:{ ar:'ثلاثة بنود بمقياس من 1 (منخفض) إلى 5 (مرتفع): المواظبة على الحضور، واهتمامات الطالب الإثرائية، والإثراء الإضافي — ومجموعها من 15.',
             en:'Three items on a 1 (low) – 5 (high) scale: attendance, enrichment interests and additional enrichment — a total out of 15.' },
         items:{ ar:['المواظبة على الحضور','الاهتمامات الإثرائية','الإثراء الإضافي'], en:['Attendance','Enrichment interests','Additional enrichment'] } },
-      { f:'4', icon:'coach', t:{ ar:'تقييم أداء مشرف الوحدة', en:'Unit supervisor performance' },
+      { f:'4', icon:'coach', t:{ ar:'تقييم أداء مدرب الوحدة', en:'Unit trainer performance' },
         d:{ ar:'14 بنداً مجموعها 47 درجة، منها: التحضير للوحدة (5)، واتباع إجراءات التقييم والتوثيق (5)، واستخلاص المعلومات من التلاميذ بدلاً من شرحها، وطرح الأسئلة المتنوعة والمثيرة للتفكير، وإعطاء الطلاب وقتاً كافياً للتفكير، واستخدام وسائل وتقنيات تربوية مناسبة (5).',
             en:'14 items totalling 47 points, including: preparing the unit (5), following evaluation and documentation procedures (5), eliciting information from students rather than explaining it, asking varied thought-provoking questions, giving enough thinking time, and using suitable educational media (5).' } },
       { f:'5', icon:'video', t:{ ar:'تقييم أداء الوسائل المستخدمة', en:'Media performance' },
@@ -232,7 +232,7 @@ window.TP_COMPONENTS = [
       { no:'2-1', ar:'مصادر معلومات وحدات برنامج الإثراء العام', en:'Information sources for units', use:{ ar:'فهرس المصادر حسب الموضوع (أبجدياً)', en:'Source index by topic (alphabetical)' } },
       { no:'2-2', ar:'دليل المصادر', en:'Resource guide', use:{ ar:'بطاقة لكل مصدر: الجهة، والمواد المتوفرة، ووسيلة العرض، والتكاليف', en:'A card per source: provider, materials, medium, costs' } },
       { no:'3', ar:'تقييم وتوثيق اهتمامات الطلاب خلال وحدة برنامج الإثراء العام', en:'Evaluating and documenting students’ interests during a unit', use:{ ar:'وصف المادة وتفاعل الطلاب، وأسماء من أبدوا اهتماماً عالياً', en:'Material, student interaction, and those showing high interest' } },
-      { no:'4', ar:'تقييم أداء مشرف وحدة برنامج إثرائي عام', en:'Unit supervisor performance', use:{ ar:'14 بنداً — 47 درجة', en:'14 items — 47 points' } },
+      { no:'4', ar:'تقييم أداء مدرب وحدة برنامج إثرائي عام', en:'Unit trainer performance', use:{ ar:'14 بنداً — 47 درجة', en:'14 items — 47 points' } },
       { no:'5', ar:'تقييم أداء الوسائل المستخدمة في وحدة برنامج إثراء عام', en:'Media performance in a unit', use:{ ar:'ملاءمة الوسيلة وأداؤها الفني وأثرها في التفكير', en:'Suitability, technical quality and effect on thinking' } },
       { no:'6-1', ar:'موجّهات حلقة نقاش وحدة برنامج إثراء عام', en:'Discussion circle prompts', use:{ ar:'أسئلة تقود النقاش نحو مهارات التفكير العليا', en:'Questions steering toward higher-order thinking' } },
       { no:'6-2', ar:'قائمة الطلبة المشاركين في حلقة نقاش وحدة برنامج الإثراء العام', en:'Discussion circle participants list', use:{ ar:'الطالب، وعدد مرات التكرار، والسنة الدراسية، والفصل', en:'Student, number of times, grade and class' } },
