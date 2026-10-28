@@ -159,7 +159,7 @@ $('#open').onclick = async () => {
   try {
     const d = await API.check(c);
     if (!d || !d.ok) { toast((d && d.error) || 'رمز المعلمين غير صحيح', 'err'); return; }
-    LS.set('tf_code', c); if (d.admin) LS.set('tf_admin', c); load();
+    LS.set('tf_code', c); load();
   } catch (e) { toast('تعذر التحقق: ' + e.message, 'err'); }
   finally { b.disabled = false; b.textContent = 'عرض القوائم'; }
 };
@@ -410,20 +410,20 @@ function openDel(rowOrRows) {
   $('#formBox').innerHTML = `<section class="pdel glass no-print"><b>${rows.length === 1 ? `<span>حذف</span> «<span class="nt">${esc(row.name)}</span>» <span>من قائمة</span> «${esc(COMP_NAMES[row.comp] || row.comp)}»<span>؟</span>`
       : `<span>حذف</span> ${rows.length} <span>طالب من قائمة</span> «${esc(COMP_NAMES[row.comp] || row.comp)}»<span>؟</span>`}</b>
     ${rows.length > 1 ? `<details><summary class="sub" style="cursor:pointer">عرض الأسماء</summary><p class="sub">${rows.map(r => `<span class="nt">${esc(r.name)}</span>`).join('، ')}</p></details>` : ''}
-    <div class="acts">${isDemo() ? '' : `<label class="field">مفتاح المشرف<input type="password" id="delKey" value="${esc(LS.get('tf_admin', ''))}"></label>`}
+    <div class="acts">${isDemo() ? '' : ADMIN.fields()}
       <button type="button" class="btn red" id="delGo">حذف نهائي</button><button type="button" class="btn ghost" id="delNo">إلغاء</button></div>
     <p class="sub" style="margin-top:6px">الحذف متاح للمشرف فقط. لتصحيح اسم أو صف استخدم «تعديل» بدلاً من الحذف.</p></section>`;
   $('#formBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
   $('#delNo').onclick = () => { $('#formBox').innerHTML = ''; };
   $('#delGo').onclick = async () => {
-    const key = $('#delKey') ? $('#delKey').value.trim() : '';
-    if (!isDemo() && !key) { toast('اكتب مفتاح المشرف', 'err'); return; }
+    const key = isDemo() ? '' : ADMIN.read();
+    if (!isDemo() && !key) return;
     try {
       $('#delGo').disabled = true;
       await API.deleteParticipants(rows.map(r => ({ comp: r.comp, year: r.year, name: r.name })), key);
-      if (key) LS.set('tf_admin', key);
+      ADMIN.save(key);
       $('#formBox').innerHTML = ''; toast(rows.length > 1 ? `تم حذف ${rows.length} طالب` : 'تم الحذف'); load();
-    } catch (e) { toast(e.message, 'err'); if ($('#delGo')) $('#delGo').disabled = false; }
+    } catch (e) { if (/الحذف يحتاج/.test(e.message)) ADMIN.forget(); toast(e.message, 'err'); if ($('#delGo')) $('#delGo').disabled = false; }
   };
 }
 $('#addOne').onclick = () => openForm('one');

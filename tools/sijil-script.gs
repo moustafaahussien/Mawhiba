@@ -7,13 +7,41 @@
 /* ⚠️ اكتب الرمزين هنا داخل محرر Apps Script فقط، ولا تكتبهما في نسخة الملف المرفوعة على GitHub
    (المستودع عام ويستطيع أي شخص قراءته). إذا تُركا فارغين يُرفض كل دخول. */
 
-/* مفتاح المشرف: كلمة سر خاصة بك — تفتح التقارير وتجلب بيانات الطالب. لا تعطها للمعلمين. */
+/* حسابات المشرفين: اسم المستخدم ← كلمة المرور. تفتح التقارير وتجلب بيانات الطالب وتسمح بالحذف. لا تعطها للمعلمين.
+   اسم المستخدم لا يفرّق بين الحروف الكبيرة والصغيرة (Admin = admin)، وكلمة المرور تفرّق.
+   لإضافة مشرف: سطر جديد بالصيغة نفسها. لإيقاف مشرف: احذف سطره أو اترك كلمة مروره فارغة. */
+const ADMINS = {
+  'Admin': '',
+  'Adel': '',
+  'Mostafa': ''
+};
+/* مفتاح المشرف القديم (اختياري): يبقى مقبولاً إن كتبته، ويمكن تركه فارغاً بعد إنشاء الحسابات أعلاه */
 const ADMIN_KEY = '';
 
 /* رمز المعلمين: يُعطى للمعلمين، ولا يُقبل حفظ أي نموذج ولا فتح قوائم المشاركين بدونه. غيّره متى شئت (ثم انشر إصداراً جديداً). */
 const TEACHER_CODE = '';
 
-function codeOk_(c) { c = String(c || '').trim(); return c !== '' && (c === TEACHER_CODE || c === ADMIN_KEY); }
+/* يعيد اسم المشرف إن كانت بيانات الدخول صحيحة، وإلا نصاً فارغاً. الصيغة المرسلة من الصفحات: «اسم المستخدم:كلمة المرور» */
+function adminOk_(k) {
+  k = String(k || '');
+  const i = k.indexOf(':');
+  if (i > 0) {
+    const u = k.slice(0, i).trim().toLowerCase(), pw = k.slice(i + 1);
+    const name = Object.keys(ADMINS).find(n => n.toLowerCase() === u);
+    if (name && ADMINS[name] && ADMINS[name] === pw) return name;
+  }
+  return ADMIN_KEY && k === ADMIN_KEY ? 'المشرف' : '';
+}
+function codeOk_(c) { c = String(c || '').trim(); return c !== '' && (c === TEACHER_CODE || !!adminOk_(c)); }
+
+/* سجل عمليات الحذف: من حذف، ومتى، وماذا */
+const ADMIN_LOG = 'سجل عمليات المشرفين';
+function logAdmin_(who, action, details) {
+  try {
+    const sh = ensureSheet_(SpreadsheetApp.getActiveSpreadsheet(), ADMIN_LOG, ['الوقت', 'المشرف', 'العملية', 'التفاصيل'], true);
+    sh.appendRow([Utilities.formatDate(new Date(), 'Asia/Riyadh', 'yyyy-MM-dd HH:mm'), who, action, String(details).slice(0, 45000)]);
+  } catch (e) {}
+}
 
 const MASTER = 'السجل';
 const STUDENTS = 'الطلاب';
@@ -39,7 +67,7 @@ const PROG = {
 };
 const EXEC_OPTS = ['نعم', 'لا'];
 /* رقم إصدار السكربت: تقارنه صفحة إدارة البرامج لتنبيهك إن كان المنشور أقدم من الملف */
-const SCRIPT_VER = 3;
+const SCRIPT_VER = 4;
 const PROG_IDS = ['general-enrichment', 'skills', 'clusters', 'specialty', 'projects', 'acceleration', 'mentorship', 'support'];
 const PERSON_STATUS = ['نشط', 'متوقف', 'أنهى البرنامج'];
 const SESSION_STATUS = ['مجدولة', 'منفذة', 'مؤجلة', 'ملغاة'];
@@ -51,6 +79,7 @@ function setupSheet() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   ensureSheet_(ss, MASTER, MASTER_HEADERS, true);
   ensureSheet_(ss, STUDENTS, ['رقم الطالب', 'اسم الطالب', 'الصف', 'الفصل'], true);
+  ensureSheet_(ss, ADMIN_LOG, ['الوقت', 'المشرف', 'العملية', 'التفاصيل'], true);
   const ps = ensureSheet_(ss, PARTICIPANTS, PARTICIPANTS_HEADERS, true);
   ensureHeaders_(ps, PARTICIPANTS_HEADERS);
   ps.getRange('A2:A3000').setDataValidation(SpreadsheetApp.newDataValidation()
@@ -110,18 +139,18 @@ function doGet(e) {
   let res;
   try {
     if (p.mode === 'submit') res = saveRecord_(JSON.parse(p.data));
-    else if (p.mode === 'check') res = codeOk_(p.code) ? { ok: true, admin: p.code === ADMIN_KEY } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
+    else if (p.mode === 'check') res = codeOk_(p.code) ? { ok: true, admin: !!adminOk_(p.code), who: adminOk_(p.code) } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
     else if (p.mode === 'students') res = codeOk_(p.code) ? { ok: true, students: readStudents_() } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
     else if (p.mode === 'participants') res = codeOk_(p.code) ? { ok: true, rows: readParticipants_() } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
     else if (p.mode === 'programs') res = codeOk_(p.code) ? { ok: true, staff: progRead_('staff'), people: progRead_('people'), sessions: progRead_('sessions'), plan: progRead_('plan'), ver: SCRIPT_VER } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
     else if (p.mode === 'public') res = publicStats_();
     else if (p.mode === 'report') {
-      if (p.key !== ADMIN_KEY) res = { ok: false, error: 'مفتاح المشرف غير صحيح' };
-      else res = { ok: true, records: readRecords_() };
+      if (!adminOk_(p.key)) res = { ok: false, error: 'اسم المستخدم أو كلمة مرور المشرف غير صحيحة' };
+      else res = { ok: true, records: readRecords_(), who: adminOk_(p.key) };
     }
     else if (p.mode === 'student') {
       // كل سجلات طالب واحد — لتعبئة «الوضع الراهن» تلقائياً وفتح خطة التطوير
-      if (p.key !== ADMIN_KEY) res = { ok: false, error: 'مفتاح المشرف غير صحيح' };
+      if (!adminOk_(p.key)) res = { ok: false, error: 'اسم المستخدم أو كلمة مرور المشرف غير صحيحة' };
       else {
         const k = String(p.s || '').trim();
         res = { ok: true, records: readRecords_().filter(r => r.studentId === k || r.studentName.trim() === k) };
@@ -276,8 +305,10 @@ function saveParticipants_(b) {
 
 /* حذف طلاب من القوائم — بمفتاح المشرف فقط. items: [{comp, year, name}] */
 function deleteParticipants_(b) {
-  if (!ADMIN_KEY || String(b.key || '') !== ADMIN_KEY) return { ok: false, auth: true, error: 'الحذف يحتاج مفتاح المشرف' };
+  const who = adminOk_(b.key);
+  if (!who) return { ok: false, auth: true, error: 'الحذف يحتاج اسم مستخدم وكلمة مرور المشرف' };
   if (!Array.isArray(b.items) || !b.items.length) return { ok: false, error: 'بيانات ناقصة' };
+  logAdmin_(who, 'حذف من المشاركين في المسابقات (' + b.items.length + ')', b.items.map(i => i.comp + ' · ' + i.year + ' · ' + i.name).join('\n'));
   const lock = LockService.getScriptLock(); lock.waitLock(20000);
   try {
     const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(PARTICIPANTS);
@@ -377,7 +408,8 @@ function progSave_(b) {
 
 /* body: { key, table, ids: [] } */
 function progDelete_(b) {
-  if (!ADMIN_KEY || String(b.key || '') !== ADMIN_KEY) return { ok: false, auth: true, error: 'الحذف يحتاج مفتاح المشرف' };
+  const who = adminOk_(b.key);
+  if (!who) return { ok: false, auth: true, error: 'الحذف يحتاج اسم مستخدم وكلمة مرور المشرف' };
   const def = PROG[b.table];
   if (!def || !Array.isArray(b.ids)) return { ok: false, error: 'بيانات ناقصة' };
   const lock = LockService.getScriptLock(); lock.waitLock(20000);
@@ -386,7 +418,13 @@ function progDelete_(b) {
     if (!sh || sh.getLastRow() < 2) return { ok: true, deleted: 0 };
     const keys = sh.getRange(2, 1, sh.getLastRow() - 1, 1).getDisplayValues().map(x => String(x[0]));
     let n = 0;
-    for (let i = keys.length - 1; i >= 0; i--) if (b.ids.indexOf(keys[i]) >= 0 || b.ids.indexOf('r' + (i + 2)) >= 0) { sh.deleteRow(i + 2); n++; }
+    const gone = [], kI = def.keys.indexOf(def.req === 'name' ? 'name' : 'title');
+    for (let i = keys.length - 1; i >= 0; i--) if (b.ids.indexOf(keys[i]) >= 0 || b.ids.indexOf('r' + (i + 2)) >= 0) {
+      const v = sh.getRange(i + 2, 1, 1, def.keys.length).getDisplayValues()[0];
+      gone.push([v[1], v[2], v[kI] || v[def.keys.indexOf('date')]].join(' · '));
+      sh.deleteRow(i + 2); n++;
+    }
+    if (n) logAdmin_(who, 'حذف من «' + def.sheet + '» (' + n + ')', gone.join('\n'));
     return { ok: true, deleted: n };
   } finally { lock.releaseLock(); }
 }

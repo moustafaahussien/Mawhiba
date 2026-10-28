@@ -21,7 +21,7 @@
   </section>
 
   <section class="filters glass" id="login" hidden>
-    <label class="field">مفتاح المشرف<input id="key" type="password" placeholder="المفتاح المكتوب في Apps Script"></label>
+    <div id="admBox" style="display:contents"></div>
     <button class="btn" id="loginBtn">عرض التقارير</button>
   </section>
 
@@ -67,7 +67,7 @@ const GROUP_COLS = [['السمات', 'السمات السلوكية'], ['الا�
 /* ---------- تحميل ---------- */
 async function load() {
   const key = LS.get('tf_admin', '');
-  if (!isDemo() && !key) { $('#login').hidden = false; return; }
+  if (!isDemo() && !key) { showLogin(); return; }
   $('#view').innerHTML = '<div class="panel glass empty">جارٍ تحميل البيانات…</div>'; $('#main').hidden = false;
   try {
     const d = await API.report(key);
@@ -75,12 +75,15 @@ async function load() {
     ALL = (d.records || []).map(r => ({ ...r, answers: typeof r.answers === 'string' ? JSON.parse(r.answers || '{}') : r.answers, parts: typeof r.parts === 'string' ? JSON.parse(r.parts || '[]') : r.parts }));
     $('#login').hidden = true; fillFilters(); draw();
   } catch (e) {
-    $('#main').hidden = true; $('#login').hidden = false;
-    if (/مفتاح/.test(e.message)) LS.set('tf_admin', '');
+    $('#main').hidden = true;
+    if (/مفتاح|كلمة مرور|المشرف/.test(e.message)) ADMIN.forget();
+    showLogin();
     toast(e.message, 'err');
   }
 }
-$('#loginBtn').onclick = () => { LS.set('tf_admin', $('#key').value.trim()); load(); };
+function showLogin() { $('#admBox').innerHTML = ADMIN.fields(); $('#login').hidden = false; }
+$('#loginBtn').onclick = () => { const k = ADMIN.read(); if (!k) return; ADMIN.save(k); load(); };
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.closest && e.target.closest('#login')) $('#loginBtn').click(); });
 $('#reload').onclick = load;
 
 function fillFilters() {

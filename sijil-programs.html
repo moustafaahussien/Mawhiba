@@ -277,7 +277,7 @@ $('#open').onclick = async () => {
   try {
     const d = await API.check(c);
     if (!d || !d.ok) { toast((d && d.error) || 'رمز المعلمين غير صحيح', 'err'); return; }
-    LS.set('tf_code', c); if (d.admin) LS.set('tf_admin', c); load();
+    LS.set('tf_code', c); load();
   } catch (e) { toast('تعذر التحقق: ' + e.message, 'err'); }
   finally { b.disabled = false; b.textContent = 'دخول'; }
 };
@@ -821,7 +821,7 @@ async function saveAtt() {
   catch (e) { toast(e.message, 'err'); b.disabled = false; }
 }
 
-/* ---------- الحذف (مفتاح المشرف) ---------- */
+/* ---------- الحذف (حساب المشرف) ---------- */
 const rowLabel = (table, row) => table === 'sessions' ? `${titleOf(row) || '—'} — ${fmtDay(row.date)}` : table === 'plan' ? `${row.grade ? row.grade + ' · ' : ''}الحصة ${row.week || ''}: ${row.title}` : row.name;
 function delHtml() {
   const { table } = DEL, rows = DEL.rows || [DEL.row];
@@ -830,20 +830,20 @@ function delHtml() {
     : `<span>حذف</span> ${rows.length} <span>سطر</span> (${esc(one)})<span>؟</span>`;
   return `<section class="del glass no-print"><b>${head}</b>
     ${rows.length > 1 ? `<details><summary class="sub" style="cursor:pointer">عرض المحدد</summary><p class="sub">${rows.map(r => D(rowLabel(table, r))).join('، ')}</p></details>` : ''}
-    <div class="acts">${isDemo() ? '' : `<label class="field">مفتاح المشرف<input type="password" id="delKey" value="${esc(LS.get('tf_admin', ''))}"></label>`}
+    <div class="acts">${isDemo() ? '' : ADMIN.fields()}
       <button type="button" class="btn" id="delGo" style="background:linear-gradient(135deg,#E2386F,#B4234F)">حذف نهائي</button><button type="button" class="btn ghost" data-cancel="1">إلغاء</button></div>
     <p class="sub" style="margin-top:6px">الحذف متاح للمشرف فقط. لإيقاف مشارك دون حذفه غيّر حالته إلى «متوقف».</p></section>`;
 }
 async function doDelete() {
-  const { table } = DEL, rows = DEL.rows || [DEL.row], ids = rows.map(r => r.id), key = $('#delKey') ? $('#delKey').value.trim() : '';
-  if (!isDemo() && !key) { toast('اكتب مفتاح المشرف', 'err'); return; }
+  const { table } = DEL, rows = DEL.rows || [DEL.row], ids = rows.map(r => r.id), key = isDemo() ? '' : ADMIN.read();
+  if (!isDemo() && !key) return;
   const b = $('#delGo'); b.disabled = true; b.textContent = 'جارٍ الحذف…';
   try {
     await API.progDelete(table, ids, key);
-    if (key) LS.set('tf_admin', key);
+    ADMIN.save(key);
     DB[table] = DB[table].filter(x => !ids.includes(x.id)); ids.forEach(id => SEL.delete(id)); DEL = null;
     toast(ids.length > 1 ? `تم حذف ${ids.length} سطر` : 'تم الحذف'); render();
-  } catch (e) { toast(e.message, 'err'); b.disabled = false; b.textContent = 'حذف نهائي'; }
+  } catch (e) { if (e.auth) ADMIN.forget(); toast(e.message, 'err'); b.disabled = false; b.textContent = 'حذف نهائي'; }
 }
 
 /* ---------- تصدير ---------- */

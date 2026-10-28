@@ -230,9 +230,31 @@ function header(active) {
   </header>`;
 }
 function footerHtml() {
-  return `<footer><div class="wrap"><div><b>منصة الموهبة</b> — مدارس دار الذكر · السجل التام لتطور الموهبة</div>
-    <div>إعداد وإشراف: مصطفى أحمد حسين — المنسق التنفيذي لبرامج الموهبة والمسابقات الأكاديمية</div></div></footer>`;
+  return `<footer><div class="wrap"><div><b>منصة الموهبة</b> — مدارس دار الذكر</div>
+    <div>إعداد وإشراف: مصطفى أحمد حسين — المنسق التنفيذي للنموذج التام لتطوير الموهبة والمسابقات الأكاديمية</div></div></footer>`;
 }
+
+/* ---------- دخول المشرف: اسم المستخدم + كلمة المرور ----------
+   تُرسل للسكربت بالصيغة «اسم المستخدم:كلمة المرور»، وتُحفظ في هذا المتصفح لتجنب كتابتها كل مرة. */
+const ADMIN = {
+  get() { return LS.get('tf_admin', ''); },
+  user() { const k = this.get(), i = k.indexOf(':'); return i > 0 ? k.slice(0, i) : ''; },
+  /* حقلا الدخول (لصقهما في أي نموذج) */
+  fields(note) {
+    const k = this.get(), i = k.indexOf(':');
+    return `<label class="field">اسم مستخدم المشرف<input id="admUser" autocomplete="username" dir="ltr" value="${esc(i > 0 ? k.slice(0, i) : '')}" placeholder="Admin"></label>
+      <label class="field">كلمة المرور<input id="admPass" type="password" autocomplete="current-password" dir="ltr" value="${esc(i > 0 ? k.slice(i + 1) : '')}"${note ? ` placeholder="${esc(note)}"` : ''}></label>`;
+  },
+  /* يقرأ الحقلين ويعيد المفتاح المرسل للسكربت، أو '' مع تنبيه إن نقص أحدهما */
+  read() {
+    const u = ($('#admUser') || {}).value, p = ($('#admPass') || {}).value;
+    if (u == null) return this.get();
+    if (!String(u).trim() || !p) { toast('اكتب اسم المستخدم وكلمة مرور المشرف', 'err'); return ''; }
+    return String(u).trim() + ':' + p;
+  },
+  save(k) { if (k) LS.set('tf_admin', k); },
+  forget() { LS.set('tf_admin', ''); }
+};
 
 /* رمز المعلمين مطلوب للحفظ (خارج وضع التجربة) */
 function needCode() { return !isDemo() && !LS.get('tf_code', ''); }

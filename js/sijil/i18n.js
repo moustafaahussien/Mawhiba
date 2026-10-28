@@ -7,6 +7,11 @@
    ===================================================================== */
 (function () {
   const SJ_EN = {
+    "اسم مستخدم المشرف": "Supervisor username",
+    "كلمة المرور": "Password",
+    "اكتب اسم المستخدم وكلمة مرور المشرف": "Enter the supervisor username and password",
+    "اسم المستخدم أو كلمة مرور المشرف غير صحيحة": "Wrong supervisor username or password",
+    "الحذف يحتاج اسم مستخدم وكلمة مرور المشرف": "Deleting needs a supervisor username and password",
     "الجدول الأسبوعي": "Weekly timetable",
     "‹ الأسبوع السابق": "‹ Previous week",
     "هذا الأسبوع": "This week",
@@ -1060,8 +1065,9 @@
     "نماذج السجل التام": "Total Record forms",
     "تقارير السجل": "Record reports",
     "المشاركون في المسابقات": "Competition participants",
+    "— مدارس دار الذكر": "— Dar Al-Thikr Schools",
     "— مدارس دار الذكر · السجل التام لتطور الموهبة": "— Dar Al-Thikr Schools · Total Talent Development Record",
-    "إعداد وإشراف: مصطفى أحمد حسين — المنسق التنفيذي لبرامج الموهبة والمسابقات الأكاديمية": "Prepared and supervised by: Moustafa Ahmed Hussien — Executive Coordinator of Talent Programs and Academic Competitions",
+    "إعداد وإشراف: مصطفى أحمد حسين — المنسق التنفيذي للنموذج التام لتطوير الموهبة والمسابقات الأكاديمية": "Prepared and supervised by: Moustafa Ahmed Hussien — Executive Coordinator of the Total Giftedness Development Model and Academic Competitions",
     "المستخدم الحالي": "Current user",
     "القائمة": "Menu",
     "شعار مدارس دار الذكر": "Dar Al-Thikr Schools logo",

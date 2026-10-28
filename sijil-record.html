@@ -98,7 +98,7 @@ function render() {
     </div>
     <div class="instr">${esc(def.intro)}</div>
     <div class="loadbar no-print">
-      ${needKey ? `<label class="field">مفتاح المشرف<input id="akey" type="password" value="${esc(LS.get('tf_admin', ''))}" placeholder="لجلب بيانات الطالب المحفوظة"></label>` : ''}
+      ${needKey ? ADMIN.fields('لجلب بيانات الطالب المحفوظة') : ''}
       <button class="btn teal" id="load">${def.id === 'indicators' ? 'جلب خطة الطالب' : def.id === 'status' ? 'جلب نتائج الطالب وتعبئة النموذج' : 'فتح السجل المحفوظ للطالب'}</button>
       <span class="note" id="loadMsg"></span>
     </div>
@@ -184,9 +184,9 @@ function flatOf(d) {
 function studentKey() { return normKey($('#sid').value) || normKey($('#sname').value); }
 async function fetchStudent() {
   const s = studentKey(); if (!s) { toast('اكتب اسم الطالب أو رقمه أولاً', 'err'); return null; }
-  const key = $('#akey') ? $('#akey').value.trim() : '';
-  if (!isDemo() && !key) { toast('اكتب مفتاح المشرف', 'err'); return null; }
-  if (key) LS.set('tf_admin', key);
+  const key = isDemo() ? '' : ADMIN.read();
+  if (!isDemo() && !key) return null;
+  ADMIN.save(key);
   $('#loadMsg').textContent = 'جارٍ الجلب…';
   try {
     let d = await API.student(key, s);
