@@ -40,6 +40,11 @@ html[dir=rtl] .sumc{padding:6px 12px 6px 8px}
 .pform .grid4 .wide{grid-column:1/-1}
 .pform textarea{min-height:150px;line-height:1.9}
 .pform .acts{margin-top:14px;align-items:center}
+td.ck,th.ck{width:34px;text-align:center}
+td.ck input,th.ck input{width:18px;height:18px;accent-color:#E2386F;cursor:pointer}
+.selbar{position:sticky;top:76px;z-index:5;display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:8px 12px;margin:0 0 12px;border-radius:12px;background:#FFF3F6;border:1px solid rgba(226,56,111,.3)}
+.selbar[hidden]{display:none}
+.selbar .btn{margin:0;padding:6px 12px;font-size:.85rem}
 .pdel{padding:14px 16px;margin-bottom:16px;border:2px solid rgba(226,56,111,.35)}
 .pdel .acts{align-items:end;margin-top:10px}
 .field input,.field select,.field textarea{font:inherit}
@@ -52,7 +57,7 @@ td.cls{color:var(--muted);font-family:'Sora',sans-serif;font-weight:600}
 .addbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .addbar .btn{margin:0}
 @media(max-width:640px){.summary .srow{grid-template-columns:1fr}}
-@media print{.privacy,.pform,.pdel,.rowacts,th.ra,td.ra{display:none!important}.panel{break-inside:auto}}
+@media print{.privacy,.pform,.pdel,.rowacts,th.ra,td.ra,th.ck,td.ck,.selbar{display:none!important}.panel{break-inside:auto}}
 </style>
 </head>
 <body class="sj">
@@ -115,6 +120,8 @@ const stageIx = s => Math.max(0, STAGES.indexOf(String(s || '').trim()));
 const gradeRank = g => gradeOrder(g);
 const collator = new Intl.Collator('ar');
 
+const SEL = new Set();   // مفاتيح الأسطر المحددة للحذف: المسابقة|العام|الاسم
+const rk = r => [r.comp, r.year, normKey(r.name)].join('|');
 let ROWS = [], COMP = '', F = { year: '', stage: '', level: '', school: '', grade: '', subject: '', q: '' };
 
 async function load() {
@@ -127,7 +134,7 @@ async function load() {
     }
     $('#gate').hidden = true;
     $('#up').hidden = false; $('#addBar').hidden = false;
-    ROWS = d.rows || [];
+    ROWS = d.rows || []; SEL.clear();
     if (!ROWS.length) {
       $('#app').innerHTML = `<div class="panel glass empty">لا توجد أسماء بعد — ارفع ملفات التسجيل أو أضف الطلاب يدوياً من الأعلى.</div>`;
       return;
@@ -193,8 +200,8 @@ function render() {
     return `<section class="panel glass">
       <div class="sch"><h3>${esc(sc || 'مدرسة غير محددة')}</h3><span class="cnt">${rs.length} طالباً</span></div>
       <div class="gradebar">${Object.keys(gc).sort((a, b) => gradeRank(a) - gradeRank(b)).map(g => `<span class="chip">${esc(g)}: ${gc[g]}</span>`).join('')}</div>
-      <div class="tbl"><table><thead><tr><th>م</th><th>اسم الطالب</th><th>الصف</th>${hasCls ? '<th>الفصل</th>' : ''}${hasSubj ? '<th>التخصص / المادة</th>' : ''}<th>المرحلة في المسابقة</th><th>تاريخ التسجيل</th><th>ملاحظة</th><th class="ra"></th></tr></thead><tbody>
-      ${rs.map((r, i) => `<tr><td class="n">${i + 1}</td><td class="nm">${esc(r.name)}</td><td>${esc(r.grade)}</td>${hasCls ? `<td class="cls nt">${esc(r.cls || '')}</td>` : ''}${hasSubj ? `<td>${r.subject ? `<span class="subj">${esc(r.subject)}</span>` : ''}</td>` : ''}<td><span class="stg s${stageIx(r.stage)}">${esc(r.stage || 'مسجّل')}</span></td><td>${esc(r.date || '—')}</td><td><span class="nt">${esc(r.note || '')}</span></td>
+      <div class="tbl"><table><thead><tr><th class="ck"><input type="checkbox" data-selall="${esc(rs.map(rk).join('\n'))}" title="تحديد كل طلاب هذه المدرسة"></th><th>م</th><th>اسم الطالب</th><th>الصف</th>${hasCls ? '<th>الفصل</th>' : ''}${hasSubj ? '<th>التخصص / المادة</th>' : ''}<th>المرحلة في المسابقة</th><th>تاريخ التسجيل</th><th>ملاحظة</th><th class="ra"></th></tr></thead><tbody>
+      ${rs.map((r, i) => `<tr><td class="ck"><input type="checkbox" data-sel="${esc(rk(r))}"${SEL.has(rk(r)) ? ' checked' : ''}></td><td class="n">${i + 1}</td><td class="nm">${esc(r.name)}</td><td>${esc(r.grade)}</td>${hasCls ? `<td class="cls nt">${esc(r.cls || '')}</td>` : ''}${hasSubj ? `<td>${r.subject ? `<span class="subj">${esc(r.subject)}</span>` : ''}</td>` : ''}<td><span class="stg s${stageIx(r.stage)}">${esc(r.stage || 'مسجّل')}</span></td><td>${esc(r.date || '—')}</td><td><span class="nt">${esc(r.note || '')}</span></td>
         <td class="ra"><div class="rowacts"><button type="button" class="btn ghost" data-ed="${ROWS.indexOf(r)}">تعديل</button><button type="button" class="btn ghost" data-del="${ROWS.indexOf(r)}">حذف</button></div></td></tr>`).join('')}
       </tbody></table></div></section>`;
   }).join('');
@@ -223,8 +230,10 @@ function render() {
       <label class="field">الصف<select data-f="grade">${opt('', F.grade, 'كل الصفوف')}${grades.map(g => opt(g, F.grade)).join('')}</select></label>
       ${hasSubj ? `<label class="field">التخصص / المادة<select data-f="subject">${opt('', F.subject, 'كل التخصصات')}${subjects.map(x => opt(x, F.subject)).join('')}</select></label>` : ''}
       <label class="field">بحث بالاسم<input data-f="q" value="${esc(F.q)}" placeholder="اكتب جزءاً من الاسم"></label>
-      <div class="acts"><button class="btn ghost" type="button" id="csv">تنزيل Excel</button><button class="btn ghost" type="button" onclick="print()">طباعة</button></div>
+      <div class="acts"><button class="btn ghost" type="button" id="selAll">تحديد الكل (${list.length})</button><button class="btn ghost" type="button" id="csv">تنزيل Excel</button><button class="btn ghost" type="button" onclick="print()">طباعة</button></div>
     </div>
+    <div class="selbar no-print" id="selBar" hidden><span>المحدد: <b id="selN">0</b></span>
+      <button type="button" class="btn red" id="selDel">حذف المحدد</button><button type="button" class="btn ghost" id="selClear">إلغاء التحديد</button></div>
     <p class="note">يظهر ${list.length} من ${inComp.length} طالباً في «${esc(COMP_NAMES[COMP] || COMP)}»${F.year ? ' — <bdi dir="ltr">' + esc(F.year) + '</bdi>' : ''}.</p>
     ${blocks || '<div class="panel glass empty">لا توجد أسماء تطابق التصفية.</div>'}`;
 
@@ -236,6 +245,18 @@ function render() {
   const qi = $('input[data-f="q"]');
   qi.oninput = () => { F.q = qi.value; clearTimeout(qi._t); qi._t = setTimeout(() => { render(); const n = $('input[data-f="q"]'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }, 250); };
   $('#csv').onclick = () => downloadCsv(list);
+  /* تحديد عدة طلاب ثم حذفهم */
+  const upd = () => {
+    $('#selBar').hidden = !SEL.size; $('#selN').textContent = SEL.size;
+    $$('[data-sel]').forEach(i => i.checked = SEL.has(i.dataset.sel));
+    $$('[data-selall]').forEach(i => { const k = i.dataset.selall.split('\n'); i.checked = k.every(x => SEL.has(x)); i.indeterminate = !i.checked && k.some(x => SEL.has(x)); });
+  };
+  $$('[data-sel]').forEach(i => i.onchange = () => { i.checked ? SEL.add(i.dataset.sel) : SEL.delete(i.dataset.sel); upd(); });
+  $$('[data-selall]').forEach(i => i.onchange = () => { i.dataset.selall.split('\n').forEach(k => i.checked ? SEL.add(k) : SEL.delete(k)); upd(); });
+  $('#selAll').onclick = () => { list.forEach(r => SEL.add(rk(r))); upd(); };
+  $('#selClear').onclick = () => { SEL.clear(); upd(); };
+  $('#selDel').onclick = () => { const rows = ROWS.filter(r => SEL.has(rk(r))); if (rows.length) openDel(rows); };
+  if (!$('#selBar').hidden || SEL.size) upd();
 }
 
 /* تنزيل القائمة الظاهرة كملف يفتحه Excel بالعربية */
@@ -383,9 +404,12 @@ async function saveForm() {
     if (e.auth) showGate(); b.disabled = false; b.textContent = 'حفظ';
   }
 }
-function openDel(row) {
+function openDel(rowOrRows) {
   FORM = null;
-  $('#formBox').innerHTML = `<section class="pdel glass no-print"><b><span>حذف</span> «<span class="nt">${esc(row.name)}</span>» <span>من قائمة</span> «${esc(COMP_NAMES[row.comp] || row.comp)}»<span>؟</span></b>
+  const rows = Array.isArray(rowOrRows) ? rowOrRows : [rowOrRows], row = rows[0];
+  $('#formBox').innerHTML = `<section class="pdel glass no-print"><b>${rows.length === 1 ? `<span>حذف</span> «<span class="nt">${esc(row.name)}</span>» <span>من قائمة</span> «${esc(COMP_NAMES[row.comp] || row.comp)}»<span>؟</span>`
+      : `<span>حذف</span> ${rows.length} <span>طالب من قائمة</span> «${esc(COMP_NAMES[row.comp] || row.comp)}»<span>؟</span>`}</b>
+    ${rows.length > 1 ? `<details><summary class="sub" style="cursor:pointer">عرض الأسماء</summary><p class="sub">${rows.map(r => `<span class="nt">${esc(r.name)}</span>`).join('، ')}</p></details>` : ''}
     <div class="acts">${isDemo() ? '' : `<label class="field">مفتاح المشرف<input type="password" id="delKey" value="${esc(LS.get('tf_admin', ''))}"></label>`}
       <button type="button" class="btn red" id="delGo">حذف نهائي</button><button type="button" class="btn ghost" id="delNo">إلغاء</button></div>
     <p class="sub" style="margin-top:6px">الحذف متاح للمشرف فقط. لتصحيح اسم أو صف استخدم «تعديل» بدلاً من الحذف.</p></section>`;
@@ -395,10 +419,11 @@ function openDel(row) {
     const key = $('#delKey') ? $('#delKey').value.trim() : '';
     if (!isDemo() && !key) { toast('اكتب مفتاح المشرف', 'err'); return; }
     try {
-      await API.deleteParticipants([{ comp: row.comp, year: row.year, name: row.name }], key);
+      $('#delGo').disabled = true;
+      await API.deleteParticipants(rows.map(r => ({ comp: r.comp, year: r.year, name: r.name })), key);
       if (key) LS.set('tf_admin', key);
-      $('#formBox').innerHTML = ''; toast('تم الحذف'); load();
-    } catch (e) { toast(e.message, 'err'); }
+      $('#formBox').innerHTML = ''; toast(rows.length > 1 ? `تم حذف ${rows.length} طالب` : 'تم الحذف'); load();
+    } catch (e) { toast(e.message, 'err'); if ($('#delGo')) $('#delGo').disabled = false; }
   };
 }
 $('#addOne').onclick = () => openForm('one');

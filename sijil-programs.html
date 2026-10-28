@@ -69,6 +69,15 @@ tr.today td{background:rgba(232,165,10,.1)}
 .exec-pick input:focus-visible+span{outline:3px solid rgba(14,159,118,.4)}
 .field textarea{min-height:76px;resize:vertical}
 i.ck{font-style:normal}
+td.ck,th.ck{width:34px;text-align:center}
+td.ck input,th.ck input{width:18px;height:18px;accent-color:var(--c);cursor:pointer}
+.selbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:8px 12px;margin:0 0 10px;border-radius:12px;background:color-mix(in srgb,var(--c) 10%,#fff);border:1px solid color-mix(in srgb,var(--c) 30%,#fff)}
+.selbar[hidden]{display:none}
+.selbar b{font-family:'Sora',sans-serif}
+.selbar .btn{margin:0;padding:6px 12px;font-size:.85rem}
+.pick-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin:6px 0}
+.pick-bar .field{flex:0 1 220px}
+.pick-n{font-weight:700;color:var(--ink2)}
 .upd{padding:12px 16px;margin-bottom:16px;border-radius:16px;background:rgba(232,165,10,.12);border:1px solid rgba(232,165,10,.4);color:#6B4A00;font-size:.92rem;line-height:1.8}
 @media print{.privacy,.form,.att,.del,.prog-pick,.hint{display:none!important}}
 </style>
@@ -111,7 +120,7 @@ const TARGETS = ['جميع الطلاب', 'المرحلة الابتدائية',
 let P = getProgram(new URLSearchParams(location.search).get('p')) || getProgram(LS.get('tf_prog', '')) || getProgram('mentorship');
 let DB = { staff: [], people: [], sessions: [], plan: [] }, TAB = 'people', YEAR = hijriYearNow(), OLD_SCRIPT = false;
 const NEED_VER = 3;   // يطابق SCRIPT_VER في tools/sijil-script.gs
-let EDIT = null, ATT = null, DEL = null, BULK = false, IMP = false, PG = '', UP = null, Q = { q: '', lead: '', status: '' }, KNOWN = [];
+let EDIT = null, ATT = null, DEL = null, BULK = false, IMP = false, PG = '', UP = null, SEL = new Set(), Q = { q: '', lead: '', status: '' }, KNOWN = [];
 
 const split = s => String(s || '').split(/[،,\n]+/).map(x => normKey(x)).filter(Boolean);
 const join = a => a.join('، ');
@@ -303,9 +312,20 @@ function render() {
   h += UP ? upHtml() : '';
   h += TAB === 'people' ? peopleHtml() : TAB === 'staff' ? staffHtml() : TAB === 'plan' ? planHtml() : sessionsHtml();
   $('#app').innerHTML = h;
-  $('#yearSel').onchange = e => { YEAR = e.target.value; EDIT = ATT = DEL = null; BULK = IMP = false; render(); };
+  $('#yearSel').onchange = e => { YEAR = e.target.value; SEL.clear(); EDIT = ATT = DEL = null; BULK = IMP = false; render(); };
   if ($('#pgSel')) $('#pgSel').onchange = e => { PG = e.target.value; render(); };
   if (IMP) impPreview();
+}
+
+/* ---------- تحديد عدة أسطر ثم حذفها ---------- */
+const ckTh = ids => `<th class="ck no-print"><input type="checkbox" data-selall="${esc(ids.join(','))}" title="تحديد الكل"${ids.length && ids.every(id => SEL.has(id)) ? ' checked' : ''}></th>`;
+const ckTd = id => `<td class="ck no-print"><input type="checkbox" data-sel="${esc(id)}"${SEL.has(id) ? ' checked' : ''}></td>`;
+const selBar = table => `<div class="selbar no-print" id="selBar" data-table="${table}"${SEL.size ? '' : ' hidden'}><span><span>المحدد:</span> <b id="selN">${SEL.size}</b></span>
+  <button type="button" class="btn" id="selDel" style="background:linear-gradient(135deg,#E2386F,#B4234F)">حذف المحدد</button><button type="button" class="btn ghost" id="selClear">إلغاء التحديد</button></div>`;
+function updSel() {
+  const bar = $('#selBar'); if (bar) { bar.hidden = !SEL.size; $('#selN').textContent = SEL.size; }
+  $$('[data-sel]').forEach(i => i.checked = SEL.has(i.dataset.sel));
+  $$('[data-selall]').forEach(i => { const ids = i.dataset.selall.split(',').filter(Boolean); i.checked = ids.length > 0 && ids.every(id => SEL.has(id)); i.indeterminate = !i.checked && ids.some(id => SEL.has(id)); });
 }
 
 function toolsHtml(table, extra) {
@@ -330,10 +350,10 @@ function peopleHtml() {
   const xs = [P.x1, P.x2].filter(Boolean);
   return toolsHtml('people', statusSel(PERSON_STATUS)) + `<section class="panel glass">
     <h3>${esc(P.people)}</h3><p class="sub"><span>${list.length}</span> · <span>بدون ${esc(P.lead)}:</span> <span>${noLead}</span></p>
-    ${list.length ? `<div class="tbl"><table><thead><tr><th>#</th><th>الاسم</th><th>الصف / الفصل</th><th>${esc(P.pField)}</th><th>${esc(P.lead)}</th>${xs.map(x => `<th>${esc(x.l)}</th>`).join('')}<th>الحضور</th><th>الحالة</th><th class="no-print"></th></tr></thead><tbody>
+    ${list.length ? `${selBar('people')}<div class="tbl"><table><thead><tr>${ckTh(list.map(r => r.id))}<th>#</th><th>الاسم</th><th>الصف / الفصل</th><th>${esc(P.pField)}</th><th>${esc(P.lead)}</th>${xs.map(x => `<th>${esc(x.l)}</th>`).join('')}<th>الحضور</th><th>الحالة</th><th class="no-print"></th></tr></thead><tbody>
     ${list.map((r, i) => { const ss = sessionsOf(r.name).filter(s => s.status === 'منفذة'), at = ss.filter(s => split(s.attended).includes(normKey(r.name))).length;
       const isStudent = !P.x1 || P.x1.l !== 'الفئة' || !r.x1 || r.x1 === 'طالب';
-      return `<tr><td>${i + 1}</td><td class="bold">${D(r.name)}${r.joined ? `<span class="sm">انضم: ${esc(fmtDay(r.joined))}</span>` : ''}</td><td>${r.grade ? esc(r.grade) : '—'} ${D(r.cls).replace('—', '')}</td><td>${D(r.field)}</td>
+      return `<tr>${ckTd(r.id)}<td>${i + 1}</td><td class="bold">${D(r.name)}${r.joined ? `<span class="sm">انضم: ${esc(fmtDay(r.joined))}</span>` : ''}</td><td>${r.grade ? esc(r.grade) : '—'} ${D(r.cls).replace('—', '')}</td><td>${D(r.field)}</td>
         <td>${r.lead || !P.staffGrade ? D(r.lead) : (leadsOf(r).length ? `${leadsOf(r).map(n => D(n)).join('، ')}<span class="sm">حسب الصف</span>` : '—')}</td>${xs.map((x, j) => `<td>${x.type === 'select' ? (r['x' + (j + 1)] ? esc(r['x' + (j + 1)]) : '—') : D(r['x' + (j + 1)])}</td>`).join('')}<td>${ss.length ? `${at} / ${ss.length}` : '—'}</td><td>${stBadge(r.status || 'نشط')}</td>
         <td class="no-print"><div class="rowacts"><button type="button" class="btn ghost" data-edit="people" data-id="${r.id}">تعديل</button>
           ${isStudent ? `<a class="btn ghost" href="sijil-record.html?f=plan&s=${encodeURIComponent(r.sid || r.name)}">خطة التطوير</a>` : ''}
@@ -345,9 +365,9 @@ function staffHtml() {
   const list = mine(DB.staff).filter(r => match(r, ['name', 'spec', 'field', 'role', 'grade'])).sort((a, b) => a.name.localeCompare(b.name, 'ar'));
   return toolsHtml('staff') + `<section class="panel glass">
     <h3>${esc(P.staff)}</h3><p class="sub">${list.length}</p>
-    ${list.length ? `<div class="tbl"><table><thead><tr><th>#</th><th>الاسم</th><th>الدور</th><th>التخصص</th><th>${P.staffGrade ? esc(P.pField) : 'المجال'}</th>${P.staffGrade ? '<th>الصف الدراسي</th>' : ''}<th>التواصل</th><th>${esc(P.people)}</th><th>${esc(P.sessions)}</th><th class="no-print"></th></tr></thead><tbody>
+    ${list.length ? `${selBar('staff')}<div class="tbl"><table><thead><tr>${ckTh(list.map(r => r.id))}<th>#</th><th>الاسم</th><th>الدور</th><th>التخصص</th><th>${P.staffGrade ? esc(P.pField) : 'المجال'}</th>${P.staffGrade ? '<th>الصف الدراسي</th>' : ''}<th>التواصل</th><th>${esc(P.people)}</th><th>${esc(P.sessions)}</th><th class="no-print"></th></tr></thead><tbody>
     ${list.map((r, i) => { const ns = mine(DB.people).filter(s => isMine(s, r.name) && s.status !== 'متوقف').length, se = mine(DB.sessions).filter(s => s.lead === r.name && s.status !== 'ملغاة');
-      return `<tr><td>${i + 1}</td><td class="bold">${D(r.name)}</td><td>${D(r.role)}</td><td>${D(r.spec)}</td><td>${D(r.field)}</td>${P.staffGrade ? `<td>${staffGrades(r).length ? staffGrades(r).map(g => `<span class="chip">${esc(g)}</span>`).join('') : '—'}</td>` : ''}
+      return `<tr>${ckTd(r.id)}<td>${i + 1}</td><td class="bold">${D(r.name)}</td><td>${D(r.role)}</td><td>${D(r.spec)}</td><td>${D(r.field)}</td>${P.staffGrade ? `<td>${staffGrades(r).length ? staffGrades(r).map(g => `<span class="chip">${esc(g)}</span>`).join('') : '—'}</td>` : ''}
         <td><bdi class="nt">${esc(r.phone || '')}</bdi>${r.email ? `<span class="sm nt">${esc(r.email)}</span>` : ''}${!r.phone && !r.email ? '—' : ''}</td><td>${ns}</td><td>${se.filter(s => s.status === 'منفذة').length} / ${se.length}</td>
         <td class="no-print"><div class="rowacts"><button type="button" class="btn ghost" data-edit="staff" data-id="${r.id}">تعديل</button><button type="button" class="btn ghost" data-del="staff" data-id="${r.id}">حذف</button></div></td></tr>`; }).join('')}
     </tbody></table></div>` : emptyMsg()}</section>`;
@@ -359,10 +379,10 @@ function sessionsHtml() {
   const up = list.filter(r => r.date >= t && r.status !== 'منفذة').sort((a, b) => (a.date + a.from).localeCompare(b.date + b.from));
   const past = list.filter(r => !(r.date >= t && r.status !== 'منفذة')).sort((a, b) => (b.date + b.from).localeCompare(a.date + a.from));
   const places = {}; mine(DB.sessions).forEach(s => { if (s.place && s.status !== 'ملغاة') places[s.place] = (places[s.place] || 0) + 1; });
-  const table = rows => `<div class="tbl"><table><thead><tr><th>التاريخ</th><th>الوقت</th><th>العنوان</th><th>${esc(P.lead)}</th><th>المكان</th><th>المشاركون</th><th>الحضور</th><th>الحالة</th><th class="no-print"></th></tr></thead><tbody>
+  const table = rows => `<div class="tbl"><table><thead><tr>${ckTh(rows.map(r => r.id))}<th>التاريخ</th><th>الوقت</th><th>العنوان</th><th>${esc(P.lead)}</th><th>المكان</th><th>المشاركون</th><th>الحضور</th><th>الحالة</th><th class="no-print"></th></tr></thead><tbody>
     ${rows.map(r => { const n = split(r.students).length, a = split(r.attended).length, c = parseInt(r.count, 10) || 0;
       const sub = [r.field, r.target, r.means].filter(Boolean), pl = P.plan ? planOf(r) : null, tt = r.title || r._t, gr = P.plan ? gradeOf(r) : '';
-      return `<tr class="${r.date < t ? 'past' : r.date === t ? 'today' : ''}"><td class="bold">${esc(fmtDay(r.date))}<span class="sm">${esc(dayName(r.date))}</span></td>
+      return `<tr class="${r.date < t ? 'past' : r.date === t ? 'today' : ''}">${ckTd(r.id)}<td class="bold">${esc(fmtDay(r.date))}<span class="sm">${esc(dayName(r.date))}</span></td>
         <td><bdi>${esc([r.from, r.to].filter(Boolean).join(' – ') || '—')}</bdi></td><td>${pl ? `<span class="wk-num" title="الأسبوع">${esc(pl.week || '·')}</span> ` : ''}<b>${tt ? D(tt) : (P.plan ? '<span class="sm">لا يوجد موضوع لهذا الأسبوع في توزيع الحصص</span>' : '—')}</b>${gr ? ` <span class="chip">${esc(gr)}</span>` : ''}${sub.length ? `<span class="sm">${sub.map(x => D(x)).join(' · ')}</span>` : ''}${r.execNote ? `<span class="exnote nt">${esc(r.execNote)}</span>` : ''}</td>
         <td>${D(r.lead)}</td><td>${D(r.place)}</td><td>${n || '—'}</td><td>${r.status === 'منفذة' ? (n ? `${a} / ${n}` : (c || '—')) : '—'}</td><td>${stBadge(r.status || 'مجدولة')}${P.plan && r.status === 'منفذة' ? '<br>' + (exBadge(r.exec) || '<span class="ex wait">لم يُحدَّد التنفيذ</span>') : ''}</td>
         <td class="no-print"><div class="rowacts"><button type="button" class="btn ghost" data-att="${r.id}">${P.plan ? 'تسجيل الحصة' : 'الحضور'}</button><button type="button" class="btn ghost" data-edit="sessions" data-id="${r.id}">تعديل</button><button type="button" class="btn ghost" data-del="sessions" data-id="${r.id}">حذف</button></div></td></tr>`; }).join('')}
@@ -370,7 +390,7 @@ function sessionsHtml() {
   return toolsHtml('sessions', statusSel(SESSION_STATUS)) + `<section class="panel glass">
     <h3>${esc(P.sessions)}</h3><p class="sub">${list.length}${Object.keys(places).length ? ' · <span>أماكن التدريب:</span>' : ''}</p>
     ${Object.keys(places).length ? `<div class="places">${Object.entries(places).sort((a, b) => b[1] - a[1]).map(([p, n]) => `<span class="chip"><span class="nt">${esc(p)}</span> · ${n}</span>`).join('')}</div>` : ''}
-    ${list.length ? `${up.length ? `<h4 class="grp-h"><span>القادمة</span> <bdi>(${up.length})</bdi></h4>${table(up)}` : ''}${past.length ? `<h4 class="grp-h"><span>السابقة</span> <bdi>(${past.length})</bdi></h4>${table(past)}` : ''}` : emptyMsg()}</section>`;
+    ${list.length ? `${selBar('sessions')}${up.length ? `<h4 class="grp-h"><span>القادمة</span> <bdi>(${up.length})</bdi></h4>${table(up)}` : ''}${past.length ? `<h4 class="grp-h"><span>السابقة</span> <bdi>(${past.length})</bdi></h4>${table(past)}` : ''}` : emptyMsg()}</section>`;
 }
 
 /* ---------- توزيع الحصص ---------- */
@@ -391,13 +411,13 @@ function planHtml() {
   const gSel = grades.length ? `<label class="field">الصف<select id="pgSel"><option value="">كل الصفوف</option>${grades.map(g => `<option${g === PG ? ' selected' : ''}>${esc(g)}</option>`).join('')}</select></label>` : '';
   return toolsHtml('plan', gSel) + `<section class="panel glass">
     <h3>توزيع الحصص</h3><p class="sub"><span>موضوع كل أسبوع يظهر تلقائياً في كل حصة يقع تاريخها داخل الأسبوع.</span> · <span>الأسابيع:</span> ${list.length}</p>
-    ${list.length ? `<div class="tbl"><table><thead><tr><th>الحصة</th><th>التاريخ</th>${grades.length ? '<th>الصف</th>' : ''}<th>عنوان الحصة</th><th>المجال</th><th>الحصص</th><th>التنفيذ</th><th>الحضور</th><th>ملاحظات المعلمين</th><th class="no-print"></th></tr></thead><tbody>
+    ${list.length ? `${selBar('plan')}<div class="tbl"><table><thead><tr>${ckTh(list.map(r => r.id))}<th>الحصة</th><th>التاريخ</th>${grades.length ? '<th>الصف</th>' : ''}<th>عنوان الحصة</th><th>المجال</th><th>الحصص</th><th>التنفيذ</th><th>الحضور</th><th>ملاحظات المعلمين</th><th class="no-print"></th></tr></thead><tbody>
     ${list.map(p => {
       const ss = sessionsOfPlan(p), rec = ss.filter(s => s.status === 'منفذة'), yes = rec.filter(s => s.exec === 'نعم').length, no = rec.filter(s => s.exec === 'لا').length;
       let seats = 0, at = 0; rec.forEach(s => { seats += split(s.students).length; at += split(s.attended).length; });
       const notes = rec.filter(s => s.execNote).map(s => `<span class="exnote"><b>${esc(fmtDay(s.date))}</b>${s.lead ? ' · ' + D(s.lead) : ''}: <span class="nt">${esc(s.execNote)}</span></span>`).join('');
       const cur = t >= p.start && t <= planEnd(p);
-      return `<tr class="${cur ? 'today' : planEnd(p) < t ? 'past' : ''}"><td><span class="wk-num">${esc(p.week || '·')}</span></td>
+      return `<tr class="${cur ? 'today' : planEnd(p) < t ? 'past' : ''}">${ckTd(p.id)}<td><span class="wk-num">${esc(p.week || '·')}</span></td>
         <td class="bold">${esc(fmtDay(p.start))}<span class="sm">${esc(fmtDay(planEnd(p)))}</span></td>
         ${grades.length ? `<td>${p.grade ? esc(p.grade) : '<span class="sm">كل الصفوف</span>'}</td>` : ''}
         <td><b>${D(p.title)}</b>${p.goals ? `<span class="exnote nt">${esc(p.goals)}</span>` : ''}${p.note ? `<span class="sm nt">${esc(p.note)}</span>` : ''}</td>
@@ -608,10 +628,15 @@ function fieldHtml(f, v) {
   }
   if (f.type === 'lead') return `<label class="field">${esc(f.l)}<select data-k="${f.k}"><option value="">— بدون —</option>${mine(DB.staff).map(m => `<option${m.name === v ? ' selected' : ''}>${esc(m.name)}</option>`).join('')}${v && !mine(DB.staff).some(m => m.name === v) ? `<option selected>${esc(v)}</option>` : ''}</select></label>`;
   if (f.type === 'students') {
-    const chosen = split(v), active = mine(DB.people).filter(s => s.status !== 'متوقف' || chosen.includes(s.name));
+    const chosen = split(v), active = mine(DB.people).filter(s => s.status !== 'متوقف' || chosen.includes(s.name))
+      .sort((a, b) => gradeOrder(a.grade) - gradeOrder(b.grade) || a.name.localeCompare(b.name, 'ar'));
+    const grades = sortGrades([...new Set(active.map(s => s.grade).filter(Boolean))]);
     return `<div class="stud-pick"><div class="field">المشاركون في الجلسة</div>
-      ${active.length ? `<div class="quick"><button type="button" class="btn ghost small" data-pick="all">كل المشاركين النشطين</button><button type="button" class="btn ghost small" data-pick="lead">مشاركو المنفّذ المختار</button><button type="button" class="btn ghost small" data-pick="none">إلغاء التحديد</button></div>
-      <div class="checks" id="studChecks">${active.map(s => `<label><input type="checkbox" value="${esc(s.name)}"${chosen.includes(s.name) ? ' checked' : ''}><span class="nt">${esc(s.name)}</span></label>`).join('')}</div>`
+      ${active.length ? `<div class="pick-bar">
+        ${grades.length > 1 ? `<label class="field">عرض طلاب الصف<select id="pickGrade"><option value="">كل الصفوف</option>${grades.map(g => `<option>${esc(g)}</option>`).join('')}</select></label>` : ''}
+        <button type="button" class="btn ghost small" data-pick="lead">طلاب المنفّذ المختار</button><button type="button" class="btn ghost small" data-pick="all">كل الظاهرين</button><button type="button" class="btn ghost small" data-pick="none">إلغاء التحديد</button>
+        <span class="pick-n"><span>المحدد:</span> <b id="pickN">${chosen.length}</b></span></div>
+      <div class="checks" id="studChecks">${active.map(s => `<label data-g="${esc(s.grade || '')}"><input type="checkbox" value="${esc(s.name)}"${chosen.includes(s.name) ? ' checked' : ''}><span class="nt">${esc(s.name)}</span></label>`).join('')}</div>`
       : `<p class="sub">لم يُضف مشاركون بعد؛ يمكنك الاكتفاء بعدد الحضور.</p>`}</div>`;
   }
   if (f.type === 'grades') {
@@ -714,21 +739,28 @@ async function saveAtt() {
 }
 
 /* ---------- الحذف (مفتاح المشرف) ---------- */
+const rowLabel = (table, row) => table === 'sessions' ? `${titleOf(row) || '—'} — ${fmtDay(row.date)}` : table === 'plan' ? `${row.grade ? row.grade + ' · ' : ''}الحصة ${row.week || ''}: ${row.title}` : row.name;
 function delHtml() {
-  const { table, row } = DEL, label = table === 'sessions' ? `${titleOf(row)} — ${fmtDay(row.date)}` : table === 'plan' ? `${row.grade ? row.grade + ' · ' : ''}الحصة ${row.week || ''}: ${row.title}` : row.name;
-  return `<section class="del glass no-print"><b><span>حذف</span> «${D(label)}»<span>؟</span></b>
+  const { table } = DEL, rows = DEL.rows || [DEL.row];
+  const one = table === 'people' ? P.personOne : table === 'staff' ? P.staffOne : table === 'plan' ? 'حصة من التوزيع' : P.sessionOne;
+  const head = rows.length === 1 ? `<span>حذف</span> «${D(rowLabel(table, rows[0]))}»<span>؟</span>`
+    : `<span>حذف</span> ${rows.length} <span>سطر</span> (${esc(one)})<span>؟</span>`;
+  return `<section class="del glass no-print"><b>${head}</b>
+    ${rows.length > 1 ? `<details><summary class="sub" style="cursor:pointer">عرض المحدد</summary><p class="sub">${rows.map(r => D(rowLabel(table, r))).join('، ')}</p></details>` : ''}
     <div class="acts">${isDemo() ? '' : `<label class="field">مفتاح المشرف<input type="password" id="delKey" value="${esc(LS.get('tf_admin', ''))}"></label>`}
       <button type="button" class="btn" id="delGo" style="background:linear-gradient(135deg,#E2386F,#B4234F)">حذف نهائي</button><button type="button" class="btn ghost" data-cancel="1">إلغاء</button></div>
     <p class="sub" style="margin-top:6px">الحذف متاح للمشرف فقط. لإيقاف مشارك دون حذفه غيّر حالته إلى «متوقف».</p></section>`;
 }
 async function doDelete() {
-  const { table, row } = DEL, key = $('#delKey') ? $('#delKey').value.trim() : '';
+  const { table } = DEL, rows = DEL.rows || [DEL.row], ids = rows.map(r => r.id), key = $('#delKey') ? $('#delKey').value.trim() : '';
   if (!isDemo() && !key) { toast('اكتب مفتاح المشرف', 'err'); return; }
+  const b = $('#delGo'); b.disabled = true; b.textContent = 'جارٍ الحذف…';
   try {
-    await API.progDelete(table, [row.id], key);
+    await API.progDelete(table, ids, key);
     if (key) LS.set('tf_admin', key);
-    DB[table] = DB[table].filter(x => x.id !== row.id); DEL = null; toast('تم الحذف'); render();
-  } catch (e) { toast(e.message, 'err'); }
+    DB[table] = DB[table].filter(x => !ids.includes(x.id)); ids.forEach(id => SEL.delete(id)); DEL = null;
+    toast(ids.length > 1 ? `تم حذف ${ids.length} سطر` : 'تم الحذف'); render();
+  } catch (e) { toast(e.message, 'err'); b.disabled = false; b.textContent = 'حذف نهائي'; }
 }
 
 /* ---------- تصدير ---------- */
@@ -744,10 +776,21 @@ function csv(table) {
 }
 
 /* ---------- الأحداث ---------- */
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.dataset && t.dataset.sel != null) { t.checked ? SEL.add(t.dataset.sel) : SEL.delete(t.dataset.sel); updSel(); return; }
+  if (t.dataset && t.dataset.selall != null) { const ids = t.dataset.selall.split(',').filter(Boolean); ids.forEach(id => t.checked ? SEL.add(id) : SEL.delete(id)); updSel(); return; }
+});
 document.addEventListener('click', e => {
   const t = e.target.closest('button,a'); if (!t) return;
-  if (t.dataset.prog) { e.preventDefault(); P = getProgram(t.dataset.prog); LS.set('tf_prog', P.id); history.replaceState(null, '', '?p=' + P.id); EDIT = ATT = DEL = null; BULK = IMP = false; PG = ''; UP = null; Q = { q: '', lead: '', status: '' }; if ($('#gate').hidden) render(); else heroHtml(); return; }
-  if (t.dataset.tab) { TAB = t.dataset.tab; EDIT = ATT = DEL = null; BULK = IMP = false; UP = null; Q = { q: '', lead: '', status: '' }; render(); return; }
+  if (t.id === 'selClear') { SEL.clear(); updSel(); return; }
+  if (t.id === 'selDel') {
+    const table = $('#selBar').dataset.table, rows = DB[table].filter(x => SEL.has(x.id));
+    if (!rows.length) { SEL.clear(); updSel(); return; }
+    DEL = { table, rows }; EDIT = ATT = null; BULK = IMP = false; UP = null; render(); window.scrollTo({ top: $('.del').offsetTop - 100, behavior: 'smooth' }); return;
+  }
+  if (t.dataset.prog) { e.preventDefault(); P = getProgram(t.dataset.prog); LS.set('tf_prog', P.id); history.replaceState(null, '', '?p=' + P.id); SEL.clear(); EDIT = ATT = DEL = null; BULK = IMP = false; PG = ''; UP = null; Q = { q: '', lead: '', status: '' }; if ($('#gate').hidden) render(); else heroHtml(); return; }
+  if (t.dataset.tab) { TAB = t.dataset.tab; SEL.clear(); EDIT = ATT = DEL = null; BULK = IMP = false; UP = null; Q = { q: '', lead: '', status: '' }; render(); return; }
   if (t.dataset.up) { UP = {}; EDIT = ATT = DEL = null; BULK = IMP = false; render(); $('#upBox').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
   if (t.id === 'upSave') return saveUp();
   if (t.dataset.imp) { IMP = true; BULK = false; EDIT = ATT = DEL = null; render(); $('#impBox').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
@@ -759,11 +802,17 @@ document.addEventListener('click', e => {
   if (t.dataset.cancel) { EDIT = ATT = DEL = null; BULK = IMP = false; UP = null; render(); return; }
   if (t.dataset.csv) { csv(t.dataset.csv); return; }
   if (t.dataset.pick) {
-    const ld = ($('#form [data-k="lead"]') || {}).value || '';
+    const ld = ($('#form [data-k="lead"]') || {}).value || '', g = ($('#pickGrade') || {}).value || '';
+    if (t.dataset.pick === 'lead' && !ld) { toast(`اختر «${P.lead}» أولاً`, 'info'); return; }
     const theirs = new Set(mine(DB.people).filter(s => isMine(s, ld)).map(s => s.name));
-    $$('#studChecks input').forEach(i => i.checked = t.dataset.pick === 'all' ? true : t.dataset.pick === 'none' ? false : theirs.has(i.value));
-    if (t.dataset.pick === 'lead' && !ld) toast('اختر المنفّذ أولاً', 'info');
-    return;
+    $$('#studChecks label').forEach(l => {
+      const i = l.querySelector('input'), vis = !g || l.dataset.g === g;
+      if (t.dataset.pick === 'none') i.checked = false;
+      else if (t.dataset.pick === 'all') { if (vis) i.checked = true; }
+      else i.checked = vis && theirs.has(i.value);   // طلاب المنفّذ في الصف المعروض فقط
+    });
+    if (t.dataset.pick === 'lead' && !$$('#studChecks input:checked').length) toast(g ? 'لا يوجد طلاب لهذا المنفّذ في هذا الصف' : 'لا يوجد طلاب مرتبطون بهذا المنفّذ', 'info');
+    pickCount(); return;
   }
   if (t.dataset.attall) { $$('#attChecks input').forEach(i => i.checked = t.dataset.attall === '1'); return; }
   if (t.id === 'save') return saveForm();
@@ -775,6 +824,16 @@ document.addEventListener('click', e => {
 let qT = null;
 document.addEventListener('input', e => { const k = e.target.dataset && e.target.dataset.q; if (!k || e.target.tagName === 'SELECT') return; Q[k] = e.target.value; clearTimeout(qT); qT = setTimeout(() => { const pos = e.target.selectionStart; render(); const el = $(`[data-q="${k}"]`); if (el) { el.focus(); try { el.setSelectionRange(pos, pos); } catch (x) {} } }, 250); });
 document.addEventListener('input', e => { if (e.target.closest && e.target.closest('#impBox')) impPreview(); });
+function pickCount() { const n = $('#pickN'); if (n) n.textContent = $$('#studChecks input:checked').length; }
+document.addEventListener('change', e => {
+  if (e.target.closest && e.target.closest('#studChecks')) return pickCount();
+  if (e.target.id === 'pickGrade') {
+    const g = e.target.value;
+    $$('#studChecks label').forEach(l => l.style.display = !g || l.dataset.g === g ? '' : 'none');
+    const sg = $('#form [data-k="grade"]');   // صف الحصة (الرعاية الخاصة) يتبع الصف المختار إن كان فارغاً
+    if (sg && g && !sg.value && gNum(g)) sg.value = 'الصف ' + gNum(g);
+  }
+});
 document.addEventListener('change', e => { if (e.target.id === 'upFile' && e.target.files[0]) readUp(e.target.files[0]); });
 document.addEventListener('change', e => { if (e.target.closest && e.target.closest('#impBox')) impPreview(); });
 document.addEventListener('change', e => { const k = e.target.dataset && e.target.dataset.q; if (k && e.target.tagName === 'SELECT') { Q[k] = e.target.value; render(); } });

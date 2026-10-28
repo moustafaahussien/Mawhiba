@@ -7,6 +7,15 @@
    ===================================================================== */
 (function () {
   const SJ_EN = {
+    "حذف المحدد": "Delete selected",
+    "المحدد:": "Selected:",
+    "عرض طلاب الصف": "Show students of grade",
+    "طلاب المنفّذ المختار": "Selected teacher’s students",
+    "كل الظاهرين": "All shown",
+    "عرض المحدد": "Show selected",
+    "سطر": "rows",
+    "طالب من قائمة": "students from",
+    "لا يوجد طلاب لهذا المنفّذ في هذا الصف": "This teacher has no students in this grade",
     "(اختر صفاً أو أكثر — يُربط بك طلاب هذه الصفوف تلقائياً)": "(choose one or more — students in these grades are linked automatically)",
     "لحفظ «الصف الدراسي» للمعلمين في الجدول:": "To save teachers’ “Grade” to the sheet:",
     "⇧ رفع من Excel": "⇧ Upload from Excel",
