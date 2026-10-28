@@ -24,8 +24,8 @@ const COMP_STAGES = ['مسجّل', 'متأهل', 'نهائي', 'فائز'];
 /* إدارة برامج النموذج (المكونات 2 – 9): الفريق والمشاركون والجلسات — عمود «البرنامج» يحدد المكوّن */
 const PROG = {
   staff:    { sheet: 'البرامج – الفريق', req: 'name',
-              headers: ['المعرّف', 'البرنامج', 'العام الدراسي', 'الاسم', 'الدور', 'التخصص', 'المجال', 'الجوال', 'البريد الإلكتروني', 'ملاحظة'],
-              keys: ['id', 'prog', 'year', 'name', 'role', 'spec', 'field', 'phone', 'email', 'note'] },
+              headers: ['المعرّف', 'البرنامج', 'العام الدراسي', 'الاسم', 'الدور', 'التخصص', 'المجال', 'الجوال', 'البريد الإلكتروني', 'ملاحظة', 'الصف الدراسي'],
+              keys: ['id', 'prog', 'year', 'name', 'role', 'spec', 'field', 'phone', 'email', 'note', 'grade'] },
   people:   { sheet: 'البرامج – المشاركون', req: 'name',
               headers: ['المعرّف', 'البرنامج', 'العام الدراسي', 'الاسم', 'رقم الطالب', 'الصف', 'الفصل', 'المجال', 'المشرف', 'تاريخ الانضمام', 'الحالة', 'تفصيل 1', 'تفصيل 2', 'ملاحظة'],
               keys: ['id', 'prog', 'year', 'name', 'sid', 'grade', 'cls', 'field', 'lead', 'joined', 'status', 'x1', 'x2', 'note'] },
@@ -38,6 +38,8 @@ const PROG = {
               keys: ['id', 'prog', 'year', 'week', 'start', 'end', 'title', 'field', 'goals', 'note', 'grade'] }
 };
 const EXEC_OPTS = ['نعم', 'لا'];
+/* رقم إصدار السكربت: تقارنه صفحة إدارة البرامج لتنبيهك إن كان المنشور أقدم من الملف */
+const SCRIPT_VER = 3;
 const PROG_IDS = ['general-enrichment', 'skills', 'clusters', 'specialty', 'projects', 'acceleration', 'mentorship', 'support'];
 const PERSON_STATUS = ['نشط', 'متوقف', 'أنهى البرنامج'];
 const SESSION_STATUS = ['مجدولة', 'منفذة', 'مؤجلة', 'ملغاة'];
@@ -111,7 +113,7 @@ function doGet(e) {
     else if (p.mode === 'check') res = codeOk_(p.code) ? { ok: true, admin: p.code === ADMIN_KEY } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
     else if (p.mode === 'students') res = codeOk_(p.code) ? { ok: true, students: readStudents_() } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
     else if (p.mode === 'participants') res = codeOk_(p.code) ? { ok: true, rows: readParticipants_() } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
-    else if (p.mode === 'programs') res = codeOk_(p.code) ? { ok: true, staff: progRead_('staff'), people: progRead_('people'), sessions: progRead_('sessions'), plan: progRead_('plan') } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
+    else if (p.mode === 'programs') res = codeOk_(p.code) ? { ok: true, staff: progRead_('staff'), people: progRead_('people'), sessions: progRead_('sessions'), plan: progRead_('plan'), ver: SCRIPT_VER } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
     else if (p.mode === 'public') res = publicStats_();
     else if (p.mode === 'report') {
       if (p.key !== ADMIN_KEY) res = { ok: false, error: 'مفتاح المشرف غير صحيح' };

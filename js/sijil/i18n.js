@@ -7,6 +7,8 @@
    ===================================================================== */
 (function () {
   const SJ_EN = {
+    "(اختر صفاً أو أكثر — يُربط بك طلاب هذه الصفوف تلقائياً)": "(choose one or more — students in these grades are linked automatically)",
+    "لحفظ «الصف الدراسي» للمعلمين في الجدول:": "To save teachers’ “Grade” to the sheet:",
     "⇧ رفع من Excel": "⇧ Upload from Excel",
     "ملف الطلاب": "Students file",
     "الحالة (موهبة / دروب)": "Status (Mawhiba / Duroob)",

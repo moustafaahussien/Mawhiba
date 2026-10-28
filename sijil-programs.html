@@ -110,6 +110,7 @@ const TARGETS = ['جميع الطلاب', 'المرحلة الابتدائية',
 
 let P = getProgram(new URLSearchParams(location.search).get('p')) || getProgram(LS.get('tf_prog', '')) || getProgram('mentorship');
 let DB = { staff: [], people: [], sessions: [], plan: [] }, TAB = 'people', YEAR = hijriYearNow(), OLD_SCRIPT = false;
+const NEED_VER = 3;   // يطابق SCRIPT_VER في tools/sijil-script.gs
 let EDIT = null, ATT = null, DEL = null, BULK = false, IMP = false, PG = '', UP = null, Q = { q: '', lead: '', status: '' }, KNOWN = [];
 
 const split = s => String(s || '').split(/[،,\n]+/).map(x => normKey(x)).filter(Boolean);
@@ -123,6 +124,16 @@ const fmtDay = iso => { if (!iso) return '—'; try { const d = new Date(iso + '
 const D = v => v ? `<span class="nt">${esc(v)}</span>` : '—';
 const addDays = (iso, n) => { const d = new Date(iso + 'T12:00:00'); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
 const EXEC = ['نعم', 'لا'];
+
+/* ---------- ربط المعلم بطلاب صفه (staffGrade) ---------- */
+const staffGrades = m => split(m.grade);
+/* معلم الطالب: المحدد له، وإلا معلمو صفه (ومادته إن حُدّدت للطرفين) */
+function leadsOf(r) {
+  if (r.lead) return [r.lead];
+  if (!P.staffGrade || !r.grade) return [];
+  return mine(DB.staff).filter(m => staffGrades(m).includes(normKey(r.grade)) && (!m.field || !r.field || m.field === r.field)).map(m => m.name);
+}
+const isMine = (r, name) => leadsOf(r).includes(name);
 
 /* ---------- توزيع الحصص: موضوع الأسبوع لكل حصة ---------- */
 const planEnd = p => p.end || addDays(p.start, 6);
@@ -161,7 +172,8 @@ function DEF(table) {
     { k: 'name', l: 'الاسم', req: 1, list: 'staffList' },
     { k: 'role', l: 'الدور', list: 'roleList' },
     { k: 'spec', l: 'التخصص' },
-    { k: 'field', l: 'المجال', list: 'fieldList' },
+    { k: 'field', l: P.staffGrade ? P.pField : 'المجال', opts: P.staffGrade ? P.fieldOpts : null, list: 'fieldList' },
+    ...(P.staffGrade ? [{ k: 'grade', l: 'الصف الدراسي', type: 'grades' }] : []),
     { k: 'phone', l: 'الجوال', type: 'tel' },
     { k: 'email', l: 'البريد الإلكتروني', type: 'email' },
     { k: 'note', l: 'ملاحظة', wide: 1 }];
@@ -225,7 +237,7 @@ async function load() {
     }
     $('#gate').hidden = true;
     DB = { staff: d.staff || [], people: d.people || [], sessions: d.sessions || [], plan: d.plan || [] };
-    OLD_SCRIPT = !d.demo && !('plan' in d);
+    OLD_SCRIPT = !d.demo && !((+d.ver || 0) >= NEED_VER);
     API.students().then(list => { KNOWN = (list || []).map(s => s.name); });
     render();
   } catch (e) { $('#app').innerHTML = `<div class="panel glass empty">تعذر الوصول إلى الجدول: ${esc(e.message)}</div>`; }
@@ -273,7 +285,7 @@ function render() {
       ${P.plan ? `<div class="tile glass"><b>${S.execYes} / ${S.execYes + S.execNo}</b><span>حصص نُفّذ فيها البرنامج</span><small><span>من الحصص المسجلة</span> · <span>الأسابيع الموزعة:</span> ${S.weeks}</small></div>` : ''}
       ${S.pct != null ? `<div class="tile glass"><b>${S.pct}%</b><span>نسبة الحضور</span><small>في الجلسات المنفذة</small></div>` : `<div class="tile glass"><b>${S.count}</b><span>إجمالي الحضور</span><small>في الجلسات المنفذة</small></div>`}
     </div>
-    ${P.plan && OLD_SCRIPT ? `<div class="upd no-print">⚠️ <span>لحفظ «توزيع الحصص» و«تنفيذ البرنامج» في الجدول: الصق الكود الجديد من الملف tools/sijil-script.gs في محرر Apps Script، ثم Deploy ← Manage deployments ← تعديل ← New version.</span></div>` : ''}
+    ${(P.plan || P.staffGrade) && OLD_SCRIPT ? `<div class="upd no-print">⚠️ <span>${P.plan ? 'لحفظ «توزيع الحصص» و«تنفيذ البرنامج» في الجدول:' : 'لحفظ «الصف الدراسي» للمعلمين في الجدول:'} الصق الكود الجديد من الملف tools/sijil-script.gs في محرر Apps Script، ثم Deploy ← Manage deployments ← تعديل ← New version.</span></div>` : ''}
     ${P.plan && (TAB === 'plan' || TAB === 'sessions') ? weekNowHtml() : ''}
     <div class="privacy no-print">🔒 <span>بيانات المشاركين للاستخدام الداخلي فقط، ولا يظهر منها في صفحة البرنامج العامة إلا الأعداد والجدول بدون الأسماء.</span></div>
     <datalist id="fieldList">${[...new Set([...(P.fieldOpts || []), ...all('people').map(r => r.field), ...all('staff').map(r => r.field), ...all('sessions').map(r => r.field), ...all('plan').map(r => r.field)].filter(Boolean))].map(x => `<option value="${esc(x)}">`).join('')}</datalist>
@@ -312,9 +324,9 @@ const statusSel = opts => `<label class="field">الحالة<select data-q="stat
 const emptyMsg = () => `<div class="empty">لا توجد بيانات في هذا العام بعد — اضغط «إضافة».</div>`;
 
 function peopleHtml() {
-  const list = mine(DB.people).filter(r => match(r, ['name', 'field', 'lead', 'grade', 'x1', 'x2']) && (!Q.lead || r.lead === Q.lead) && (!Q.status || r.status === Q.status))
+  const list = mine(DB.people).filter(r => match(r, ['name', 'field', 'lead', 'grade', 'x1', 'x2']) && (!Q.lead || isMine(r, Q.lead)) && (!Q.status || r.status === Q.status))
     .sort((a, b) => gradeOrder(a.grade) - gradeOrder(b.grade) || a.name.localeCompare(b.name, 'ar'));
-  const noLead = mine(DB.people).filter(r => !r.lead && r.status !== 'متوقف').length;
+  const noLead = mine(DB.people).filter(r => !leadsOf(r).length && r.status !== 'متوقف').length;
   const xs = [P.x1, P.x2].filter(Boolean);
   return toolsHtml('people', statusSel(PERSON_STATUS)) + `<section class="panel glass">
     <h3>${esc(P.people)}</h3><p class="sub"><span>${list.length}</span> · <span>بدون ${esc(P.lead)}:</span> <span>${noLead}</span></p>
@@ -322,7 +334,7 @@ function peopleHtml() {
     ${list.map((r, i) => { const ss = sessionsOf(r.name).filter(s => s.status === 'منفذة'), at = ss.filter(s => split(s.attended).includes(normKey(r.name))).length;
       const isStudent = !P.x1 || P.x1.l !== 'الفئة' || !r.x1 || r.x1 === 'طالب';
       return `<tr><td>${i + 1}</td><td class="bold">${D(r.name)}${r.joined ? `<span class="sm">انضم: ${esc(fmtDay(r.joined))}</span>` : ''}</td><td>${r.grade ? esc(r.grade) : '—'} ${D(r.cls).replace('—', '')}</td><td>${D(r.field)}</td>
-        <td>${D(r.lead)}</td>${xs.map((x, j) => `<td>${x.type === 'select' ? (r['x' + (j + 1)] ? esc(r['x' + (j + 1)]) : '—') : D(r['x' + (j + 1)])}</td>`).join('')}<td>${ss.length ? `${at} / ${ss.length}` : '—'}</td><td>${stBadge(r.status || 'نشط')}</td>
+        <td>${r.lead || !P.staffGrade ? D(r.lead) : (leadsOf(r).length ? `${leadsOf(r).map(n => D(n)).join('، ')}<span class="sm">حسب الصف</span>` : '—')}</td>${xs.map((x, j) => `<td>${x.type === 'select' ? (r['x' + (j + 1)] ? esc(r['x' + (j + 1)]) : '—') : D(r['x' + (j + 1)])}</td>`).join('')}<td>${ss.length ? `${at} / ${ss.length}` : '—'}</td><td>${stBadge(r.status || 'نشط')}</td>
         <td class="no-print"><div class="rowacts"><button type="button" class="btn ghost" data-edit="people" data-id="${r.id}">تعديل</button>
           ${isStudent ? `<a class="btn ghost" href="sijil-record.html?f=plan&s=${encodeURIComponent(r.sid || r.name)}">خطة التطوير</a>` : ''}
           <button type="button" class="btn ghost" data-del="people" data-id="${r.id}">حذف</button></div></td></tr>`; }).join('')}
@@ -330,12 +342,12 @@ function peopleHtml() {
 }
 
 function staffHtml() {
-  const list = mine(DB.staff).filter(r => match(r, ['name', 'spec', 'field', 'role'])).sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+  const list = mine(DB.staff).filter(r => match(r, ['name', 'spec', 'field', 'role', 'grade'])).sort((a, b) => a.name.localeCompare(b.name, 'ar'));
   return toolsHtml('staff') + `<section class="panel glass">
     <h3>${esc(P.staff)}</h3><p class="sub">${list.length}</p>
-    ${list.length ? `<div class="tbl"><table><thead><tr><th>#</th><th>الاسم</th><th>الدور</th><th>التخصص</th><th>المجال</th><th>التواصل</th><th>${esc(P.people)}</th><th>${esc(P.sessions)}</th><th class="no-print"></th></tr></thead><tbody>
-    ${list.map((r, i) => { const ns = mine(DB.people).filter(s => s.lead === r.name && s.status !== 'متوقف').length, se = mine(DB.sessions).filter(s => s.lead === r.name && s.status !== 'ملغاة');
-      return `<tr><td>${i + 1}</td><td class="bold">${D(r.name)}</td><td>${D(r.role)}</td><td>${D(r.spec)}</td><td>${D(r.field)}</td>
+    ${list.length ? `<div class="tbl"><table><thead><tr><th>#</th><th>الاسم</th><th>الدور</th><th>التخصص</th><th>${P.staffGrade ? esc(P.pField) : 'المجال'}</th>${P.staffGrade ? '<th>الصف الدراسي</th>' : ''}<th>التواصل</th><th>${esc(P.people)}</th><th>${esc(P.sessions)}</th><th class="no-print"></th></tr></thead><tbody>
+    ${list.map((r, i) => { const ns = mine(DB.people).filter(s => isMine(s, r.name) && s.status !== 'متوقف').length, se = mine(DB.sessions).filter(s => s.lead === r.name && s.status !== 'ملغاة');
+      return `<tr><td>${i + 1}</td><td class="bold">${D(r.name)}</td><td>${D(r.role)}</td><td>${D(r.spec)}</td><td>${D(r.field)}</td>${P.staffGrade ? `<td>${staffGrades(r).length ? staffGrades(r).map(g => `<span class="chip">${esc(g)}</span>`).join('') : '—'}</td>` : ''}
         <td><bdi class="nt">${esc(r.phone || '')}</bdi>${r.email ? `<span class="sm nt">${esc(r.email)}</span>` : ''}${!r.phone && !r.email ? '—' : ''}</td><td>${ns}</td><td>${se.filter(s => s.status === 'منفذة').length} / ${se.length}</td>
         <td class="no-print"><div class="rowacts"><button type="button" class="btn ghost" data-edit="staff" data-id="${r.id}">تعديل</button><button type="button" class="btn ghost" data-del="staff" data-id="${r.id}">حذف</button></div></td></tr>`; }).join('')}
     </tbody></table></div>` : emptyMsg()}</section>`;
@@ -602,6 +614,11 @@ function fieldHtml(f, v) {
       <div class="checks" id="studChecks">${active.map(s => `<label><input type="checkbox" value="${esc(s.name)}"${chosen.includes(s.name) ? ' checked' : ''}><span class="nt">${esc(s.name)}</span></label>`).join('')}</div>`
       : `<p class="sub">لم يُضف مشاركون بعد؛ يمكنك الاكتفاء بعدد الحضور.</p>`}</div>`;
   }
+  if (f.type === 'grades') {
+    const chosen = split(v), used = new Set(mine(DB.people).map(r => r.grade).filter(Boolean));
+    return `<div class="stud-pick"><div class="field">${esc(f.l)} <span class="sub">(اختر صفاً أو أكثر — يُربط بك طلاب هذه الصفوف تلقائياً)</span></div>
+      ${GRADE_GROUPS.map(g => `<div class="sub" style="margin:6px 0 4px">${esc(g.label)}</div><div class="checks" data-grades="1">${g.grades.map(x => `<label><input type="checkbox" value="${esc(x)}"${chosen.includes(x) ? ' checked' : ''}><span>${esc(x)}${used.has(x) ? ` <i class="ck">(${mine(DB.people).filter(r => r.grade === x).length})</i>` : ''}</span></label>`).join('')}</div>`).join('')}</div>`;
+  }
   if (f.type === 'textarea') return `<label class="field${f.wide ? ' wide' : ''}">${esc(f.l)}${req}<textarea data-k="${f.k}" rows="3">${esc(v)}</textarea></label>`;
   return `<label class="field${f.wide ? ' wide' : ''}">${esc(f.l)}${req}<input data-k="${f.k}" type="${f.type || 'text'}" value="${esc(v)}"${f.list ? ` list="${f.list}"` : ''}${f.ph ? ` placeholder="${esc(f.ph)}"` : ''}${f.type === 'tel' ? ' inputmode="tel"' : ''}${f.type === 'number' ? ' min="0"' : ''}></label>`;
 }
@@ -617,6 +634,7 @@ function readForm() {
   const { table, row } = EDIT, out = Object.assign({}, row, { prog: P.id, year: row.year || YEAR });
   $$('#form [data-k]').forEach(el => out[el.dataset.k] = normKey(el.value));
   if (table === 'sessions' && $('#studChecks')) out.students = join($$('#studChecks input:checked').map(i => i.value));
+  if (table === 'staff' && P.staffGrade) out.grade = join($$('#form [data-grades] input:checked').map(i => i.value));
   return out;
 }
 async function saveForm() {
@@ -663,7 +681,7 @@ async function saveForm() {
 function attHtml() {
   const s = DB.sessions.find(x => x.id === ATT); if (!s) return '';
   let names = split(s.students);
-  if (!names.length) names = mine(DB.people).filter(x => x.status !== 'متوقف' && (!s.lead || x.lead === s.lead)).map(x => x.name);
+  if (!names.length) names = mine(DB.people).filter(x => x.status !== 'متوقف' && (!s.lead || isMine(x, s.lead))).map(x => x.name);
   const att = split(s.attended), first = s.status !== 'منفذة', pl = P.plan ? planOf(s) : null, tt = titleOf(s), gr = P.plan ? gradeOf(s) : '';
   return `<section class="att glass no-print" id="attBox"><h3><span>${P.plan ? 'تسجيل الحصة' : 'تسجيل الحضور'}</span> — ${tt ? D(tt) : '—'}</h3>
     <p class="sub">${esc(fmtDay(s.date))} · ${esc(dayName(s.date))} · ${D(s.place)} · ${D(s.lead)}</p>
@@ -742,7 +760,7 @@ document.addEventListener('click', e => {
   if (t.dataset.csv) { csv(t.dataset.csv); return; }
   if (t.dataset.pick) {
     const ld = ($('#form [data-k="lead"]') || {}).value || '';
-    const theirs = new Set(mine(DB.people).filter(s => s.lead === ld).map(s => s.name));
+    const theirs = new Set(mine(DB.people).filter(s => isMine(s, ld)).map(s => s.name));
     $$('#studChecks input').forEach(i => i.checked = t.dataset.pick === 'all' ? true : t.dataset.pick === 'none' ? false : theirs.has(i.value));
     if (t.dataset.pick === 'lead' && !ld) toast('اختر المنفّذ أولاً', 'info');
     return;
