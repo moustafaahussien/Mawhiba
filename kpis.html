@@ -234,6 +234,7 @@ html.js .reveal.in{opacity:1;transform:none}
 <script>document.documentElement.classList.add('js')</script>
 <script src="js/config.js"></script>
 <script src="js/competitions-data.js"></script>
+<script src="js/achievements-data.js"></script>
 </head>
 <body>
 <div class="aurora" aria-hidden="true"></div>
@@ -296,6 +297,12 @@ html.js .reveal.in{opacity:1;transform:none}
   </section>
 
   <section>
+    <div class="sec-head"><h2><span data-i18n="ach.t1">الإنجازات</span> <em data-i18n="ach.t2">على مستوى المملكة</em></h2><p id="achSub"></p></div>
+    <div class="summary" id="achTiles"></div>
+    <div class="fn glass reveal" id="achBox" style="margin-top:16px;padding:22px"></div>
+  </section>
+
+  <section>
     <div class="sec-head"><h2><em data-i18n="rep.title">التقارير</em></h2><p data-i18n="rep.sub">التقارير الدورية وتقارير البرامج والمسابقات والتقرير السنوي</p></div>
     <div class="reports" id="reports"></div>
   </section>
@@ -329,6 +336,8 @@ const I18N = {
   target:'المستهدف', achieved:'نسبة التحقق', vsPrev:'عن العام السابق', pts:'نقطة', noPrev:'لا توجد مقارنة', unitCount:'عدد',
   'tbl.kpi':'المؤشر', 'tbl.axis':'المحور', 'tbl.target':'المستهدف', 'tbl.status':'الحالة',
   'fn.t1':'مسار', 'fn.t2':'المسابقات', 'fn.sub':'من التسجيل إلى الفوز — ونسبة الانتقال بين كل مرحلة والتي تليها',
+  'ach.t1':'الإنجازات', 'ach.t2':'على مستوى المملكة', 'ach.sub':'إنجازات العام {y} — التفاصيل كاملة في', 'ach.honor':'لوحة الشرف', 'ach.other':'لا إنجازات مسجلة لعام {y}؛ المعروض آخر عام مسجل: {z}.',
+  'ach.first':'مراكز أولى للفصول', 'ach.top10':'فصول ضمن العشرة الأوائل', 'ach.stu':'ترتيب فردي للطلاب', 'ach.acc':'طلاب التسريع',
   'fn.reg':'المسجلون', 'fn.qual':'المتأهلون', 'fn.fin':'النهائيون', 'fn.win':'الفائزون', 'fn.empty':'لا توجد بيانات مسابقات لهذا العام بعد.',
   'rep.title':'التقارير', 'rep.sub':'التقارير الدورية وتقارير البرامج والمسابقات والتقرير السنوي',
   'rep.periodic':'التقارير الدورية', 'rep.event':'تقارير البرامج والمسابقات', 'rep.annual':'التقارير السنوية', 'rep.empty':'لا توجد تقارير منشورة بعد.',
@@ -349,6 +358,8 @@ const I18N = {
   target:'Target', achieved:'Achieved', vsPrev:'vs previous year', pts:'pts', noPrev:'No comparison', unitCount:'count',
   'tbl.kpi':'Indicator', 'tbl.axis':'Area', 'tbl.target':'Target', 'tbl.status':'Status',
   'fn.t1':'Competition', 'fn.t2':'pipeline', 'fn.sub':'From registration to winning — with the progression rate between each stage',
+  'ach.t1':'National', 'ach.t2':'achievements', 'ach.sub':'Achievements of {y} — full details on the', 'ach.honor':'Honor Board', 'ach.other':'No achievements recorded for {y}; showing the latest recorded year: {z}.',
+  'ach.first':'Classes ranked 1st', 'ach.top10':'Classes in the top 10', 'ach.stu':'Individual student rankings', 'ach.acc':'Accelerated students',
   'fn.reg':'Registered', 'fn.qual':'Qualified', 'fn.fin':'Finalists', 'fn.win':'Winners', 'fn.empty':'No competition data for this year yet.',
   'rep.title':'Reports', 'rep.sub':'Periodic reports, program and competition reports, and the annual report',
   'rep.periodic':'Periodic reports', 'rep.event':'Program & competition reports', 'rep.annual':'Annual reports', 'rep.empty':'No reports published yet.',
@@ -526,7 +537,7 @@ function render(){
   document.getElementById('kpiCards').classList.toggle('hidden', VIEW !== 'cards');
   document.getElementById('kpiTableWrap').classList.toggle('hidden', VIEW !== 'table');
 
-  renderFunnel(); renderReports();
+  renderFunnel(); renderAch(); renderReports();
   observe(document.querySelectorAll('.reveal:not(.in)'));
   requestAnimationFrame(() => setTimeout(() => document.querySelectorAll('[data-w]').forEach(el => el.style.width = el.dataset.w), 60));
 }
@@ -593,6 +604,18 @@ function renderFunnel(){
         return `<div class="fn-row"><span class="nm">${t(names[i])}</span><span class="tr"><i data-w="${w}%" style="width:0;background:${grads[i]}" data-tip="${esc(t(names[i]) + ': ' + fmt(v))}"></i></span><span class="v">${fmt(v)}</span><span class="pc">${p}</span></div>`;
       }).join('')}</div></div>`;
   }).join('');
+}
+
+/* الإنجازات على مستوى المملكة (من js/achievements-data.js) */
+function renderAch(){
+  if (!window.TP_ACH) return;
+  const ys = TP_ACH.years(); let y = YEAR, note = '';
+  if (!ys.includes(y)) { const z = ys.filter(v => v <= YEAR).pop() || ys[ys.length - 1]; if (z) { note = t('ach.other').replace('{y}', YEAR).replace('{z}', z); y = z; } }
+  const S = TP_ACH.stats(y), hy = (TP_ACH.list({ gyear: y })[0] || {}).year || y;
+  document.getElementById('achSub').innerHTML = (note ? esc(note) + ' ' : '') + esc(t('ach.sub').replace('{y}', hy)) + ` <a href="honor.html" style="font-weight:700;text-decoration:underline">${esc(t('ach.honor'))}</a>`;
+  const tile = (n, k, c, ic) => `<div class="sum glass reveal" style="--c:${c}"><span class="gorb">${ico(ic)}</span><div><b>${fmt(n)}</b><span>${t(k)}</span></div></div>`;
+  document.getElementById('achTiles').innerHTML = tile(S.classesFirst, 'ach.first', '#E8A50A', 'trophy') + tile(S.classesTop10, 'ach.top10', '#F07B0F', 'growth') + tile(S.students, 'ach.stu', '#7B4DFF', 'book') + tile(S.accel, 'ach.acc', '#2F6FE0', 'clock');
+  document.getElementById('achBox').innerHTML = TP_ACH.html({ gyear: y });
 }
 
 function renderReports(){

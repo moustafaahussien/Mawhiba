@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="css/platform.css">
 <script src="js/config.js"></script>
 <script src="js/components-data.js"></script>
+<script src="js/achievements-data.js"></script>
 <script src="js/platform.js"></script>
 <style>
 /* ---------- الهيرو ---------- */
@@ -294,7 +295,7 @@ html[dir=rtl] .oth{padding:12px 12px 12px 18px}
 TP.addDict({
   ar:{ 'nav.model':'مكونات النموذج', model:'النموذج التام لتطوير الموهبة', comp:'المكوّن',
        's.about':'التعريف', 's.goals':'الأهداف', 's.subs':'البرامج الفرعية', 's.content':'المحتوى والمعايير', 's.content.ge':'المجالات والوسائل', 's.recs':'توصيات الدراسة', 's.how':'آلية التنفيذ', 's.eval':'التقييم',
-       's.forms':'النماذج', 's.year':'هذا العام', 's.impact':'أثر البرنامج',
+       's.forms':'النماذج', 's.year':'هذا العام', 's.impact':'أثر البرنامج', 's.ach':'إنجازاتنا',
        target:'الفئة المستهدفة', branches:'فروع المحتوى (مجالات الوحدات)', means:'وسائل تقديم الوحدات', circle:'حلقة النقاش: موجّهات للمدرب',
        'sub.goals':'أهدافه', 'sub.methods':'أساليبه', 'sub.target':'الفئة المستهدفة', crit:'المعيار', cval:'الحد المطلوب',
        resp:'المسؤول', form:'نموذج', 'f.no':'رقم النموذج', 'f.name':'اسم النموذج', 'f.use':'الاستخدام', 'f.staff':'افتح نماذج السجل (للمعلمين)',
@@ -313,7 +314,7 @@ TP.addDict({
        bookSrc:'المصدر: كتاب «النموذج التام لتطوير الموهبة» — د. عادل عبدالجليل بترجي (ديبونو، 2011).' },
   en:{ 'nav.model':'Model components', model:'Total Giftedness Development Model', comp:'Component',
        's.about':'Overview', 's.goals':'Goals', 's.subs':'Sub-programs', 's.content':'Content & criteria', 's.content.ge':'Content & media', 's.recs':'Study recommendations', 's.how':'Procedure', 's.eval':'Evaluation',
-       's.forms':'Forms', 's.year':'This year', 's.impact':'Impact',
+       's.forms':'Forms', 's.year':'This year', 's.impact':'Impact', 's.ach':'Our achievements',
        target:'Target group', branches:'Content branches (unit fields)', means:'Delivery media', circle:'Discussion circle: prompts for the trainer',
        'sub.goals':'Goals', 'sub.methods':'Methods', 'sub.target':'Target group', crit:'Criterion', cval:'Required level',
        resp:'Lead', form:'Form', 'f.no':'Form no.', 'f.name':'Form', 'f.use':'Use', 'f.staff':'Open the record forms (teachers)',
@@ -352,7 +353,8 @@ function sectionList(){
     ['eval','check','s.eval', has('evals')],
     ['forms','file','s.forms', has('forms')],
     ['year','cal','s.year', true],
-    ['impact','chart','s.impact', has('study')]
+    ['impact','chart','s.impact', has('study')],
+    ['ach','medal','s.ach', !!(window.TP_ACH && TP_ACH.list({ comp: C.id }).length)]
   ].filter(s => s[3]);
 }
 let SECTIONS = [];
@@ -457,7 +459,8 @@ function render(){
     year: () => `<div class="panel glass reveal">${yearHtml()}
         <div class="res-h" style="margin-top:22px">${TP.t('res.school')}</div>
         <div id="folderBox">${folderHtml(st)}</div></div>`,
-    impact: () => `<div class="panel glass study reveal">${studyHtml()}</div>`
+    impact: () => `<div class="panel glass study reveal">${studyHtml()}</div>`,
+    ach: () => `<div class="panel glass reveal">${TP_ACH.html({ comp: C.id })}</div>`
   };
 
   main.innerHTML = hero + `

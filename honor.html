@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الشرف – منصة الموهبة</title>
+<meta name="description" content="لوحة شرف مدارس دار الذكر: إنجازات طلابنا وفصولنا على مستوى المملكة في برامج الموهبة والمسابقات.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Noto+Kufi+Arabic:wght@300;600;900&family=Sora:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/platform.css">
+<script src="js/config.js"></script>
+<script src="js/competitions-data.js"></script>
+<script src="js/components-data.js"></script>
+<script src="js/achievements-data.js"></script>
+<script src="js/platform.js"></script>
+<style>
+:root{--c:#D99A06}
+.hero{padding:120px 0 10px;text-align:center}
+.hero .kicker{justify-content:center}
+.hero p.lead{max-width:760px;margin:14px auto 0;color:var(--ink2);font-size:17px;line-height:1.9}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:28px 0 10px}
+.tile{padding:18px;border-radius:24px;display:flex;gap:12px;align-items:center}
+.tile .gorb{--sz:48px}
+.tile b{display:block;font-family:'Sora',sans-serif;font-weight:800;font-size:30px;line-height:1.1}
+.tile span{color:var(--muted);font-size:14px}
+@media(max-width:900px){.tiles{grid-template-columns:repeat(2,1fr)}}
+.yearh{display:flex;align-items:center;gap:12px;margin:36px 0 14px}
+.yearh h2{font-family:var(--display);font-weight:900;font-size:clamp(22px,2.6vw,30px)}
+.yearh .gorb{--sz:48px}
+.panel{padding:26px;border-radius:30px;margin-bottom:16px}
+@media(max-width:620px){.panel{padding:18px;border-radius:22px}}
+.src{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:color-mix(in srgb,var(--pc) 75%,#1A1640);margin-bottom:10px}
+.src i{width:10px;height:10px;border-radius:50%;background:var(--pc)}
+.comp-ach{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.comp-ach li{display:flex;gap:10px;align-items:flex-start;padding:14px;border-radius:16px;background:rgba(255,255,255,.7);border:1px solid var(--glass-edge)}
+.comp-ach li .gorb{--sz:40px}
+.comp-ach b{display:block}
+.comp-ach small{display:block;color:var(--muted);font-size:13px}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="aurora tinted" id="aurora" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav">
+  <a href="index.html" class="brand">
+    <img class="brand-logo" src="assets/school-emblem.png" alt="شعار مدارس دار الذكر" data-i18n-alt="alt.logo" width="48" height="48">
+    <span><b data-i18n="brand">منصة الموهبة</b><small data-i18n="school">مدارس دار الذكر</small></span>
+  </a>
+  <div class="nav-right">
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html" data-i18n="nav.home">الرئيسية</a>
+      <a href="index.html#components" data-i18n="nav.model">مكونات النموذج</a>
+      <a href="competitions.html" data-i18n="nav.comps">المسابقات</a>
+      <a href="honor.html" class="cur" data-i18n="nav.honor">لوحة الشرف</a>
+      <a href="kpis.html" data-i18n="nav.kpis">المؤشرات والتقارير</a>
+    </nav>
+    <button class="lang" id="langBtn" type="button" aria-label="Language"><span data-l="ar">ع</span><span data-l="en">EN</span></button>
+    <button class="burger" id="burger" type="button" aria-label="القائمة" data-i18n-aria="aria.menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main class="wrap" id="main"></main>
+
+<footer>
+  <div class="wrap">
+    <div><b data-i18n="brand">منصة الموهبة</b> — <span data-i18n="school">مدارس دار الذكر</span></div>
+    <div data-i18n="footer.credit">إعداد وتصميم: مصطفى أحمد حسين</div>
+    <span class="staff-links"><a class="staff-link" href="sijil.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg><span data-i18n="footer.sijil">دخول المعلمين</span></a><a class="staff-link" href="sijil-reports.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.6-3 8.5-7 10-4-1.5-7-5.4-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><span data-i18n="footer.admin">دخول المشرف</span></a></span>
+  </div>
+</footer>
+
+<script>
+TP.addDict({
+  ar: { 'nav.honor': 'لوحة الشرف', title2: 'لوحة الشرف – منصة الموهبة', kicker: 'إنجازات طلابنا', h1: 'لوحة الشرف',
+    lead: 'نوثّق هنا إنجازات طلابنا وفصولنا على مستوى المملكة في برامج النموذج التام لتطوير الموهبة والمسابقات، تقديراً للطلاب ومعلميهم.',
+    't.first': 'مراكز أولى للفصول على المملكة', 't.top10': 'فصول ضمن العشرة الأوائل على المملكة', 't.stu': 'ترتيب فردي لطلاب على المملكة', 't.acc': 'طلاب التسريع الأكاديمي',
+    year: 'العام', comps: 'المسابقات', none: 'تظهر هنا إنجازات المدرسة فور إدخالها.' },
+  en: { 'nav.honor': 'Honor Board', title2: 'Honor Board – Talent Platform', kicker: 'Our students’ achievements', h1: 'Honor Board',
+    lead: 'Our students’ and classes’ achievements across the Kingdom in the Total Giftedness Development Model programs and competitions — honoring students and their teachers.',
+    't.first': 'Classes ranked 1st nationwide', 't.top10': 'Classes in the national top 10', 't.stu': 'Individual national rankings', 't.acc': 'Accelerated students',
+    year: 'Year', comps: 'Competitions', none: 'School achievements appear here once entered.' }
+});
+let DATA = null;
+const COMPS = window.TP_COMPONENTS || [], CMPS = window.TP_COMPETITIONS || [];
+const srcOf = id => COMPS.find(c => c.id === id) || CMPS.find(c => c.id === id);
+const lvlColor = l => /دولي|international/i.test(l) ? '#7B4DFF' : /وطني|national/i.test(l) ? '#E8A50A' : /إقليمي|regional/i.test(l) ? '#0EA5D6' : '#0E9F76';
+
+function render() {
+  document.title = TP.t('title2');
+  const all = window.TP_ACHIEVEMENTS || [];
+  /* إنجازات المسابقات من تبويب «الإنجازات» في جدول بيانات المنصة */
+  const sheet = DATA ? CMPS.flatMap(c => TP.rowsFor(DATA.achievements, c.id).filter(r => (r[1] || '').trim()).map(r => ({ c, year: String(r[0] || '').trim(), t: r[1], lvl: r[2] || '', d: r[3] || '' }))) : [];
+  const years = [...new Set([...all.map(a => a.year), ...sheet.map(s => s.year)])].filter(Boolean).sort().reverse();
+  const S = TP_ACH.years().map(y => TP_ACH.stats(y)).reduce((m, s) => { Object.keys(s).forEach(k => m[k] = (m[k] || 0) + s[k]); return m; }, {});
+  const tile = (n, k, ic, c) => `<div class="tile glass reveal" style="--c:${c}"><span class="gorb">${TP.icon(ic)}</span><div><b>${n || 0}</b><span>${TP.t(k)}</span></div></div>`;
+  const nm = o => o ? TP.tx(o.short || o.name) : '';
+  document.getElementById('main').innerHTML = `<section class="hero">
+      <div class="kicker">${TP.t('kicker')}</div>
+      <h1 class="foil-title">${TP.t('h1')}</h1>
+      <p class="lead">${TP.t('lead')}</p>
+      <div class="tiles">${tile(S.classesFirst, 't.first', 'medal', '#E8A50A')}${tile(S.classesTop10, 't.top10', 'trophy', '#F07B0F')}${tile(S.students, 't.stu', 'star', '#7B4DFF')}${tile(S.accel, 't.acc', 'arrow', '#2F6FE0')}</div>
+    </section>
+    ${years.length ? years.map(y => {
+      const items = all.filter(a => a.year === y), sh = sheet.filter(s => s.year === y);
+      return `<div class="yearh"><span class="gorb">${TP.icon('cal')}</span><h2>${TP.esc(y)}</h2></div>
+        ${items.map(a => { const o = srcOf(a.comp);
+          return `<section class="panel glass reveal" style="--pc:${(o && (o.color || o.c)) || '#D99A06'}">${o ? `<a class="src" href="${COMPS.includes(o) ? 'component.html?c=' : 'competition.html?c='}${o.id}"><i></i>${TP.esc(nm(o))}</a>` : ''}
+            ${TP_ACH.html({ id: a.id }, { empty: false })}</section>`; }).join('')}
+        ${sh.length ? `<section class="panel glass reveal"><div class="src" style="--pc:#E2386F"><i></i>${TP.t('comps')}</div><ul class="comp-ach">${sh.map(s => `<li><span class="gorb" style="--c:${lvlColor(s.lvl)}">${TP.icon('medal')}</span><div><b>${TP.esc(s.t)}</b><small>${[nm(s.c), s.lvl, s.d].filter(Boolean).map(TP.esc).join(' · ')}</small></div></li>`).join('')}</ul></section>` : ''}`;
+    }).join('') : `<div class="panel glass empty">${TP.t('none')}</div>`}`;
+  TP.observe();
+}
+TP.onLang(render);
+TP.applyLang();
+render();
+TP.loadData(d => { if (d) { DATA = d; render(); } });
+</script>
+</body>
+</html>
