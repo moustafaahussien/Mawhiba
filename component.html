@@ -509,15 +509,8 @@ function yearHtml(){
     if (Y.staff) tiles += dv('care.mentors', Y.staff);
     tiles += pct != null ? `<div class="dv"><span>${TP.t('care.att')}</span><b>${pct}%</b><div class="bar"><i data-w="${pct}%" style="width:0"></i></div></div>` : Y.count ? dv('care.count', Y.count) : '';
   }
-  const cols = [['u.title', 1], ['u.branch', U.some(u => u.branch)], ['u.target', U.some(u => u.target)], ['u.mean', U.some(u => u.mean)], ['u.date', 1], ['u.sup', U.some(u => u.sup)], ['care.place', U.some(u => u.place)], ['u.st', 1]];
-  const show = k => cols.find(c => c[0] === k)[1];
+  /* الصفحة العامة تعرض البطاقات الإجمالية فقط؛ جدول الوحدات والجلسات التفصيلي في «إدارة البرامج» للمعلمين */
   return `${card}<div class="div" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">${tiles}</div>
-    ${U.length ? `<div class="units"><table><thead><tr>${cols.filter(c => c[1]).map(c => `<th>${TP.t(c[0])}</th>`).join('')}</tr></thead><tbody>
-    ${U.map(u => { const ph = u.status === 'منفذة' ? 'past' : u.status === 'ملغاة' ? 'tba' : u.d ? TP.phase(u, now) : 'tba';
-      const stc = u.status === 'مؤجلة' ? ['tba', 'u.postponed'] : ph === 'past' ? ['done', 'u.done'] : ph === 'tba' ? ['tba', 'u.tba'] : ['next', ph === 'cur' ? 'u.cur' : 'u.up'];
-      return `<tr class="${ph === 'past' ? 'past' : ''}"><td><b>${TP.esc(u.ar)}</b>${u.note ? `<br><small class="muted">${TP.esc(u.note)}</small>` : ''}</td>${show('u.branch') ? `<td>${TP.esc(u.branch || '—')}</td>` : ''}${show('u.target') ? `<td>${TP.esc(u.target || '—')}</td>` : ''}${show('u.mean') ? `<td>${TP.esc(u.mean || '—')}</td>` : ''}
-        <td>${u.d ? TP.esc(TP.dateText(u)) : '—'}</td>${show('u.sup') ? `<td>${TP.esc(u.sup || '—')}</td>` : ''}${show('care.place') ? `<td>${TP.esc(u.place || '—')}</td>` : ''}<td><span class="st ${stc[0]}">${TP.t(stc[1])}</span></td></tr>`; }).join('')}
-    </tbody></table></div>` : ''}
     ${PD ? `<p class="muted" style="font-size:13.5px;margin-top:10px">${TP.esc(TP.t('care.year'))} <bdi>${TP.esc(PD.yr)}</bdi> · ${TP.t('care.priv')}</p>` : ''}${C.id === 'record' ? '' : staff}`;
 }
 
