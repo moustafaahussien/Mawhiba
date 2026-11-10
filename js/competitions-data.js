@@ -375,15 +375,26 @@ window.TP_COMPETITIONS = [
   },
   resources:[
     { ar:'حقائب المرحلة الأولى (الأحياء، الكيمياء، الفيزياء، العلوم، الرياضيات) – صفحة الأولمبياد', en:'Phase One study packages (Biology, Chemistry, Physics, Science, Math) – Olympiad page', url:'https://www.mawhiba.sa/discover-mawhiba/competitions/national-gifted-olympiad/', type:'link' },
-    { ar:'حقائب المعلوماتية', en:'Informatics booklets', url:'https://nsmobooklets.mawhiba.sa/en/learn/', type:'link' }
+    { ar:'حقائب المعلوماتية', en:'Informatics booklets', url:'https://nsmobooklets.mawhiba.sa/en/learn/', type:'link' },
+    /* حقائب المرحلة الثانية — المصدر: صفحة الأولمبياد، تبويب «مكتبة الأولمبياد» */
+    { group:{ ar:'حقائب المرحلة الثانية (المسار العلمي)', en:'Phase Two study packages (scientific track)' }, items:[
+      { ar:'الرياضيات – الناشئين (الأول والثاني المتوسط)', en:'Mathematics – Junior (Grades 7–8)', url:'https://www.mawhiba.sa/media/rlyet5ka/phase-two-mathematics-junior-arabic.pdf', type:'pdf' },
+      { ar:'العلوم (الأول والثاني المتوسط)', en:'Science (Grades 7–8)', url:'https://www.mawhiba.sa/media/tgin3du0/phase-two-science-arabic.pdf', type:'pdf' },
+      { ar:'المعلوماتية – الناشئين (الأول والثاني المتوسط)', en:'Informatics – Junior (Grades 7–8)', url:'https://nsmobooklets.mawhiba.sa/ar/learn/overview/introduction.html', type:'link' },
+      { ar:'الرياضيات – الكبار (الثالث المتوسط والأول الثانوي)', en:'Mathematics – Senior (Grades 9–10)', url:'https://www.mawhiba.sa/media/sndc00g3/phase-two-mathematics-senior-arabic.pdf', type:'pdf' },
+      { ar:'الفيزياء (الثالث المتوسط والأول الثانوي)', en:'Physics (Grades 9–10)', url:'https://www.mawhiba.sa/media/bmxdv1xp/phase-two-physics-arabic.pdf', type:'pdf' },
+      { ar:'الكيمياء (الثالث المتوسط والأول الثانوي)', en:'Chemistry (Grades 9–10)', url:'https://www.mawhiba.sa/media/b2obxzgx/phase-two-chemistry-arabic.pdf', type:'pdf' },
+      { ar:'الأحياء (الثالث المتوسط والأول الثانوي)', en:'Biology (Grades 9–10)', url:'https://www.mawhiba.sa/media/1c2nwjrg/phase-two-biology-arabic.pdf', type:'pdf' },
+      { ar:'المعلوماتية – الكبار (الثالث المتوسط والأول الثانوي)', en:'Informatics – Senior (Grades 9–10)', url:'https://nsmobooklets.mawhiba.sa/ar/learn/overview/introduction.html', type:'link' }
+    ] }
   ],
   training:{
     ar:['حصص تدريب أسبوعية لكل تخصص بإشراف معلمي المواد.',
-        'إنهاء حقائب المرحلة الأولى الرسمية وحل تمارينها.',
+        'إنهاء حقائب المرحلة الأولى الرسمية وحل تمارينها، ثم حقائب المرحلة الثانية للمتأهلين.',
         'اختبارات محاكاة قصيرة بنفس مدة الاختبار (ساعتان).',
         'متابعة الطلاب المتأهلين في التدريب المركزي الذي تنظمه موهبة.'],
     en:['Weekly training per field, led by subject teachers.',
-        'Complete the official Phase One packages and their exercises.',
+        'Complete the official Phase One packages and their exercises, then the Phase Two packages for qualifiers.',
         'Short mock tests with the same duration (two hours).',
         'Follow up qualified students during Mawhiba’s central training.']
   },
