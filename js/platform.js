@@ -33,6 +33,7 @@
     document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = TP.t(el.dataset.i18nPh); });
     document.querySelectorAll('[data-i18n-alt]').forEach(el => { el.alt = TP.t(el.dataset.i18nAlt); });
     document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', TP.t(el.dataset.i18nAria)); });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = TP.t(el.dataset.i18nTitle); el.setAttribute('aria-label', el.title); });
     handlers.forEach(fn => fn(lang));
   };
   TP.toggleLang = function () {
