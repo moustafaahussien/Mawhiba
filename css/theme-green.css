@@ -1,0 +1,54 @@
+/* =========================================================
+   مظهر مؤقت: ألوان التصميم الرئيسية بأخضر الشعار ودرجاته
+   ---------------------------------------------------------
+   للرجوع إلى الألوان الأصلية: احذف هذا الملف، أو احذف سطر
+   <link rel="stylesheet" href="css/theme-green.css"> من الصفحات.
+   ألوان المكونات والمسابقات (لكل برنامج لونه) لم تتغير.
+   ========================================================= */
+:root{
+  /* درجات أخضر الشعار */
+  --g950:#03281C; --g900:#064E33; --g800:#00663F; --g700:#00704A; --g600:#058C55;
+  --g500:#0FA35E; --g400:#2DBE78; --g300:#6FD6A0; --g200:#B5EBCD; --g100:#E3F6EC; --g50:#F2FAF6;
+
+  --bg:var(--g50); --ink:#0B2E22; --muted:#4D6A5E;
+  --line:rgba(0,102,63,.14);
+  --gold:var(--g500); --amber:var(--g600);
+  --gold-foil:linear-gradient(100deg,#00663F 0%,#058C55 18%,#2DBE78 34%,#6FD6A0 46%,#0FA35E 62%,#058C55 78%,#00663F 100%);
+  --foil:linear-gradient(100deg,#00704A 0%,#0FA35E 22%,#6FD6A0 40%,#2DBE78 58%,#058C55 78%,#00704A 100%);
+  /* صفحات المعلمين */
+  --ink2:#3E5A4F; --fline:rgba(0,102,63,.16); --mid:#0FA35E;
+  --shadow:0 22px 46px -30px rgba(0,80,50,.55);
+  /* ألوان الجزيئات المتحركة في الرئيسية */
+  --fx-dots:15,163,94|45,190,120|111,214,160|0,112,74|181,235,205;
+}
+body{background:var(--bg)}
+
+/* الخلفية الضوئية */
+.aurora,.aurora.tinted{background:
+  radial-gradient(38% 34% at 18% 22%,rgba(15,163,94,.30),transparent 70%),
+  radial-gradient(34% 30% at 82% 18%,rgba(111,214,160,.34),transparent 70%),
+  radial-gradient(36% 32% at 74% 78%,rgba(0,112,74,.20),transparent 70%),
+  radial-gradient(34% 30% at 14% 84%,rgba(45,190,120,.26),transparent 70%),
+  radial-gradient(30% 26% at 45% 52%,rgba(181,235,205,.40),transparent 70%)}
+.grain{background-image:radial-gradient(rgba(6,78,51,.07) 1px,transparent 1px)}
+
+/* الشريط العلوي */
+.nav-links a:hover{background:rgba(15,163,94,.14)}
+.nav-links a.cur,.lang [data-l]{transition:background .2s}
+html[lang="ar"] .lang [data-l="ar"],html[lang="en"] .lang [data-l="en"]{background:var(--g700)}
+.nav-links a.cur{background:var(--g700)}
+.nav-staff a:hover,.staff-link:hover{background:rgba(15,163,94,.2)}
+
+/* الأزرار الرئيسية */
+.btn.primary,.sj .btn{background:linear-gradient(135deg,#2DBE78,#0FA35E 50%,#00704A);box-shadow:0 16px 32px -12px rgba(0,112,74,.6)}
+.btn.primary:hover{box-shadow:0 22px 40px -12px rgba(0,112,74,.65)}
+.btn.ghost{box-shadow:0 10px 26px -14px rgba(0,80,50,.35)}
+:focus-visible{outline-color:var(--g500)}
+
+/* الرئيسية: كرة النموذج في الوسط، وبطاقات «كل ما يخص الموهبة» */
+.core-foil{background:conic-gradient(from 0deg,#B5EBCD,#2DBE78,#0FA35E,#00704A,#058C55,#2DBE78,#B5EBCD)}
+#cards .card:nth-child(4n+1){--c:#0FA35E!important}
+#cards .card:nth-child(4n+2){--c:#00704A!important}
+#cards .card:nth-child(4n+3){--c:#2DBE78!important}
+#cards .card:nth-child(4n+4){--c:#058C55!important}
+.card.featured{background:linear-gradient(140deg,rgba(45,190,120,.94),rgba(15,163,94,.94) 50%,rgba(0,112,74,.95));box-shadow:0 26px 50px -24px rgba(0,112,74,.6)}

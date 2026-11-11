@@ -491,6 +491,8 @@ html.js .reveal.in{opacity:1;transform:none}
 <script src="js/competitions-data.js"></script>
 <script src="js/components-data.js"></script>
 <script src="js/platform.js"></script>
+<!-- مظهر مؤقت بأخضر الشعار: احذف السطر التالي للرجوع إلى الألوان الأصلية -->
+<link rel="stylesheet" href="css/theme-green.css">
 </head>
 <body>
 <div class="aurora" aria-hidden="true"></div>
@@ -1250,7 +1252,8 @@ addEventListener('scroll', maybeAnimateStats, { passive: true });
 (function dust(){
   const cv = document.getElementById('fx'); if (!cv || reduce) return;
   const ctx = cv.getContext('2d'); let W, H, P = [];
-  const cols = ['242,183,5','240,123,15','226,56,111','123,77,255','255,212,92'];
+  const themeDots = getComputedStyle(document.documentElement).getPropertyValue('--fx-dots').trim();   // يحدده ملف المظهر إن وُجد
+  const cols = themeDots ? themeDots.split('|') : ['242,183,5','240,123,15','226,56,111','123,77,255','255,212,92'];
   function size(){ const d = Math.min(2, devicePixelRatio || 1); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * d; cv.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0); }
   function make(){ return { x: Math.random() * W, y: H + Math.random() * H * .5, r: Math.random() * 2.4 + .8, s: Math.random() * .5 + .2, o: Math.random() * .6 + .3, c: cols[(Math.random() * cols.length) | 0], w: Math.random() * 6.28 }; }
   size(); addEventListener('resize', size);
