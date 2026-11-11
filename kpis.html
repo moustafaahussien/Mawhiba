@@ -57,6 +57,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 .tools{display:flex;gap:6px;align-items:center}
 .tbtn{display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 14px;border-radius:14px;border:1px solid var(--glass-edge);background:rgba(255,255,255,.7);font-family:var(--display);font-weight:600;font-size:14px;transition:background .2s,transform .2s}
 .tbtn:hover{background:#fff;transform:translateY(-2px)}
+.nav.nav-icons .tbtn .lbl{display:none}.nav.nav-icons .tbtn{padding:0 11px}
+.nav.nav-burger .tbtn.opt{display:none}
+.nav.nav-tight .brand b,.nav.nav-tight .brand small{display:none}.nav.nav-tight .lang span{padding:6px 9px}
 .tbtn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .lang{direction:ltr;display:inline-flex;align-items:center;padding:3px;border:0;border-radius:14px;background:rgba(26,22,64,.08);font-family:'Sora',sans-serif;font-weight:600;font-size:13px}
 .lang span{padding:6px 12px;border-radius:11px;color:var(--muted)}
@@ -232,6 +235,18 @@ html.js .reveal.in{opacity:1;transform:none}
 }
 </style>
 <script>document.documentElement.classList.add('js')</script>
+<script>
+/* ملاءمة الشريط العلوي (مثل js/platform.js): تُخفى النصوص، ثم الأزرار الثانوية، ثم اسم المنصة */
+  function fitNav() {
+    const nav = document.querySelector('header.nav'); if (!nav) return;
+        const over = () => { const r = nav.getBoundingClientRect(); return [...nav.querySelectorAll('a,button')].some(e => { if (!e.offsetParent) return false; const q = e.getBoundingClientRect(); return q.width && (q.left < r.left - 1 || q.right > r.right + 1); }) || nav.scrollWidth > nav.clientWidth + 1; };
+    const stages = ['nav-icons', 'nav-burger', 'nav-tight'];
+    nav.classList.remove(...stages);
+    for (const c of stages) { if (!over()) break; nav.classList.add(c); }
+  }
+  let fitT; addEventListener('resize', () => { clearTimeout(fitT); fitT = setTimeout(fitNav, 60); });
+  document.addEventListener('DOMContentLoaded', () => { fitNav(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitNav); });
+</script>
 <script src="js/config.js"></script>
 <script src="js/competitions-data.js"></script>
 <script src="js/achievements-data.js"></script>
@@ -250,12 +265,12 @@ html.js .reveal.in{opacity:1;transform:none}
     <span><b data-i18n="brand">منصة الموهبة</b><small data-i18n="school">مدارس دار الذكر</small></span>
   </a>
   <div class="tools">
-    <a class="tbtn" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></svg><span class="lbl" data-i18n="nav.home">الرئيسية</span></a>
-    <a class="tbtn" href="competitions.html"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0zM17 6h3v2a3 3 0 01-3 3M7 6H4v2a3 3 0 003 3"/></svg><span class="lbl" data-i18n="nav.comps">المسابقات</span></a>
-    <a class="tbtn" href="mawhiba-test.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg><span class="lbl" data-i18n="nav.mtest">مقياس موهبة</span></a>
+    <a class="tbtn opt" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></svg><span class="lbl" data-i18n="nav.home">الرئيسية</span></a>
+    <a class="tbtn opt" href="competitions.html"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0zM17 6h3v2a3 3 0 01-3 3M7 6H4v2a3 3 0 003 3"/></svg><span class="lbl" data-i18n="nav.comps">المسابقات</span></a>
+    <a class="tbtn opt" href="mawhiba-test.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg><span class="lbl" data-i18n="nav.mtest">مقياس موهبة</span></a>
     <a class="tbtn" href="sijil.html" title="دخول المعلمين"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg><span class="lbl" data-i18n="footer.sijil">دخول المعلمين</span></a>
     <a class="tbtn" href="sijil-reports.html" title="دخول المشرف"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.6-3 8.5-7 10-4-1.5-7-5.4-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><span class="lbl" data-i18n="footer.admin">دخول المشرف</span></a>
-    <button class="tbtn" id="printBtn" type="button"><svg viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a1 1 0 01-1-1v-6a2 2 0 012-2h14a2 2 0 012 2v6a1 1 0 01-1 1h-2M6 14h12v7H6z"/></svg><span class="lbl" data-i18n="print">طباعة / PDF</span></button>
+    <button class="tbtn opt" id="printBtn" type="button"><svg viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a1 1 0 01-1-1v-6a2 2 0 012-2h14a2 2 0 012 2v6a1 1 0 01-1 1h-2M6 14h12v7H6z"/></svg><span class="lbl" data-i18n="print">طباعة / PDF</span></button>
     <button class="lang" id="langBtn" type="button" aria-label="Language"><span data-l="ar">ع</span><span data-l="en">EN</span></button>
   </div>
 </header>
@@ -668,7 +683,7 @@ function applyLang(){
   const lg = document.getElementById('logoImg'); if (lg) lg.alt = lang === 'ar' ? 'شعار مدارس دار الذكر' : 'Dar Al-Thikr Schools logo';
   if (MODEL) render();
 }
-document.getElementById('langBtn').onclick = () => { lang = lang === 'ar' ? 'en' : 'ar'; try { localStorage.setItem('tp-lang', lang); } catch(e){} applyLang(); };
+document.getElementById('langBtn').onclick = () => { lang = lang === 'ar' ? 'en' : 'ar'; try { localStorage.setItem('tp-lang', lang); } catch(e){} applyLang(); fitNav(); };
 document.getElementById('printBtn').onclick = () => { document.querySelectorAll('.reveal').forEach(el => el.classList.add('in')); window.print(); };
 addEventListener('beforeprint', () => document.querySelectorAll('.reveal').forEach(el => el.classList.add('in')));
 document.addEventListener('click', e => {

@@ -40,6 +40,7 @@
     lang = lang === 'ar' ? 'en' : 'ar';
     try { localStorage.setItem('tp-lang', lang); } catch (e) {}
     TP.applyLang();
+    if (TP.fitNav) TP.fitNav();
   };
 
   /* ---------- أدوات ---------- */
@@ -267,6 +268,17 @@
   TP.observe = els => (els || document.querySelectorAll('.reveal:not(.in)')).forEach(el => io ? io.observe(el) : el.classList.add('in'));
 
   document.documentElement.classList.add('js');
+  /* ملاءمة الشريط العلوي: إن لم تتسع عناصره (حسب اللغة وعرض الشاشة) تُخفى نصوص زري الدخول، ثم تتحول الروابط إلى قائمة ☰ */
+  function fitNav() {
+    const nav = document.querySelector('header.nav'); if (!nav) return;
+        const over = () => { const r = nav.getBoundingClientRect(); return [...nav.querySelectorAll('a,button')].some(e => { if (!e.offsetParent) return false; const q = e.getBoundingClientRect(); return q.width && (q.left < r.left - 1 || q.right > r.right + 1); }) || nav.scrollWidth > nav.clientWidth + 1; };
+    const stages = ['nav-icons', 'nav-burger', 'nav-tight'];
+    nav.classList.remove(...stages);
+    for (const c of stages) { if (!over()) break; nav.classList.add(c); }
+  }
+  TP.fitNav = fitNav;
+  let fitT; addEventListener('resize', () => { clearTimeout(fitT); fitT = setTimeout(fitNav, 60); });
+  document.addEventListener('DOMContentLoaded', () => { fitNav(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitNav); });
   document.addEventListener('DOMContentLoaded', () => {
     if (window.TP_HOST_PAGE) return; // الصفحة الرئيسية تدير زر اللغة والقائمة بنفسها
     const lb = document.getElementById('langBtn'); if (lb) lb.addEventListener('click', TP.toggleLang);

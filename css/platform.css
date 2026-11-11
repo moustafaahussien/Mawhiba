@@ -85,6 +85,15 @@ html[lang="ar"] .lang [data-l="ar"],html[lang="en"] .lang [data-l="en"]{backgrou
   .nav-links a{padding:12px 16px}
 }
 @media(max-width:620px){.brand small{display:none}.nav{height:62px}}
+/* يضيفها TP.fitNav عند ضيق الشريط */
+.nav.nav-icons .nav-staff a span{display:none}.nav.nav-icons .nav-staff a{padding:9px}
+.nav.nav-burger .burger{display:block}
+.nav.nav-burger .nav-links{position:absolute;top:calc(100% + 10px);inset-inline:0;flex-direction:column;align-items:stretch;padding:10px;display:none;
+  background:var(--glass-strong);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);border:1px solid var(--glass-edge);border-radius:20px;box-shadow:0 20px 40px -18px rgba(0,0,0,.25)}
+.nav.nav-burger .nav-links.open{display:flex}
+.nav.nav-burger .nav-links a{padding:12px 16px}
+.nav.nav-tight .brand b,.nav.nav-tight .brand small{display:none}.nav.nav-tight .lang span{padding:6px 9px}
+
 
 /* ---------- عناصر عامة ---------- */
 .kicker{display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:15px;color:#9A5E04;margin-bottom:8px}
