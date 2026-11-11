@@ -59,7 +59,7 @@ html[dir=rtl] .hs{padding:10px 12px 10px 18px}
 .filters .grp{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .filters .lbl{font-family:var(--display);font-weight:600;font-size:13.5px;color:var(--muted)}
 .filters .seg{box-shadow:none;background:rgba(255,255,255,.55)}
-.filters .seg button[data-c]{--c:#E8A50A}
+.filters .seg button[data-c]{--c:var(--gold,#E8A50A)}
 .filters .seg button.on[data-c]{background:linear-gradient(135deg,color-mix(in srgb,var(--c) 65%,#fff),var(--c));box-shadow:0 8px 18px -8px var(--c)}
 .search{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;padding:0 14px;height:44px;border-radius:14px;background:rgba(255,255,255,.75);border:1px solid var(--glass-edge)}
 .search svg{width:18px;height:18px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round}
@@ -205,7 +205,7 @@ function renderStatic(){
   const fieldsUsed = [...new Set(COMPS.map(c => c.field))];
   const open = DATA ? COMPS.filter(c => TP.compState(DATA, c.id).status === 'open').length : null;
   const hs = [
-    { n: COMPS.length, k:'hs.comps', c:'#E8A50A', ic:'trophy' },
+    { n: COMPS.length, k:'hs.comps', c:'var(--gold,#E8A50A)', ic:'trophy' },
     { n: fieldsUsed.length, k:'hs.fields', c:'#7B4DFF', ic:'grid' },
     { n: 3, k:'hs.stages', c:'#0EA5D6', ic:'users' }
   ];
@@ -218,7 +218,7 @@ function renderStatic(){
     <div class="c-core">${TP.icon('trophy')}</div>
     <div class="c-orbit">${COMPS.map((c, i) => `<div class="c-slot" style="--a:${-90 + i * 360 / n}deg"><div class="c-up"><div class="c-up2"><a class="c-orb" style="--c:${c.color}" href="competition.html?c=${c.id}" aria-label="${TP.esc(TP.tx(c.name))}">${TP.icon(c.icon)}<span class="c-pill">${TP.esc(TP.tx(c.short))}</span></a></div></div></div>`).join('')}</div>`;
 
-  document.getElementById('fieldSeg').innerHTML = [['all', TP.t('f.all'), '#E8A50A'], ...fieldsUsed.map(f => [f, TP.tx(FIELDS[f]), FIELDS[f].c])]
+  document.getElementById('fieldSeg').innerHTML = [['all', TP.t('f.all'), 'var(--gold,#E8A50A)'], ...fieldsUsed.map(f => [f, TP.tx(FIELDS[f]), FIELDS[f].c])]
     .map(([k, l, c]) => `<button type="button" class="${k === F_FIELD ? 'on' : ''}" data-field="${k}" data-c style="--c:${c}">${TP.esc(l)}</button>`).join('');
   document.getElementById('stageSeg').innerHTML = [['all', TP.t('f.all')], ...Object.keys(STAGES).map(s => [s, TP.tx(STAGES[s])])]
     .map(([k, l]) => `<button type="button" class="${k === F_STAGE ? 'on' : ''}" data-stage="${k}">${TP.esc(l)}</button>`).join('');

@@ -332,8 +332,8 @@ html[dir=rtl] .skl button{padding:6px 12px 6px 7px}
             <div class="h3"><span class="gorb" style="--c:#7B4DFF" data-ic="users"></span><span data-i18n="g.who">من يحق له التسجيل؟</span></div>
             <ul class="checks" id="who"></ul>
           </div>
-          <div class="card glass reveal" style="--c:#E8A50A">
-            <div class="h3"><span class="gorb" style="--c:#E8A50A" data-ic="star"></span><span data-i18n="g.fee">المساهمة المالية والترشيح المدعوم</span></div>
+          <div class="card glass reveal" style="--c:var(--gold,#E8A50A)">
+            <div class="h3"><span class="gorb" style="--c:var(--gold,#E8A50A)" data-ic="star"></span><span data-i18n="g.fee">المساهمة المالية والترشيح المدعوم</span></div>
             <p id="feeTxt"></p>
           </div>
         </div>
@@ -376,8 +376,8 @@ html[dir=rtl] .skl button{padding:6px 12px 6px 7px}
         <p class="src reveal" data-i18n="d.domsrc">التعريفات وفق صفحة البرنامج الوطني للكشف عن الموهوبين على موقع موهبة.</p>
       </div>
       <div class="four" id="facts"></div>
-      <div class="card glass reveal" style="--c:#E8A50A">
-        <div class="h3"><span class="gorb" style="--c:#E8A50A" data-ic="chart"></span><span id="leTitle"></span></div>
+      <div class="card glass reveal" style="--c:var(--gold,#E8A50A)">
+        <div class="h3"><span class="gorb" style="--c:var(--gold,#E8A50A)" data-ic="chart"></span><span id="leTitle"></span></div>
         <div class="stats" id="leStats"></div>
         <p class="src"><span data-i18n="d.source">المصدر:</span> <a id="leSrc" target="_blank" rel="noopener" data-i18n="d.spa">وكالة الأنباء السعودية</a></p>
       </div>
@@ -574,7 +574,7 @@ function regItem() { return REG ? { d: TP.parseDate(REG.date), e: TP.parseDate(R
 function renderHero() {
   document.title = TP.t('title2');
   $('#heroChips').innerHTML = [['chip.grades', '#0EA5D6'], ['chip.levels', '#7B4DFF'], ['chip.domains', '#E2386F'], ['chip.lang', '#0E9F76']].map(([k, c]) => `<span class="tag" style="--c:${c}">${TP.t(k)}</span>`).join('') +
-    `<span class="tag solid" style="--c:#E8A50A">${esc(L(I.edition))}</span>`;
+    `<span class="tag solid" style="--c:var(--gold,#E8A50A)">${esc(L(I.edition))}</span>`;
   const it = regItem(), ph = it ? TP.phase(it) : 'undated';
   const st = ph === 'cur' ? 'open' : ph === 'future' ? 'soon' : 'closed';
   $('#regCard').innerHTML = `<div class="top"><h3>${TP.t('reg.t')}</h3><span class="tag status-${st}"><span class="dot"></span>${TP.t('reg.' + st)}</span></div>
@@ -599,7 +599,7 @@ function renderGuide() {
   $('#feeTxt').textContent = F('fee.txt', { fee: L(I.fee) });
   $('#rules').innerHTML = I.rules.map(r => `<li>${TP.icon('info')}<span>${esc(L(r))}</span></li>`).join('');
   $('#day').innerHTML = I.testDay.map(r => `<li>${chk}<span>${esc(L(r))}${r.official ? `<span class="ofc">${TP.t('official')}</span>` : ''}</span></li>`).join('');
-  $('#after').innerHTML = I.after.map((a, i) => `<div class="card glass reveal" style="--c:${['#0EA5D6', '#7B4DFF', '#E8A50A'][i % 3]}"><div class="h3"><span class="gorb" style="--c:${['#0EA5D6', '#7B4DFF', '#E8A50A'][i % 3]}">${TP.icon(a.ic)}</span><span>${esc(L(a))}</span></div><p class="mini" style="font-size:14.5px">${esc(L(a.d))}</p></div>`).join('');
+  $('#after').innerHTML = I.after.map((a, i) => `<div class="card glass reveal" style="--c:${['#0EA5D6', '#7B4DFF', 'var(--gold,#E8A50A)'][i % 3]}"><div class="h3"><span class="gorb" style="--c:${['#0EA5D6', '#7B4DFF', 'var(--gold,#E8A50A)'][i % 3]}">${TP.icon(a.ic)}</span><span>${esc(L(a))}</span></div><p class="mini" style="font-size:14.5px">${esc(L(a.d))}</p></div>`).join('');
 }
 function renderFinder() {
   const v = $('#gradeSel').value, box = $('#finderRes');

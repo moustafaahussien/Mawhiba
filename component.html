@@ -95,7 +95,7 @@ html[dir=rtl] .sub-h::after{background:linear-gradient(270deg,color-mix(in srgb,
 .note svg{width:18px;height:18px;flex:none;stroke:var(--c);fill:none;stroke-width:2;margin-top:4px}
 .callout{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;margin-top:22px;padding:20px 22px;border-radius:24px;
   background:linear-gradient(135deg,color-mix(in srgb,#E8A50A 16%,rgba(255,255,255,.85)),rgba(255,255,255,.7));border:1px solid color-mix(in srgb,#E8A50A 35%,#fff)}
-.callout .gorb{--sz:46px;--c:#E8A50A}
+.callout .gorb{--sz:46px;--c:var(--gold,#E8A50A)}
 .callout p{font-size:15.5px;line-height:1.95}
 
 /* آلية التنفيذ */
@@ -420,7 +420,7 @@ function render(){
       </div>`,
     goals: () => `<div class="panel glass reveal">${has('goals') ? `<ul class="goals">${L(C.goals).map((g, i) => `<li><span class="gorb"><b>${i + 1}</b></span><span>${TP.esc(g)}</span></li>`).join('')}</ul>` : ''}
         ${has('goalGroups') ? `<div class="ggroups">${C.goalGroups.map(g => `<div class="gg"><div class="mh"><span class="gorb">${TP.icon(g.icon)}</span><h4>${TP.esc(TP.tx(g.t))}</h4></div><ul>${L(g).map(x => `<li>${TP.esc(x)}</li>`).join('')}</ul></div>`).join('')}</div>` : ''}</div>`,
-    subs: () => `<div class="subs">${C.subs.map((s, i) => `<article class="sub glass reveal" style="--c:${['#7B4DFF','#E2386F','#0E9F76','#E8A50A'][i % 4]}">
+    subs: () => `<div class="subs">${C.subs.map((s, i) => `<article class="sub glass reveal" style="--c:${['#7B4DFF','#E2386F','#0E9F76','var(--gold,#E8A50A)'][i % 4]}">
         <div class="mh"><span class="gorb">${TP.icon(s.icon)}</span><div><small>${String(i + 1).padStart(2, '0')}</small><h3>${TP.esc(TP.tx(s.t))}</h3></div></div>
         <p class="d">${TP.esc(TP.tx(s.d))}</p>
         ${s.goals ? `<div class="sh">${TP.t('sub.goals')}</div><ul class="dots">${L(s.goals).map(x => `<li>${TP.esc(x)}</li>`).join('')}</ul>` : ''}
