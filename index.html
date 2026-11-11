@@ -1016,19 +1016,19 @@ const TGDM = [
     who:{ar:'جميع الطلاب والمعلمين والإداريين وأولياء الأمور الراغبين',en:'All students, teachers, staff & interested parents'},
     d:{ar:'مجموعات أنشطة لاصفية تتمحور حول أفرع المعرفة والمواضيع المشتركة، يمارس فيها الطلاب اهتماماتهم مع أعضاء هيئة التدريس والإداريين لإنتاج سلعة ذات قيمة أو تقديم خدمة، ويُوزَّع فيها الطلاب حسب اهتماماتهم لا حسب أعمارهم.',
        en:'Extracurricular activity clusters around fields of knowledge where students pursue shared interests with teachers and staff to produce a valuable product or service — grouped by interest rather than age.'} },
-  { n:5, c:'#E2386F', ic:'book', ar:'برنامج الإثراء المتخصص', en:'Specialty Enrichment Program', s:{ar:'الإثراء المتخصص',en:'Specialty Enrichment'},
+  { n:5, c:'#F07B0F', ic:'book', ar:'برنامج الإثراء المتخصص', en:'Specialty Enrichment Program', s:{ar:'الإثراء المتخصص',en:'Specialty Enrichment'},
     who:{ar:'الوعاء الإثرائي (من 15 إلى 20%)',en:'Enrichment pool (15–20%)'},
     d:{ar:'وحدات تعليمية في القرآن الكريم والرياضيات والعلوم الطبيعية واللغتين العربية والإنجليزية بمحتوى ومستوى يفوق ما يُعطى لبقية الطلاب، تستخدم مهارات التفكير العليا في تصنيف بلوم؛ لتحقيق عنصر التمييز.',
        en:'Units in Qur’an, mathematics, natural sciences, Arabic and English with content and level beyond the regular curriculum, using Bloom’s higher-order thinking — to achieve differentiation.'} },
-  { n:6, c:'#F07B0F', ic:'flask', ar:'برنامج المشاريع الهادفة', en:'Targeted Projects Program', s:{ar:'المشاريع الهادفة',en:'Targeted Projects'},
+  { n:6, c:'#E2386F', ic:'flask', ar:'برنامج المشاريع الهادفة', en:'Targeted Projects Program', s:{ar:'المشاريع الهادفة',en:'Targeted Projects'},
     who:{ar:'فئة المبدعين (من 2 إلى 3%)',en:'Creative group (2–3%)'},
     d:{ar:'الوسيلة التي تُفعَّل بها الخبرات المكتسبة وتظهر في هيئة مُخرَج يقدمه الطالب؛ يمارس فيه دور الباحث الممارس للبحث العلمي المتقدم والإنتاج العملي والفني، ويتحول المعلم من ملقٍ للمعرفة إلى موجّه وراعٍ وشريك.',
        en:'The means by which acquired experiences are activated and shown as a student product; the student acts as a practising researcher in advanced research and practical or artistic production, while the teacher becomes guide, mentor and partner.'} },
-  { n:7, c:'#C2410C', ic:'rocket', ar:'برنامج التسريع الأكاديمي', en:'Academic Acceleration Program', s:{ar:'التسريع الأكاديمي',en:'Acceleration'},
+  { n:7, c:'#2F6FE0', ic:'rocket', ar:'برنامج التسريع الأكاديمي', en:'Academic Acceleration Program', s:{ar:'التسريع الأكاديمي',en:'Acceleration'},
     who:{ar:'طلاب الوعاء الإثرائي',en:'Enrichment-pool students'},
     d:{ar:'إجراءات للتأكد من مطابقة السمات الشخصية والقدرات العقلية للطالب المرشح لمتطلبات البرنامج، ويُعد التسريع في كامل المنهج لسنة دراسية الخيار الأكثر شيوعاً؛ ليتلقى الطالب المادة الدراسية في مستواه العقلي.',
        en:'Procedures to confirm that a nominated student’s personal traits and mental abilities match the program; whole-grade acceleration by one year is the most common option, so the student learns at their mental level.'} },
-  { n:8, c:'#6D4BFF', ic:'compass', ar:'برنامج الرعاية الخاصة', en:'Mentorship Program', s:{ar:'الرعاية الخاصة',en:'Mentorship'},
+  { n:8, c:'#C2410C', ic:'compass', ar:'برنامج الرعاية الخاصة', en:'Mentorship Program', s:{ar:'الرعاية الخاصة',en:'Mentorship'},
     who:{ar:'الوعاء الإثرائي (من 15 إلى 20%)',en:'Enrichment pool (15–20%)'},
     d:{ar:'خطط ذات أبعاد استراتيجية وخطوات مرحلية توضع لتناسب قدرات وطموح كل طالب، يشرف على وضعها وتطبيقها مختصون في مجال الموهبة؛ لتعزيز القدرات التطويرية والمهارات الاجتماعية والأهداف العملية والمعارف المتخصصة.',
        en:'Strategic, staged plans tailored to each student’s abilities and ambitions, designed and supervised by giftedness specialists — strengthening development capacities, social skills, practical goals and specialized knowledge.'} },
@@ -1038,6 +1038,8 @@ const TGDM = [
     d:{ar:'أربعة برامج فرعية تقدّم الخدمات المساندة لبرامج المكونات الرئيسة، وتُعد أساساً لنجاح عملية الكشف والتطوير التي يهدف إليها النموذج.',
        en:'Four sub-programs providing support services to the main components — a foundation for the success of identification and development.'} }
 ];
+/* ألوان المكونات من مصدر واحد (js/components-data.js) لتطابق ألوانها في صفحاتها */
+TGDM.forEach(m => { const c = (window.TP_COMPONENTS || []).find(x => x.n === m.n); if (c && c.color) m.c = c.color; });
 
 /* مصطلحات النموذج — من الكتاب */
 const STAT_KEYS = [

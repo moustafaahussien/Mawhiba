@@ -52,3 +52,11 @@ html[lang="ar"] .lang [data-l="ar"],html[lang="en"] .lang [data-l="en"]{backgrou
 #cards .card:nth-child(4n+3){--c:#2DBE78!important}
 #cards .card:nth-child(4n+4){--c:#058C55!important}
 .card.featured{background:linear-gradient(140deg,rgba(45,190,120,.94),rgba(15,163,94,.94) 50%,rgba(0,112,74,.95));box-shadow:0 26px 50px -24px rgba(0,112,74,.6)}
+
+/* الرئيسية: بطاقة المؤسس، وصورة المؤلف، وحلقات المدار */
+#orgChart .org-person,.author .org-photo{--c:#0FA35E!important}
+.orbit-ring.r1{border-color:rgba(15,163,94,.45)}
+.orbit-ring.r2{border-color:rgba(0,112,74,.22)}
+.kicker{color:var(--g700)}
+.pulse{border-color:rgba(15,163,94,.55)}
+.core{box-shadow:0 3cqw 6cqw -2cqw rgba(0,112,74,.6),inset -1.4cqw -2cqw 3cqw rgba(0,40,25,.35),inset .8cqw 1cqw 2cqw rgba(255,255,255,.55)}
