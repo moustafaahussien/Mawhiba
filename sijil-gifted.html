@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>استيراد الموهوبين من نظام الكشف – منصة الموهبة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@300;600;900&family=Sora:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/platform.css">
+<link rel="stylesheet" href="css/sijil.css">
+<meta name="robots" content="noindex">
+<!-- مظهر مؤقت بأخضر الشعار: احذف السطر التالي للرجوع إلى الألوان الأصلية -->
+<link rel="stylesheet" href="css/theme-green.css">
+<style>
+.cat{display:inline-block;padding:3px 10px;border-radius:999px;font-weight:800;font-size:.8rem;white-space:nowrap}
+.cat.both{background:linear-gradient(135deg,#F2B705,#F07B0F);color:#fff}
+.cat.ability{background:rgba(47,111,224,.14);color:#1F4FB0}
+.cat.creative{background:rgba(226,56,111,.12);color:#B4234F}
+.cat.borderline{background:rgba(107,104,144,.14);color:#4A4870}
+.pc{font-family:'Sora',sans-serif;font-weight:800}
+.pc.hi{color:#0B7A5B}
+.pc.mid{color:#8A5D00}
+.pc small{display:block;font-family:inherit;font-weight:600;font-size:.72rem;color:var(--muted)}
+.progs{display:flex;flex-wrap:wrap;gap:6px}
+.pg{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;border:1px solid var(--glass-edge);background:rgba(255,255,255,.75);font-size:.82rem;font-weight:700;cursor:pointer}
+.pg input{margin:0}
+.pg.opt{border-style:dashed;color:var(--muted)}
+.pg.done{background:rgba(14,159,118,.12);color:#0B7A5B;border-color:transparent;cursor:default}
+.stt{font-size:.8rem;font-weight:700;white-space:nowrap}
+.stt.new{color:#B4234F}
+.stt.old{color:#0B7A5B}
+tr.det td{background:rgba(255,255,255,.55);font-size:.88rem;line-height:1.9}
+tr.det ul{margin:4px 0;padding-inline-start:20px}
+.linkbox .field{flex:1 1 260px}
+.actbar{position:sticky;bottom:12px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px 16px;margin-top:14px;z-index:5}
+.guide{font-size:.92rem;line-height:1.9}
+.guide ol{margin:6px 0;padding-inline-start:22px}
+.lnk{color:var(--violet);font-weight:700;cursor:pointer;background:none;border:0;font:inherit;padding:0;text-decoration:underline}
+</style>
+</head>
+<body class="sj">
+<div id="hdr"></div>
+<main class="wrap">
+  <div id="demo"></div>
+  <section class="hero glass">
+    <span class="kicker">الكشف عن الموهوبين</span>
+    <h1>استيراد الموهوبين من نظام الكشف</h1>
+    <p>يجلب الطلاب الذين ظهرت موهبتهم في <b>اختبار المصفوفات</b> (القدرة العقلية) و<b>اختبار التفكير الإبداعي</b> من نظام الكشف، ويقترح لكل طالب البرامج المناسبة من برامج النموذج التام. تراجع الاقتراحات ثم تعتمدها بضغطة واحدة، فتُحفظ نتائج الطالب في ملفه بالسجل، ويُسجَّل في البرامج المعتمدة.</p>
+  </section>
+
+  <section class="filters glass" id="login" hidden>
+    <div id="admBox" style="display:contents"></div>
+    <button class="btn" id="loginBtn">دخول</button>
+  </section>
+
+  <div id="main" hidden>
+    <section class="panel glass">
+      <h3>الاتصال بنظام الكشف</h3>
+      <div class="filters linkbox" style="padding:0;margin:10px 0 0;box-shadow:none;background:none;border:0">
+        <label class="field">مفتاح الربط<input id="lkKey" type="password" dir="ltr" autocomplete="off" placeholder="LNK-…"></label>
+        <label class="field" style="flex:0 1 200px">العام الدراسي<select id="year"></select></label>
+        <label class="chk" style="display:flex;gap:6px;align-items:center;font-weight:700"><input type="checkbox" id="lkRemember"> تذكّر المفتاح على هذا الجهاز</label>
+        <button class="btn" id="fetchBtn">جلب الطلاب من نظام الكشف</button>
+      </div>
+      <details class="guide" style="margin-top:10px"><summary><b>من أين أحصل على مفتاح الربط؟</b></summary>
+        <ol>
+          <li>افتح نظام الكشف عن الموهوبين وسجّل الدخول بحساب <b>مدير النظام</b>.</li>
+          <li>من القائمة اختر <b>الإعدادات</b>، ثم انزل إلى بطاقة <b>«الربط مع منصة الموهبة»</b>.</li>
+          <li>اضغط <b>«إنشاء مفتاح ربط»</b>، ثم <b>«نسخ»</b>.</li>
+          <li>الصقه هنا في خانة «مفتاح الربط» واضغط «جلب الطلاب».</li>
+        </ol>
+        المفتاح يسمح بقراءة ملخص نتائج المرشحين والحالات الحدّية فقط. لا تفعّل «تذكّر المفتاح» على جهاز مشترك.
+      </details>
+    </section>
+
+    <div id="out"></div>
+  </div>
+</main>
+<div id="ftr"></div>
+
+<script src="js/config.js"></script>
+<script src="js/sijil/config.js"></script>
+<script src="js/sijil/programs.js"></script>
+<script src="js/sijil/common.js"></script>
+<script src="js/sijil/i18n.js"></script>
+<script>
+$('#hdr').innerHTML = header('gifted');
+$('#demo').innerHTML = demoBanner(); $('#ftr').outerHTML = footerHtml();
+
+const LINK_URL = () => ((window.TP_CONFIG || {}).GIFTED_SCRIPT_URL || '').trim();
+const KEYS = { store: 'tf_gift_key' };
+let LIST = [], STATE = { records: [], people: [], students: [] }, SEL = {}, PICK = {}, OPEN = {};
+const F = { stage: '', cat: '', status: '', q: '' };
+const CAT_ORDER = ['both', 'ability', 'creative', 'borderline'];
+const CAT_NAME = { both: 'قدرة عقلية + تفكير إبداعي', ability: 'قدرة عقلية عالية', creative: 'تفكير إبداعي عالٍ', borderline: 'حالة حدّية' };
+const nm = s => String(s || '').trim().replace(/\s+/g, ' ');
+
+/* ---------- المفتاح: في هذه الجلسة فقط، أو على الجهاز إن اختار المشرف ---------- */
+function getKey() { try { return sessionStorage.getItem(KEYS.store) || LS.get(KEYS.store, ''); } catch (e) { return LS.get(KEYS.store, ''); } }
+function putKey(k, remember) {
+  try { sessionStorage.setItem(KEYS.store, k); } catch (e) {}
+  LS.set(KEYS.store, remember ? k : '');
+}
+
+/* ---------- تحويل صف نظام الكشف إلى اسم الصف في المنصة ---------- */
+const ORD = ['الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس', 'السادس'];
+function gradeName(s) {
+  const n = Number(s.grade), girls = /بنات|أنث|female|girl/i.test(s.gender || ''), us = /أمري|american|amer|us\b/i.test(s.track || '');
+  let g = '';
+  if (us && n >= 4 && n <= 12) g = 'Grade ' + n;
+  else if (n >= 1 && n <= 6) g = ORD[n - 1] + ' الابتدائي' + (girls ? ' بنات' : '');
+  else if (n >= 7 && n <= 9) g = ORD[n - 7] + ' المتوسط';
+  else if (n >= 10 && n <= 12) g = ORD[n - 10] + ' الثانوي';
+  return GRADES.indexOf(g) >= 0 ? g : (g || ('الصف ' + (s.grade || '')));
+}
+
+/* ---------- الدخول ---------- */
+function showLogin() { $('#admBox').innerHTML = ADMIN.fields(); $('#login').hidden = false; $('#main').hidden = true; }
+async function start() {
+  const key = ADMIN.get();
+  if (!key) { showLogin(); return; }
+  try {
+    await loadState();
+    $('#login').hidden = true; $('#main').hidden = false;
+    $('#year').innerHTML = yearOptions().map(y => `<option ${y === hijriYearNow() ? 'selected' : ''}>${y}</option>`).join('');
+    const k = getKey(); $('#lkKey').value = k; $('#lkRemember').checked = !!LS.get(KEYS.store, '');
+    if (!LINK_URL()) $('#out').innerHTML = `<div class="panel glass empty">رابط نظام الكشف غير مضبوط في <code>js/config.js</code> (GIFTED_SCRIPT_URL).</div>`;
+    else if (k) fetchList();
+    else $('#out').innerHTML = '<div class="panel glass empty">الصق مفتاح الربط واضغط «جلب الطلاب من نظام الكشف».</div>';
+  } catch (e) {
+    if (/كلمة مرور|المشرف/.test(e.message)) ADMIN.forget();
+    showLogin(); toast(e.message, 'err');
+  }
+}
+$('#loginBtn').onclick = () => { const k = ADMIN.read(); if (!k) return; ADMIN.save(k); start(); };
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.closest && e.target.closest('#login')) $('#loginBtn').click(); });
+
+async function loadState() {
+  if (isDemo()) { STATE = { records: LS.get('tf_gift_demo', []), people: [], students: [] }; return; }
+  const d = await jsonp({ mode: 'gifted', key: ADMIN.get() }, 40000);
+  if (!d || !d.ok) throw new Error((d && d.error) || 'تعذر قراءة السجل');
+  if (!d.ver || d.ver < 5) throw new Error('سكربت السجل المنشور أقدم من هذه الصفحة. انشر إصداراً جديداً من tools/sijil-script.gs');
+  STATE = d;
+}
+
+/* ---------- جلب القائمة من نظام الكشف ---------- */
+$('#fetchBtn').onclick = () => {
+  const k = $('#lkKey').value.trim();
+  if (!k) { toast('الصق مفتاح الربط أولاً', 'err'); return; }
+  putKey(k, $('#lkRemember').checked); fetchList();
+};
+$('#lkRemember').onchange = () => { const k = $('#lkKey').value.trim(); if (k) putKey(k, $('#lkRemember').checked); else LS.set(KEYS.store, ''); };
+$('#year').onchange = () => { initPicks(true); draw(); };
+
+async function fetchList() {
+  const b = $('#fetchBtn'); b.disabled = true;
+  $('#out').innerHTML = '<div class="panel glass empty">جارٍ جلب الطلاب من نظام الكشف…</div>';
+  try {
+    const r = await fetch(LINK_URL(), { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'linkExport', key: getKey() }) });
+    const d = await r.json();
+    if (!d.ok) { if (/مفتاح/.test(d.error || '')) { putKey('', false); $('#lkKey').value = ''; } throw new Error(d.error || 'تعذر الجلب'); }
+    LIST = (d.students || []).map(s => Object.assign(s, { _grade: gradeName(s), _k: s.studentId + '|' + s.stage }));
+    await loadState().catch(() => {});
+    initPicks(true); draw(d);
+  } catch (e) {
+    $('#out').innerHTML = `<div class="panel glass empty">${esc(e.message === 'Failed to fetch' ? 'تعذر الوصول إلى نظام الكشف. تحقق من الإنترنت ثم أعد المحاولة.' : e.message)}</div>`;
+  } finally { b.disabled = false; }
+}
+
+/* ---------- حالة كل طالب في المنصة ---------- */
+const yearSel = () => $('#year').value;
+function imported(s) { const y = yearSel(); return STATE.records.find(r => r.year === y && (r.studentId ? r.studentId === s.studentId : nm(r.name) === nm(s.name))); }
+function enrolled(s, prog) { const y = yearSel(); return STATE.people.some(p => p.prog === prog && p.year === y && ((p.sid && p.sid === s.studentId) || nm(p.name) === nm(s.name))); }
+function initPicks(reset) {
+  LIST.forEach(s => {
+    if (reset || !PICK[s._k]) PICK[s._k] = {};
+    s.programs.forEach(p => { if (reset || PICK[s._k][p.prog] == null) PICK[s._k][p.prog] = p.pre && !enrolled(s, p.prog); });
+    if (reset || SEL[s._k] == null) SEL[s._k] = !imported(s);
+  });
+}
+
+/* ---------- العرض ---------- */
+function pcell(x) {
+  if (!x) return '<span class="muted">—</span>';
+  const v = x.pct, cls = x.nominated ? 'hi' : x.borderline ? 'mid' : '';
+  return `<span class="pc ${cls}" title="${esc(x.level)}${x.ref ? ' · مقارنة بـ ' + esc(x.ref) : ''}">${v}${x.nominated ? ' ★' : ''}<small>${x.nominated ? 'مرشح' : x.borderline ? 'حدّي' : 'المئيني'}</small></span>`;
+}
+function rows() {
+  const q = nm(F.q);
+  return LIST.filter(s => (!F.stage || s.stage === F.stage) && (!F.cat || s.cat === F.cat)
+    && (!F.status || (F.status === 'new' ? !imported(s) : !!imported(s)))
+    && (!q || nm(s.name).includes(q) || String(s.studentId).includes(q)));
+}
+function draw(meta) {
+  if (!LIST.length) { $('#out').innerHTML = '<div class="panel glass empty">لا يوجد طلاب مرشحون أو حالات حدّية في نظام الكشف حتى الآن. تظهر القائمة بعد تصحيح الاختبارات.</div>'; return; }
+  const cnt = c => LIST.filter(s => s.cat === c).length, nNew = LIST.filter(s => !imported(s)).length;
+  const R = rows(), nSel = LIST.filter(s => SEL[s._k]).length;
+  const stages = [...new Set(LIST.map(s => s.stage))];
+  $('#out').innerHTML = `
+    <div class="tiles">
+      <div class="tile glass"><b>${LIST.length}</b><span>طالباً في نظام الكشف</span></div>
+      ${CAT_ORDER.map(c => `<div class="tile glass"><b>${cnt(c)}</b><span>${CAT_NAME[c]}</span></div>`).join('')}
+      <div class="tile glass"><b>${nNew}</b><span>لم يُستورد في ${esc(yearSel())}</span></div>
+    </div>
+    <section class="filters glass no-print">
+      <label class="field">المرحلة<select data-f="stage"><option value="">كل المراحل</option>${stages.map(st => `<option value="${st}" ${F.stage === st ? 'selected' : ''}>${esc((LIST.find(s => s.stage === st) || {}).stageName || st)}</option>`).join('')}</select></label>
+      <label class="field">التصنيف<select data-f="cat"><option value="">الكل</option>${CAT_ORDER.map(c => `<option value="${c}" ${F.cat === c ? 'selected' : ''}>${CAT_NAME[c]}</option>`).join('')}</select></label>
+      <label class="field">الحالة<select data-f="status"><option value="">الكل</option><option value="new" ${F.status === 'new' ? 'selected' : ''}>لم يُستورد</option><option value="old" ${F.status === 'old' ? 'selected' : ''}>مستورد</option></select></label>
+      <label class="field">بحث<input data-f="q" value="${esc(F.q)}" placeholder="الاسم أو الرقم"></label>
+    </section>
+    <section class="panel glass">
+      <div class="sub">★ = تجاوز حد الترشيح (المئيني ${meta && meta.giftedPct ? meta.giftedPct : 90} فأكثر). البرامج المحددة مقترحة ومعتمدة مبدئياً، والمنقّطة تحتاج محكاً إضافياً قبل إضافتها. اضغط اسم الطالب لعرض التفاصيل والمسابقات المقترحة.</div>
+      <div class="tbl"><table>
+        <thead><tr><th><input type="checkbox" id="all" title="تحديد الكل"></th><th>الطالب</th><th>التصنيف</th><th>المصفوفات</th><th>الإبداع اللفظي</th><th>الإبداع الشكلي</th><th>البرامج</th><th>الحالة</th></tr></thead>
+        <tbody>${R.map(s => rowHtml(s)).join('') || '<tr><td colspan="8" class="empty">لا نتائج ضمن هذا التصفية</td></tr>'}</tbody>
+      </table></div>
+    </section>
+    <div class="actbar glass no-print"><span><b id="nSel">${nSel}</b> طالباً محدداً للاعتماد في العام <b>${esc(yearSel())}</b></span>
+      <span><button class="btn ghost" id="selNew">تحديد غير المستوردين</button> <button class="btn teal" id="approve">اعتماد المحدد</button></span></div>`;
+  bind();
+}
+function rowHtml(s) {
+  const imp = imported(s);
+  const progs = s.programs.map(p => {
+    if (enrolled(s, p.prog)) return `<span class="pg done" title="${esc(p.why)}">✓ ${esc(p.name)}</span>`;
+    return `<label class="pg ${p.pre ? '' : 'opt'}" title="${esc(p.why)}"><input type="checkbox" data-p="${esc(s._k)}" data-prog="${p.prog}" ${PICK[s._k][p.prog] ? 'checked' : ''}> ${esc(p.name.replace(/^برنامج /, ''))}</label>`;
+  }).join('');
+  const det = OPEN[s._k] ? `<tr class="det"><td></td><td colspan="7">${detail(s)}</td></tr>` : '';
+  return `<tr><td><input type="checkbox" data-s="${esc(s._k)}" ${SEL[s._k] ? 'checked' : ''}></td>
+    <td><button class="lnk nt" data-o="${esc(s._k)}">${esc(s.name)}</button><br><small class="muted">${esc(s._grade)}${s.className ? ' · ' + esc(s.className) : ''} · <span dir="ltr">${esc(s.studentId)}</span></small></td>
+    <td><span class="cat ${s.cat}">${esc(s.catName)}</span></td><td>${pcell(s.rv)}</td><td>${pcell(s.verbal)}</td><td>${pcell(s.figural)}</td>
+    <td><div class="progs">${progs}</div></td>
+    <td>${imp ? `<span class="stt old">مستورد ✓</span>` : '<span class="stt new">جديد</span>'}</td></tr>${det}`;
+}
+function detail(s) {
+  const line = (t, x) => x ? `<li><b>${t}:</b> المئيني ${x.pct} — ${esc(x.level)}${x.index != null ? ' · المؤشر الإبداعي ' + x.index : x.score != null ? ' · الدرجة ' + x.score + ' من ' + x.max : ''}${x.provisional ? ' <span class="muted">(مبدئي)</span>' : ''}${(x.flags || []).length ? ' <span class="muted">· ' + esc(x.flags.join('، ')) + '</span>' : ''}</li>` : '';
+  const str = [].concat((s.verbal && s.verbal.strengths) || [], (s.figural && s.figural.strengths) || []);
+  return `<ul>${line('المصفوفات (القدرة العقلية)', s.rv)}${line('الإبداع اللفظي', s.verbal)}${line('الإبداع الشكلي', s.figural)}</ul>
+    ${str.length ? `<div><b>نقاط القوة الإبداعية:</b> ${str.map(x => `<span class="chip">${esc(x)}</span>`).join('')}</div>` : ''}
+    <div><b>البرامج:</b><ul>${s.programs.map(p => `<li><b>${esc(p.name)}</b>${p.pre ? '' : ' <span class="muted">(يحتاج محكاً إضافياً)</span>'} — ${esc(p.why)}</li>`).join('')}</ul></div>
+    ${s.competitions.length ? `<div><b>مسابقات مقترحة:</b><ul>${s.competitions.map(c => `<li><a href="competition.html?c=${esc(c.id)}" target="_blank">${esc(c.name)}</a> — ${esc(c.why)}</li>`).join('')}</ul></div>` : ''}
+    ${s.notes.length ? `<div><b>ملاحظات:</b><ul>${s.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul></div>` : ''}`;
+}
+function bind() {
+  $$('[data-f]').forEach(el => el[el.tagName === 'INPUT' ? 'oninput' : 'onchange'] = () => { F[el.dataset.f] = el.value; const pos = el.selectionStart; draw(); if (el.tagName === 'INPUT') { const n = $('[data-f="q"]'); n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} } });
+  $$('[data-s]').forEach(c => c.onchange = () => { SEL[c.dataset.s] = c.checked; $('#nSel').textContent = LIST.filter(s => SEL[s._k]).length; });
+  $$('[data-p]').forEach(c => c.onchange = () => { PICK[c.dataset.p][c.dataset.prog] = c.checked; });
+  $$('[data-o]').forEach(b => b.onclick = () => { OPEN[b.dataset.o] = !OPEN[b.dataset.o]; draw(); });
+  $('#all').onchange = e => { rows().forEach(s => SEL[s._k] = e.target.checked); draw(); };
+  $('#selNew').onclick = () => { LIST.forEach(s => SEL[s._k] = !imported(s)); draw(); };
+  $('#approve').onclick = approve;
+}
+
+/* ---------- الاعتماد ---------- */
+function summaryOf(s) {
+  const p = x => x ? x.pct + (x.nominated ? ' ★' : x.borderline ? ' (حدّي)' : '') : '—';
+  return `${s.catName} — المصفوفات: ${p(s.rv)} · الإبداع اللفظي: ${p(s.verbal)} · الإبداع الشكلي: ${p(s.figural)} (المئيني)`;
+}
+async function approve() {
+  const chosen = LIST.filter(s => SEL[s._k]);
+  if (!chosen.length) { toast('حدد طالباً واحداً على الأقل', 'err'); return; }
+  const y = yearSel();
+  const items = chosen.map(s => {
+    const progs = s.programs.filter(p => PICK[s._k][p.prog] && !enrolled(s, p.prog)).map(p => ({ prog: p.prog, name: p.name, why: p.why }));
+    const data = { stage: s.stage, stageName: s.stageName, cat: s.cat, catName: s.catName, rv: s.rv, verbal: s.verbal, figural: s.figural, source: 'نظام الكشف عن الموهوبين' };
+    const notes = [].concat(s.competitions.map(c => 'مسابقة مقترحة: ' + c.name + ' — ' + c.why), s.notes).join('\n');
+    return { student: { id: s.studentId, name: s.name, grade: s._grade, cls: s.className }, data, summary: summaryOf(s), notes, programs: progs, competitions: s.competitions.map(c => ({ id: c.id, name: c.name })) };
+  });
+  const nP = items.reduce((a, i) => a + i.programs.length, 0);
+  if (!confirm(`اعتماد ${items.length} طالباً للعام ${y}؟\n• تُحفظ نتائجهم في ملفاتهم بالسجل التام.\n• يُسجَّلون في ${nP} مقعداً في البرامج المحددة.\nإعادة الاعتماد لطالب مستورد تحدّث نتائجه ولا تكرر تسجيله في البرامج.`)) return;
+  const b = $('#approve'); b.disabled = true; b.textContent = 'جارٍ الاعتماد…';
+  try {
+    let d;
+    if (isDemo()) { const old = LS.get('tf_gift_demo', []); items.forEach(i => old.push({ year: y, studentId: i.student.id, name: i.student.name })); LS.set('tf_gift_demo', old); d = { ok: true, records: items.length, updated: 0, students: 0, programs: nP, skipped: 0 }; }
+    else {
+      const r = await fetch(CONFIG.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'giftedImport', key: ADMIN.get(), year: y, items }) });
+      d = await r.json();
+    }
+    if (!d.ok) throw new Error(d.error || 'تعذر الاعتماد');
+    toast(`تم: ${d.records} سجل جديد${d.updated ? '، وتحديث ' + d.updated : ''}، ${d.students} طالب جديد في القائمة، ${d.programs} تسجيل في البرامج`, 'ok');
+    await loadState(); initPicks(true); draw();
+  } catch (e) { toast(e.message, 'err'); b.disabled = false; b.textContent = 'اعتماد المحدد'; }
+}
+
+start();
+</script>
+</body>
+</html>

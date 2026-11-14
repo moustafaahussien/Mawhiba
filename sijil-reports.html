@@ -146,7 +146,7 @@ function overview(R) {
     <div class="tile glass"><b>${R.length}</b><span>نموذج معبّأ</span></div>
     <div class="tile glass"><b>${students.length}</b><span>طالباً</span></div>
     <div class="tile glass"><b>${teachers.length}</b><span>معلماً</span></div>
-    <div class="tile glass"><b>${uniq(R.map(r => r.formId)).length} / ${FORMS.length}</b><span>نموذجاً مستخدماً</span></div></div>`;
+    <div class="tile glass"><b>${uniq(R.map(r => r.formId)).filter(id => getForm(id)).length} / ${FORMS.length}</b><span>نموذجاً مستخدماً</span></div></div>`;
   if (!R.length) { $('#view').innerHTML = h + '<div class="panel glass empty">لا توجد نماذج معبّأة بعد ضمن هذا التصفية.</div>'; return; }
 
   // حسب المعلم
@@ -269,6 +269,19 @@ function studentView(R) {
     <div class="sub">${esc(st.grade)} ${esc(st.cls || '')}${SR[0].studentId ? ' · رقم الطالب ' + esc(SR[0].studentId) : ''} · ${SR.length} نموذجاً · عبّأها: ${uniq(SR.map(r => r.teacher)).map(esc).join('، ')}</div></section>`;
 
   const notes = [];
+  // نتائج مقاييس الكشف عن الموهبة (مستوردة من نظام الكشف)
+  const gift = latest('gifted');
+  if (gift) {
+    const g = gift.answers || {}, pc = x => x ? `<b>${x.pct}</b>${x.nominated ? ' ★ مرشح' : x.borderline ? ' (حدّي)' : ''} <span class="muted">— ${esc(x.level || '')}</span>` : '<span class="muted">لم يُختبر</span>';
+    const str = [].concat((g.verbal && g.verbal.strengths) || [], (g.figural && g.figural.strengths) || []);
+    h += `<section class="panel glass"><span class="kicker">الكشف عن الموهبة · ${esc(gift.year)}</span><h3>${esc(g.catName || 'نتائج مقاييس الكشف')}</h3>
+      <div class="sub">مستوردة من نظام الكشف عن الموهوبين${g.approvedBy ? ' · اعتمدها ' + esc(g.approvedBy) : ''}${g.approvedAt ? ' في ' + esc(g.approvedAt) : ''} · الأرقام رتب مئينية مقارنة بطلاب المدرسة</div>
+      <table><tr><th>المصفوفات (القدرة العقلية)</th><td>${pc(g.rv)}</td></tr><tr><th>التفكير الإبداعي اللفظي</th><td>${pc(g.verbal)}</td></tr><tr><th>التفكير الإبداعي الشكلي</th><td>${pc(g.figural)}</td></tr></table>
+      ${str.length ? `<p><b>نقاط القوة الإبداعية:</b> ${str.map(x => `<span class="chip">${esc(x)}</span>`).join('')}</p>` : ''}
+      ${(g.programs || []).length ? `<p><b>البرامج المعتمدة:</b> ${g.programs.map(p => `<span class="chip">${esc(p.name || p.prog)}</span>`).join('')}</p>` : ''}
+      ${gift.notes ? `<p class="note">${esc(gift.notes).replace(/\n/g, '<br>')}</p>` : ''}</section>`;
+    notes.push(`نتائج الكشف: <b>${esc(g.catName || '')}</b>.`);
+  }
   // الاهتمامات
   const ints = FORMS.filter(f => f.group === 'الاهتمامات').map(f => ({ f, r: latest(f.id) })).filter(x => x.r);
   const learn = latest('learning'), expr = latest('expression'), traits = SR.filter(r => r.formId === 'traits');

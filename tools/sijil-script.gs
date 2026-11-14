@@ -67,7 +67,7 @@ const PROG = {
 };
 const EXEC_OPTS = ['نعم', 'لا'];
 /* رقم إصدار السكربت: تقارنه صفحة إدارة البرامج لتنبيهك إن كان المنشور أقدم من الملف */
-const SCRIPT_VER = 4;
+const SCRIPT_VER = 5;
 const PROG_IDS = ['general-enrichment', 'skills', 'clusters', 'specialty', 'projects', 'acceleration', 'mentorship', 'support'];
 const PERSON_STATUS = ['نشط', 'متوقف', 'أنهى البرنامج'];
 const SESSION_STATUS = ['مجدولة', 'منفذة', 'مؤجلة', 'ملغاة'];
@@ -130,6 +130,7 @@ function doPost(e) {
     if (body.action === 'deleteParticipants') return out_(deleteParticipants_(body));
     if (body.action === 'progSave') return out_(progSave_(body));
     if (body.action === 'progDelete') return out_(progDelete_(body));
+    if (body.action === 'giftedImport') return out_(giftedImport_(body));
     return out_({ ok: false, error: 'طلب غير معروف' });
   } catch (err) { return out_({ ok: false, error: String(err.message || err) }); }
 }
@@ -143,6 +144,7 @@ function doGet(e) {
     else if (p.mode === 'students') res = codeOk_(p.code) ? { ok: true, students: readStudents_() } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
     else if (p.mode === 'participants') res = codeOk_(p.code) ? { ok: true, rows: readParticipants_() } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
     else if (p.mode === 'programs') res = codeOk_(p.code) ? { ok: true, staff: progRead_('staff'), people: progRead_('people'), sessions: progRead_('sessions'), plan: progRead_('plan'), ver: SCRIPT_VER } : { ok: false, auth: true, error: 'رمز المعلمين غير صحيح' };
+    else if (p.mode === 'gifted') res = adminOk_(p.key) ? giftedState_() : { ok: false, auth: true, error: 'اسم المستخدم أو كلمة مرور المشرف غير صحيحة' };
     else if (p.mode === 'public') res = publicStats_();
     else if (p.mode === 'report') {
       if (!adminOk_(p.key)) res = { ok: false, error: 'اسم المستخدم أو كلمة مرور المشرف غير صحيحة' };
@@ -468,4 +470,88 @@ function gradeNum_(g) {
   const ORD = ['الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس', 'السادس'], k = ORD.findIndex(o => g.indexOf(o) >= 0);
   if (k < 0) return 0;
   return k + 1 + (/ثانوي/.test(g) ? 9 : /متوسط/.test(g) ? 6 : 0);
+}
+
+/* =====================================================================
+   استيراد الموهوبين من «نظام الكشف عن الموهوبين» (اختبار المصفوفات + التفكير الإبداعي)
+   الصفحة (sijil-gifted.html) تجلب المرشحين من نظام الكشف بمفتاح الربط، ثم ترسل هنا ما اعتمده المشرف:
+   - يُضاف الطالب إلى ورقة «الطلاب» إن لم يكن موجوداً.
+   - تُحفظ نتائجه في «السجل» كنموذج «نتائج مقاييس الكشف عن الموهبة» (سجل واحد لكل طالب في كل عام، يُحدَّث عند إعادة الاستيراد)
+     وفي ورقة «نتائج الكشف عن الموهبة» للتحليل داخل الجدول.
+   - يُسجَّل في البرامج المعتمدة («البرامج – المشاركون») دون تكرار.
+   ===================================================================== */
+const GIFTED_FORM = { id: 'gifted', code: 'كشف', title: 'نتائج مقاييس الكشف عن الموهبة', by: 'نظام الكشف عن الموهوبين (آلي)' };
+const GIFTED_SHEET = 'نتائج الكشف عن الموهبة';
+const GIFTED_HEADERS = ['المعرّف', 'تاريخ الاستيراد', 'العام الدراسي', 'رقم الطالب', 'اسم الطالب', 'الصف', 'الفصل', 'المرحلة', 'التصنيف',
+  'المصفوفات: المئيني', 'المصفوفات: المستوى', 'الإبداع اللفظي: المئيني', 'الإبداع اللفظي: المستوى', 'الإبداع الشكلي: المئيني', 'الإبداع الشكلي: المستوى',
+  'نقاط القوة الإبداعية', 'البرامج المعتمدة', 'المسابقات المقترحة', 'ملاحظات', 'اعتمده'];
+
+function giftedState_() {
+  const recs = readRecords_().filter(r => r.formId === GIFTED_FORM.id)
+    .map(r => ({ key: r.key, year: r.year, studentId: r.studentId, name: r.studentName, ts: r.ts }));
+  const people = progRead_('people').map(r => ({ prog: r.prog, year: r.year, sid: r.sid, name: r.name, status: r.status }));
+  return { ok: true, records: recs, people: people, students: readStudents_(), ver: SCRIPT_VER };
+}
+
+/* body: { key, year, items: [{ student: {id, name, grade, cls}, data: {...ملخص النتائج}, cat, summary, notes, programs: [{prog, why}], competitions: [] }] } */
+function giftedImport_(b) {
+  const who = adminOk_(b.key);
+  if (!who) return { ok: false, auth: true, error: 'الاعتماد يحتاج اسم مستخدم وكلمة مرور المشرف' };
+  const year = String(b.year || '').trim();
+  if (!year || !Array.isArray(b.items) || !b.items.length) return { ok: false, error: 'بيانات ناقصة' };
+  const norm = x => String(x == null ? '' : x).trim().replace(/\s+/g, ' ');
+  const lock = LockService.getScriptLock(); lock.waitLock(30000);
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const tz = 'Asia/Riyadh', nowD = new Date();
+    const ts = nowD.toISOString(), dateStr = Utilities.formatDate(nowD, tz, 'yyyy-MM-dd'), stamp = Utilities.formatDate(nowD, tz, 'yyyy-MM-dd HH:mm');
+    // 1) الطلاب
+    const stSh = ensureSheet_(ss, STUDENTS, ['رقم الطالب', 'اسم الطالب', 'الصف', 'الفصل'], true);
+    const haveSt = {}; readStudents_().forEach(s => { if (s.id) haveSt[String(s.id).trim()] = 1; haveSt['n:' + norm(s.name)] = 1; });
+    const newSt = [];
+    // 2) السجل + ورقة النتائج
+    const m = ensureSheet_(ss, MASTER, MASTER_HEADERS, true);
+    const gs = ensureSheet_(ss, GIFTED_SHEET, GIFTED_HEADERS, true); ensureHeaders_(gs, GIFTED_HEADERS);
+    // 3) البرامج
+    const pdef = PROG.people;
+    const ps = ensureSheet_(ss, pdef.sheet, pdef.headers, true); ensureHeaders_(ps, pdef.headers);
+    const enrolled = {};
+    progRead_('people').forEach(r => { enrolled[[r.prog, r.year, r.sid || ('n:' + norm(r.name))].join('|')] = 1; if (r.sid) enrolled[[r.prog, r.year, 'n:' + norm(r.name)].join('|')] = 1; });
+    const newPeople = [];
+    let recs = 0, updated = 0, progAdded = 0, progSkipped = 0;
+    // البرامج المعتمدة سابقاً لكل سجل (حتى لا تضيع عند إعادة الاعتماد)
+    const prevProgs = {};
+    readRecords_().forEach(r => { if (r.formId === GIFTED_FORM.id) { try { prevProgs[r.key] = JSON.parse(r.answers || '{}').programs || []; } catch (e) {} } });
+    const lvl = x => x ? (x.level || '') : '';
+    const pct = x => x && x.pct != null ? x.pct : '';
+    b.items.forEach(it => {
+      const st = it.student || {}, sid = norm(st.id), name = norm(st.name);
+      if (!name) return;
+      if ((sid && !haveSt[sid]) || (!sid && !haveSt['n:' + name])) { newSt.push([sid, name, norm(st.grade), norm(st.cls)]); if (sid) haveSt[sid] = 1; haveSt['n:' + name] = 1; }
+      const progs = (it.programs || []).filter(p => PROG_IDS.indexOf(String(p.prog)) >= 0);
+      const key = 'gifted|' + (sid || name) + '|' + year;
+      const allProgs = (prevProgs[key] || []).filter(p => !progs.some(q => q.prog === p.prog)).concat(progs);
+      const d = it.data || {};
+      const row = [key, ts, dateStr, year, GIFTED_FORM.by, GIFTED_FORM.code, GIFTED_FORM.title, GIFTED_FORM.id, sid, name, norm(st.grade), norm(st.cls),
+        norm(it.summary), String(it.notes || ''), JSON.stringify(Object.assign({}, d, { programs: allProgs, competitions: it.competitions || [], approvedBy: who, approvedAt: stamp })), '[]'];
+      if (upsert_(m, key, row)) updated++; else recs++;
+      const strengths = [].concat((d.verbal && d.verbal.strengths) || [], (d.figural && d.figural.strengths) || []);
+      upsert_(gs, key, [key, stamp, year, sid, name, norm(st.grade), norm(st.cls), norm(d.stageName), norm(d.catName),
+        pct(d.rv), lvl(d.rv), pct(d.verbal), lvl(d.verbal), pct(d.figural), lvl(d.figural),
+        strengths.join('، '), allProgs.map(p => p.name || p.prog).join('، '), (it.competitions || []).map(c => c.name || c.id).join('، '), String(it.notes || '').replace(/\n/g, ' · '), who]);
+      progs.forEach(p => {
+        const k1 = [p.prog, year, sid || ('n:' + name)].join('|'), k2 = [p.prog, year, 'n:' + name].join('|');
+        if (enrolled[k1] || enrolled[k2]) { progSkipped++; return; }
+        enrolled[k1] = enrolled[k2] = 1;
+        const o = { id: Utilities.getUuid().slice(0, 8), prog: p.prog, year: year, name: name, sid: sid, grade: norm(st.grade), cls: norm(st.cls), field: norm(p.field),
+          lead: '', joined: dateStr, status: 'نشط', x1: '', x2: '', note: ('من نظام الكشف (' + norm(d.catName) + '): ' + norm(p.why)).slice(0, 400) };
+        newPeople.push(pdef.keys.map(k => String(o[k] == null ? '' : o[k])));
+        progAdded++;
+      });
+    });
+    if (newSt.length) stSh.getRange(stSh.getLastRow() + 1, 1, newSt.length, 4).setNumberFormat('@').setValues(newSt);
+    if (newPeople.length) ps.getRange(ps.getLastRow() + 1, 1, newPeople.length, newPeople[0].length).setNumberFormat('@').setValues(newPeople);
+    logAdmin_(who, 'استيراد من نظام الكشف (' + b.items.length + ' طالباً)', b.items.map(i => (i.student || {}).name + ' — ' + (i.programs || []).map(p => p.prog).join('/')).join('\n'));
+    return { ok: true, records: recs, updated: updated, students: newSt.length, programs: progAdded, skipped: progSkipped };
+  } finally { lock.releaseLock(); }
 }
