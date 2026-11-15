@@ -162,6 +162,11 @@ html[dir=rtl] .res-h::after{background:linear-gradient(270deg,color-mix(in srgb,
 .px .last b{font-family:'Sora',sans-serif;color:var(--ink)}
 .px .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto}
 .px .acts .btn{padding:9px 14px;font-size:13.5px}
+.px-how{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;margin-bottom:16px;border-radius:18px;background:color-mix(in srgb,var(--c) 8%,#fff);border:1px solid color-mix(in srgb,var(--c) 22%,#fff);font-size:14px;line-height:1.85}
+.px-how .gorb{--sz:40px;flex:none}
+.px-how b{display:block;font-family:var(--display);font-weight:600}
+.px-live{display:flex;gap:8px;align-items:center;padding:10px 14px;margin-bottom:14px;border-radius:14px;background:#EFFAF5;border:1px solid #9FDCC6;color:#0B7A5B;font-weight:600;font-size:14px}
+.px-live svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.2}
 .px-note{margin-top:14px;font-size:13px;color:var(--muted);line-height:1.8}
 .px-note a{color:color-mix(in srgb,var(--c) 70%,#1A1640);font-weight:600}
 /* ورقة الإجابة */
@@ -205,6 +210,11 @@ html[dir=rtl] .res-h::after{background:linear-gradient(270deg,color-mix(in srgb,
 .pxo .hist{margin-top:14px;font-size:13px;color:var(--muted)}
 .pxo .hist b{font-family:'Sora',sans-serif;color:var(--ink)}
 .pxo .foot{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.pxo.pip{position:static;display:block;padding:0;background:none;backdrop-filter:none;overflow:visible}
+.pxo.pip .sheet{width:100%;min-height:100vh;border-radius:0;box-shadow:none;padding:14px}
+.pxo.pip .bar{top:0}
+.pxo.pip .qs{grid-template-columns:1fr}
+.pxo.pip .sh-h h3{font-size:16px}
 @media(max-width:560px){.pxo{padding:0}.pxo .sheet{border-radius:0;min-height:100%}.pxo .bar{top:0}}
 @media print{.pxo{display:none!important}}
 
@@ -306,7 +316,11 @@ TP.addDict({
        'px.timeup':'انتهى الوقت', 'px.confirm':'لم تُجب عن {n} سؤالاً. هل تريد التصحيح الآن؟', 'px.yes':'نعم، صحّح', 'px.no':'أكمل الحل',
        'px.score':'درجتك', 'px.ok':'صحيحة {n}', 'px.bad':'خاطئة {n}', 'px.skip':'متروكة {n}', 'px.right':'✓ صحيحة', 'px.wrong':'✗ الصحيحة: {k}', 'px.empty':'— الصحيحة: {k}',
        'px.retry':'أعد حل الأسئلة الخاطئة فقط', 'px.reset':'ابدأ من جديد', 'px.hist':'محاولاتك السابقة:', 'px.src':'مصدر الأسئلة ومفاتيح الإجابة: مكتبة أولمبياد الموهبة الوطني على موقع موهبة. الأسئلة تُفتح من ملفات موهبة الرسمية ولا تُنسخ إلى المنصة.',
-       'px.byblk':'الأسئلة {a}–{b}: {s} من {t}', 'px.type':'اكتب الإجابة', 'px.notime':'دون توقيت' },
+       'px.byblk':'الأسئلة {a}–{b}: {s} من {t}', 'px.type':'اكتب الإجابة',
+       'px.side':'الأسئلة وورقة الإجابة معاً', 'px.sideTip':'تفتح ورقة الإجابة في نافذة صغيرة عائمة تبقى ظاهرة فوق ملف الأسئلة',
+       'px.howT':'كيف تحل الأسئلة وورقة الإجابة أمامك معاً؟',
+       'px.how':'اضغط «الأسئلة وورقة الإجابة معاً»: تظهر ورقة الإجابة في نافذة صغيرة عائمة تبقى فوق أي نافذة، ثم اضغط فيها «الأسئلة (PDF)» فيفتح ملف الأسئلة خلفها، وتحل وأنت ترى الاثنين. (على الجوال أو الآيباد: افتح ورقة الإجابة والملف بتقسيم الشاشة.)',
+       'px.pipOn':'ورقة إجابة «{s}» مفتوحة الآن في النافذة العائمة.', 'px.notime':'دون توقيت' },
   en:{ comps:'Competitions', register:'Register now', official:'Official website',
        's.about':'Overview', 's.link':'Competition links', 's.cond':'Conditions', 's.reg':'How to register', 's.tl':'Timeline',
        's.res':'Packages & resources', 's.train':'Training', 's.results':'Results',
@@ -329,7 +343,11 @@ TP.addDict({
        'px.timeup':'Time is up', 'px.confirm':'You left {n} questions blank. Mark now?', 'px.yes':'Yes, mark it', 'px.no':'Keep going',
        'px.score':'Your score', 'px.ok':'{n} correct', 'px.bad':'{n} wrong', 'px.skip':'{n} blank', 'px.right':'✓ Correct', 'px.wrong':'✗ Answer: {k}', 'px.empty':'— Answer: {k}',
        'px.retry':'Redo the wrong ones only', 'px.reset':'Start again', 'px.hist':'Your previous attempts:', 'px.src':'Questions and answer keys: National Gifted Olympiad library on the Mawhiba website. Questions open from Mawhiba’s official files and are not copied to this platform.',
-       'px.byblk':'Questions {a}–{b}: {s} of {t}', 'px.type':'Type answer', 'px.notime':'Untimed' }
+       'px.byblk':'Questions {a}–{b}: {s} of {t}', 'px.type':'Type answer',
+       'px.side':'Questions + answer sheet', 'px.sideTip':'Opens the answer sheet in a small floating window that stays on top of the question file',
+       'px.howT':'How do I see the questions and the answer sheet together?',
+       'px.how':'Click “Questions + answer sheet”: the answer sheet opens in a small floating window that stays on top of every other window. Then click “Questions (PDF)” in it to open the question file behind it, and answer while you see both. (On a phone or iPad, open the answer sheet and the file in split screen.)',
+       'px.pipOn':'The “{s}” answer sheet is open in the floating window.', 'px.notime':'Untimed' }
 });
 
 const COMPS = window.TP_COMPETITIONS, FIELDS = window.TP_FIELDS, STAGES = window.TP_STAGES;
@@ -348,6 +366,7 @@ const secHead = (i, ic, k) => `<div class="sec-h"><span class="gorb">${TP.icon(i
 const L = arr => (arr && (arr[TP.lang()] || arr.ar)) || [];
 
 function render(){
+  if (PX_SOLO) { if (!PXR) pxSolo(); else pxRender(); return; }
   const main = document.getElementById('main');
   if (!C) {
     document.title = TP.t('nf');
@@ -498,8 +517,11 @@ const pxSubj = t => t.subj[TP.lang() === 'en' ? 1 : 0];
 let PX_GRP = '', PXR = null, PX_TIMER = null;
 function pxHtml(){
   const tests = PX.tests.filter(t => !PX_GRP || t.grp === PX_GRP);
+  const pipOn = PXR && PXR.mode === 'pip';
   return `<div class="px-top"><p>${TP.esc(TP.t('px.intro'))}</p>
     <div class="seg px-seg no-print">${[['', 'px.all'], ['jr', 'px.jr'], ['sr', 'px.sr']].map(([g, k]) => `<button type="button" class="${g === PX_GRP ? 'on' : ''}" data-pxg="${g}">${TP.t(k)}</button>`).join('')}</div></div>
+  <div class="px-how"><span class="gorb">${TP.icon('layers')}</span><div><b>${TP.t('px.howT')}</b><span>${TP.t('px.how')}</span></div></div>
+  ${pipOn ? `<div class="px-live">${TP.icon('check')}<span>${PXF('px.pipOn', { s: TP.esc(pxSubj(PXR.t)) })}</span></div>` : ''}
   <div class="res-h">${TP.esc(TP.tx(PX.title))}</div>
   <div class="px-grid">${tests.map(t => {
     const st = pxStore.get(t.id), last = st.hist[st.hist.length - 1], best = st.hist.length ? Math.max(...st.hist.map(h => h.s)) : null;
@@ -509,7 +531,8 @@ function pxHtml(){
       <div class="meta"><span>${TP.t('px.' + t.grp)}</span><span>${PXF('px.nq', { n: pxN(t) })}</span><span>${TP.t('px.pts')}</span><span>${PXF('px.min', { m: t.min })}</span></div>
       <div class="last">${last ? `${TP.t('px.last')} <b>${last.s}/100</b> · ${TP.t('px.best')} <b>${best}/100</b>` : answered && !st.done ? PXF('px.done', { a: answered, n: pxN(t) }) : TP.t('px.new')}</div>
       <div class="acts">
-        ${ready ? `<button type="button" class="btn tint" style="--c:${t.c}" data-pxo="${t.id}">${TP.icon('check')}<span>${answered && !st.done ? TP.t('px.cont') : TP.t('px.sheet')}</span></button>` : `<span class="btn ghost" aria-disabled="true">${TP.t('px.soon')}</span>`}
+        ${ready ? `<button type="button" class="btn tint" style="--c:${t.c}" data-pxs="${t.id}" title="${TP.esc(TP.t('px.sideTip'))}">${TP.icon('layers')}<span>${TP.t('px.side')}</span></button>
+        <button type="button" class="btn ghost" data-pxo="${t.id}">${TP.icon('check')}<span>${answered && !st.done ? TP.t('px.cont') : TP.t('px.sheet')}</span></button>` : `<span class="btn ghost" aria-disabled="true">${TP.t('px.soon')}</span>`}
         <a class="btn ghost" href="${TP.esc(t.q)}" target="_blank" rel="noopener">${TP.icon('pdf')}<span>${TP.t('px.q')}</span></a>
         <a class="btn ghost" href="${TP.esc(t.a)}" target="_blank" rel="noopener">${TP.icon('file')}<span>${TP.t('px.a')}</span></a>
       </div></div>`;
@@ -517,24 +540,64 @@ function pxHtml(){
   <p class="px-note">${TP.esc(TP.t('px.src'))} <a href="${TP.esc(PX.src)}" target="_blank" rel="noopener">mawhiba.sa</a></p>`;
 }
 function pxRefresh(){ const b = document.getElementById('pxBox'); if (b) b.innerHTML = pxHtml(); }
-function pxOpen(id){
-  const t = PX.tests.find(x => x.id === id); if (!t) return;
+/* أوضاع ورقة الإجابة: 'modal' نافذة داخل الصفحة ، 'pip' نافذة عائمة فوق كل النوافذ ، 'solo' صفحة مستقلة (?sheet=) */
+let PX_PIP = null;
+function pxStart(id){
+  const t = PX.tests.find(x => x.id === id); if (!t) return null;
   const st = pxStore.get(id);
   if (st.done) { st.done = false; st.ans = {}; st.t0 = null; }
   if (!st.t0) st.t0 = Date.now();
   pxStore.set(id, st);
-  PXR = { t, st, graded: null, confirm: false };
+  return { t, st, graded: null, confirm: false, mode: 'modal', root: null };
+}
+function pxOpen(id){
+  if (PX_PIP) { try { PX_PIP.close(); } catch (e) {} }
+  PXR = pxStart(id); if (!PXR) return;
   let ov = document.getElementById('pxo');
   if (!ov) { ov = document.createElement('div'); ov.id = 'pxo'; ov.className = 'pxo'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); document.body.appendChild(ov); }
-  ov.classList.add('open'); document.body.style.overflow = 'hidden';
+  ov.classList.add('open'); document.body.style.overflow = 'hidden'; PXR.root = ov;
   pxRender(); clearInterval(PX_TIMER); PX_TIMER = setInterval(pxTick, 1000);
 }
-function pxClose(){ const ov = document.getElementById('pxo'); if (ov) ov.classList.remove('open'); document.body.style.overflow = ''; clearInterval(PX_TIMER); PXR = null; pxRefresh(); }
+/* ورقة الإجابة بجانب الأسئلة: نافذة عائمة تبقى فوق ملف الأسئلة (كروم وإيدج على الكمبيوتر)،
+   وإلا نافذة صغيرة مستقلة على يمين الشاشة */
+async function pxSide(id){
+  const t = PX.tests.find(x => x.id === id); if (!t) return;
+  if (PXR && PXR.mode === 'modal') pxClose();
+  if ('documentPictureInPicture' in window) {
+    try {
+      if (PX_PIP) { try { PX_PIP.close(); } catch (e) {} }
+      const w = await documentPictureInPicture.requestWindow({ width: 440, height: Math.min(820, screen.availHeight - 80) });
+      PX_PIP = w;
+      [...document.querySelectorAll('link[rel="stylesheet"], style')].forEach(n => {
+        if (n.tagName === 'LINK') { const l = w.document.createElement('link'); l.rel = 'stylesheet'; l.href = n.href; w.document.head.appendChild(l); }
+        else w.document.head.appendChild(n.cloneNode(true));
+      });
+      const de = w.document.documentElement; de.lang = document.documentElement.lang; de.dir = document.documentElement.dir;
+      de.style.cssText = document.documentElement.style.cssText;
+      w.document.title = pxSubj(t);
+      w.document.body.innerHTML = '<div id="pxo" class="pxo open pip"></div>';
+      PXR = pxStart(id); PXR.mode = 'pip'; PXR.root = w.document.getElementById('pxo');
+      pxBind(w.document);
+      w.addEventListener('pagehide', () => { if (PXR && PXR.mode === 'pip') { clearInterval(PX_TIMER); PXR = null; } PX_PIP = null; pxRefresh(); });
+      pxRender(); clearInterval(PX_TIMER); PX_TIMER = setInterval(pxTick, 1000);
+      pxRefresh();
+      return;
+    } catch (e) { /* يكمل إلى النافذة المستقلة */ }
+  }
+  const W = 460, url = location.pathname + '?c=' + encodeURIComponent(C.id) + '&sheet=' + encodeURIComponent(id);
+  const pop = window.open(url, 'pxsheet', `popup,width=${W},height=${screen.availHeight - 40},left=${screen.availWidth - W},top=0`);
+  if (!pop) location.href = url;
+}
+function pxClose(){
+  if (PXR && PXR.mode === 'pip' && PX_PIP) { try { PX_PIP.close(); } catch (e) {} return; }
+  if (PXR && PXR.mode === 'solo') { window.close(); return; }
+  const ov = document.getElementById('pxo'); if (ov) ov.classList.remove('open'); document.body.style.overflow = ''; clearInterval(PX_TIMER); PXR = null; pxRefresh();
+}
 function pxLeft(){ return PXR.t.min * 60 - Math.floor((Date.now() - PXR.st.t0) / 1000); }
 function pxFmt(sec){ const a = Math.abs(sec), h = Math.floor(a / 3600), m = Math.floor(a % 3600 / 60), x = a % 60; return (sec < 0 ? '−' : '') + (h ? h + ':' : '') + String(m).padStart(2, '0') + ':' + String(x).padStart(2, '0'); }
 function pxTick(){
   if (!PXR || PXR.graded) return;
-  const el = document.getElementById('pxTm'); if (!el) return;
+  const el = PXR.root && PXR.root.querySelector('#pxTm'); if (!el) return;
   const left = pxLeft(); el.textContent = left > 0 ? pxFmt(left) : TP.t('px.timeup'); el.classList.toggle('low', left < 600);
 }
 function pxGrade(){
@@ -549,7 +612,7 @@ function pxGrade(){
   pxStore.set(t.id, st); PXR.graded = { s, res, by };
 }
 function pxRender(){
-  const { t, st, graded } = PXR, n = pxN(t), answered = Object.keys(st.ans).length, ov = document.getElementById('pxo');
+  const { t, st, graded } = PXR, n = pxN(t), answered = Object.keys(st.ans).length, ov = PXR.root;
   const cnt = k => graded ? Object.values(graded.res).filter(x => x === k).length : 0;
   let head = '';
   if (graded) head = `<div class="score"><div class="big">${graded.s}<small>/100</small></div><div><div style="font-weight:600;margin-bottom:6px">${TP.t('px.score')}</div>
@@ -581,30 +644,49 @@ function pxRender(){
   </div>`;
   pxTick();
 }
-document.addEventListener('click', e => {
+function pxClick(e){
   const g = e.target.closest('[data-pxg]'); if (g) { PX_GRP = g.dataset.pxg; pxRefresh(); return; }
   const o = e.target.closest('[data-pxo]'); if (o) { pxOpen(o.dataset.pxo); return; }
+  const sd = e.target.closest('[data-pxs]'); if (sd) { pxSide(sd.dataset.pxs); return; }
   if (!PXR) return;
   const q = e.target.closest('[data-pxq]');
   if (q && !PXR.graded) { const i = q.dataset.pxq, v = q.dataset.pxv; if (PXR.st.ans[i] === v) delete PXR.st.ans[i]; else PXR.st.ans[i] = v; PXR.confirm = false; pxStore.set(PXR.t.id, PXR.st); pxRender(); return; }
-  const a = e.target.closest('[data-pxa]'); if (!a) { if (e.target.id === 'pxo') pxClose(); return; }
+  const a = e.target.closest('[data-pxa]'); if (!a) { if (e.target.id === 'pxo' && PXR.mode === 'modal') pxClose(); return; }
   const act = a.dataset.pxa;
-  if (act === 'close') pxClose();
+  if (act === 'close') { pxClose(); return; }
   else if (act === 'grade') { if (Object.keys(PXR.st.ans).length < pxN(PXR.t)) { PXR.confirm = true; pxRender(); } else { pxGrade(); pxRender(); } }
   else if (act === 'grade2') { pxGrade(); pxRender(); }
   else if (act === 'cancel') { PXR.confirm = false; pxRender(); }
   else if (act === 'retry') { const st = PXR.st; Object.keys(PXR.graded.res).forEach(i => { if (PXR.graded.res[i] !== 'ok') delete st.ans[i]; }); st.done = false; st.t0 = Date.now(); pxStore.set(PXR.t.id, st); PXR.graded = null; pxRender(); }
   else if (act === 'reset') { const st = PXR.st; st.ans = {}; st.done = false; st.t0 = Date.now(); pxStore.set(PXR.t.id, st); PXR.graded = null; pxRender(); }
-  const ov = document.getElementById('pxo'); if (ov && act !== 'close') ov.scrollTop = act === 'grade2' || act === 'grade' ? 0 : ov.scrollTop;
-});
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && PXR) pxClose(); });
-document.addEventListener('input', e => {
+  if (act === 'grade2' || (act === 'grade' && PXR.graded)) { const sc = PXR.mode === 'modal' ? PXR.root : PXR.root.ownerDocument.scrollingElement; if (sc) sc.scrollTop = 0; }
+  if (PXR.mode !== 'modal') pxRefresh();
+}
+function pxInput(e){
   const x = e.target.closest('[data-pxt]'); if (!x || !PXR || PXR.graded) return;
   const v = x.value.trim(); if (v) PXR.st.ans[x.dataset.pxt] = v; else delete PXR.st.ans[x.dataset.pxt];
   pxStore.set(PXR.t.id, PXR.st); PXR.confirm = false;
-  const n = pxN(PXR.t), a = Object.keys(PXR.st.ans).length, sm = document.querySelector('#pxo .pg small'), bar = document.querySelector('#pxo .pg i b');
+  const n = pxN(PXR.t), a = Object.keys(PXR.st.ans).length, sm = PXR.root.querySelector('.pg small'), bar = PXR.root.querySelector('.pg i b');
   if (sm) sm.textContent = PXF('px.done', { a, n }); if (bar) bar.style.width = a / n * 100 + '%';
-});
+}
+function pxBind(doc){
+  doc.addEventListener('click', pxClick);
+  doc.addEventListener('input', pxInput);
+  doc.addEventListener('keydown', e => { if (e.key === 'Escape' && PXR && PXR.mode === 'modal') pxClose(); });
+}
+pxBind(document);
+/* تحديث البطاقات عند الحل في نافذة أخرى */
+window.addEventListener('storage', e => { if (e.key && e.key.startsWith('tp-px-') && !PXR) pxRefresh(); });
+/* صفحة ورقة الإجابة المستقلة: competition.html?c=nsmo&sheet=… */
+const PX_SOLO = PX && new URLSearchParams(location.search).get('sheet');
+function pxSolo(){
+  PXR = pxStart(PX_SOLO); if (!PXR) return false;
+  PXR.mode = 'solo';
+  document.body.innerHTML = '<div id="pxo" class="pxo open pip"></div>';
+  PXR.root = document.getElementById('pxo'); document.title = pxSubj(PXR.t);
+  pxRender(); clearInterval(PX_TIMER); PX_TIMER = setInterval(pxTick, 1000);
+  return true;
+}
 TP.onLang(() => { if (PXR) pxRender(); });
 
 /* مكتبة النماذج السابقة (سنة ← مستويات × أعمدة) */
