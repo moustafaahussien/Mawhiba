@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="css/platform.css">
 <script src="js/config.js"></script>
 <script src="js/competitions-data.js"></script>
+<script src="js/past-tests.js"></script>
 <script src="js/platform.js"></script>
 <style>
 /* ---------- الهيرو ---------- */
@@ -144,6 +145,69 @@ html[dir=rtl] .res-h::after{background:linear-gradient(270deg,color-mix(in srgb,
 .pp svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .minitable + .minitable{margin-top:16px}
 
+/* بنك الاختبارات السابقة التفاعلي */
+.px-top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.px-top p{font-size:14.5px;color:var(--muted);line-height:1.85;flex:1 1 380px}
+.px-seg{box-shadow:none;background:rgba(255,255,255,.6)}
+.px-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.px{--pc:var(--c);display:flex;flex-direction:column;gap:10px;padding:18px;border-radius:22px;background:rgba(255,255,255,.66);border:1px solid var(--glass-edge);transition:transform .2s,box-shadow .2s}
+.px:hover{transform:translateY(-3px);box-shadow:0 18px 30px -22px var(--pc)}
+.px .hd{display:flex;gap:12px;align-items:center}
+.px .hd .gorb{--c:var(--pc);--sz:46px}
+.px .hd b{display:block;font-family:var(--display);font-weight:900;font-size:16.5px;line-height:1.5}
+.px .hd small{color:var(--muted);font-size:12.5px}
+.px .meta{display:flex;flex-wrap:wrap;gap:6px}
+.px .meta span{font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:999px;background:color-mix(in srgb,var(--pc) 10%,#fff);color:color-mix(in srgb,var(--pc) 75%,#1A1640)}
+.px .last{font-size:13px;color:var(--muted)}
+.px .last b{font-family:'Sora',sans-serif;color:var(--ink)}
+.px .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto}
+.px .acts .btn{padding:9px 14px;font-size:13.5px}
+.px-note{margin-top:14px;font-size:13px;color:var(--muted);line-height:1.8}
+.px-note a{color:color-mix(in srgb,var(--c) 70%,#1A1640);font-weight:600}
+/* ورقة الإجابة */
+.pxo{position:fixed;inset:0;z-index:80;display:none;align-items:flex-start;justify-content:center;padding:24px 14px;background:rgba(26,22,64,.38);backdrop-filter:blur(6px);overflow:auto}
+.pxo.open{display:flex}
+.pxo .sheet{--pc:var(--c);width:min(880px,100%);border-radius:26px;padding:20px;background:rgba(255,255,255,.96);box-shadow:0 30px 60px -30px rgba(26,22,64,.5)}
+.pxo .sh-h{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.pxo .sh-h .gorb{--c:var(--pc);--sz:44px}
+.pxo .sh-h h3{font-family:var(--display);font-weight:900;font-size:18px;flex:1;line-height:1.5}
+.pxo .x{width:40px;height:40px;border-radius:12px;border:1px solid var(--glass-edge);background:#fff;font-size:22px;cursor:pointer;color:var(--ink)}
+.pxo .bar{position:sticky;top:-24px;z-index:2;display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 12px;margin:0 -6px 12px;border-radius:16px;background:color-mix(in srgb,var(--pc) 8%,#fff);border:1px solid color-mix(in srgb,var(--pc) 22%,#fff)}
+.pxo .bar .tm{font-family:'Sora',sans-serif;font-weight:800;font-size:18px;min-width:84px;text-align:center;padding:4px 10px;border-radius:10px;background:#fff;direction:ltr}
+.pxo .bar .tm.low{color:#C0283E}
+.pxo .bar .pg{flex:1;min-width:120px}
+.pxo .bar .pg small{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+.pxo .bar .pg i{display:block;height:8px;border-radius:8px;background:rgba(26,22,64,.08);overflow:hidden}
+.pxo .bar .pg i b{display:block;height:100%;border-radius:8px;background:var(--pc);transition:width .3s}
+.pxo .bar .btn{padding:8px 14px;font-size:13.5px}
+.pxo .blk{margin:14px 0 6px;font-family:var(--display);font-weight:600;font-size:14px;color:color-mix(in srgb,var(--pc) 70%,#1A1640)}
+.pxo .qs{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.pxo .qr{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:7px 10px;border-radius:14px;background:#fff;border:1px solid var(--glass-edge)}
+.pxo .qr .n{font-family:'Sora',sans-serif;font-weight:800;font-size:13px;min-width:26px;color:var(--muted)}
+.pxo .qr .bb{display:flex;gap:5px;direction:ltr}
+.pxo .qr .bb button{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(26,22,64,.25);background:#fff;font-family:'Sora',sans-serif;font-weight:700;font-size:13px;cursor:pointer;color:var(--ink);padding:0}
+.pxo .qr .bb button:hover{border-color:var(--pc)}
+.pxo .qr .bb button.on{background:var(--pc);border-color:var(--pc);color:#fff}
+.pxo .qr .bb button:disabled{cursor:default}
+.pxo .qr .tx{flex:1;min-width:0;max-width:150px;font:600 14px 'Sora',sans-serif;padding:6px 10px;border-radius:10px;border:1.5px solid rgba(26,22,64,.25);background:#fff;color:var(--ink)}
+.pxo .qr .tx:focus{outline:none;border-color:var(--pc)}
+.pxo .qr .rs{margin-inline-start:auto;font-size:12.5px;font-weight:700;white-space:nowrap}
+.pxo .qr.ok{border-color:#9FDCC6;background:#EFFAF5}.pxo .qr.ok .rs{color:#0B7A5B}
+.pxo .qr.bad{border-color:#F4B9C6;background:#FDF0F3}.pxo .qr.bad .rs{color:#B4234F}
+.pxo .qr.skip{border-color:#F3D69B;background:#FFF8E9}.pxo .qr.skip .rs{color:#8A5D00}
+.pxo .qr.bad .bb button.on{background:#E2386F;border-color:#E2386F}
+.pxo .qr .bb button.key{box-shadow:0 0 0 3px #0E9F76 inset;border-color:#0E9F76}
+.pxo .score{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:6px}
+.pxo .score .big{font-family:'Sora',sans-serif;font-weight:800;font-size:40px;line-height:1;color:var(--pc)}
+.pxo .score .big small{font-size:18px;color:var(--muted)}
+.pxo .score .chips{display:flex;flex-wrap:wrap;gap:6px}
+.pxo .score .chips span{font-size:13px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(26,22,64,.06)}
+.pxo .hist{margin-top:14px;font-size:13px;color:var(--muted)}
+.pxo .hist b{font-family:'Sora',sans-serif;color:var(--ink)}
+.pxo .foot{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+@media(max-width:560px){.pxo{padding:0}.pxo .sheet{border-radius:0;min-height:100%}.pxo .bar{top:0}}
+@media print{.pxo{display:none!important}}
+
 /* التدريب */
 .plan{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px}
 .plan li{display:flex;gap:12px;align-items:flex-start;padding:16px;border-radius:18px;background:rgba(255,255,255,.62);border:1px solid var(--glass-edge);font-size:15px;line-height:1.85}
@@ -233,7 +297,16 @@ TP.addDict({
        'th.prog':'البرنامج', 'th.when':'الموعد', 'th.place':'المكان', 'th.coach':'المدرب', 'th.target':'الفئة المستهدفة', 'th.link':'رابط', open:'فتح',
        'rs.funnel':'مشاركاتنا حسب العام', 'rs.ach':'إنجازاتنا', 'rs.none':'تظهر هنا نتائج مشاركات المدرسة وإنجازاتها فور إدخالها في جدول بيانات المنصة.',
        'fn.reg':'المسجلون', 'fn.qual':'المتأهلون', 'fn.fin':'النهائيون', 'fn.win':'الفائزون',
-       sources:'المصادر:', others:'مسابقات أخرى', nf:'لم نعثر على هذه المسابقة.', back:'العودة إلى المسابقات' },
+       sources:'المصادر:', others:'مسابقات أخرى', nf:'لم نعثر على هذه المسابقة.', back:'العودة إلى المسابقات',
+       's.bank':'بنك الاختبارات السابقة', 'px.intro':'افتح ملف الأسئلة الرسمي، وأجب في ورقة الإجابة هنا بالوقت الحقيقي للاختبار، ثم صحّح فوراً بمفتاح الإجابة الرسمي ودرجات كل سؤال. تُحفظ إجاباتك ونتائجك في متصفحك فقط.',
+       'px.all':'الكل', 'px.jr':'الأول والثاني المتوسط', 'px.sr':'الثالث المتوسط والأول الثانوي',
+       'px.nq':'{n} سؤالاً', 'px.pts':'100 درجة', 'px.min':'{m} دقيقة', 'px.q':'الأسئلة (PDF)', 'px.a':'مفتاح الإجابة', 'px.sheet':'ورقة الإجابة', 'px.soon':'التصحيح قريباً',
+       'px.last':'آخر نتيجة:', 'px.best':'أفضل نتيجة:', 'px.new':'لم تحاول بعد', 'px.cont':'متابعة الحل',
+       'px.blk':'الأسئلة {a}–{b} · {p} درجات لكل سؤال', 'px.done':'أجبت عن {a} من {n}', 'px.grade':'صحّح الآن', 'px.close':'إغلاق',
+       'px.timeup':'انتهى الوقت', 'px.confirm':'لم تُجب عن {n} سؤالاً. هل تريد التصحيح الآن؟', 'px.yes':'نعم، صحّح', 'px.no':'أكمل الحل',
+       'px.score':'درجتك', 'px.ok':'صحيحة {n}', 'px.bad':'خاطئة {n}', 'px.skip':'متروكة {n}', 'px.right':'✓ صحيحة', 'px.wrong':'✗ الصحيحة: {k}', 'px.empty':'— الصحيحة: {k}',
+       'px.retry':'أعد حل الأسئلة الخاطئة فقط', 'px.reset':'ابدأ من جديد', 'px.hist':'محاولاتك السابقة:', 'px.src':'مصدر الأسئلة ومفاتيح الإجابة: مكتبة أولمبياد الموهبة الوطني على موقع موهبة. الأسئلة تُفتح من ملفات موهبة الرسمية ولا تُنسخ إلى المنصة.',
+       'px.byblk':'الأسئلة {a}–{b}: {s} من {t}', 'px.type':'اكتب الإجابة', 'px.notime':'دون توقيت' },
   en:{ comps:'Competitions', register:'Register now', official:'Official website',
        's.about':'Overview', 's.link':'Competition links', 's.cond':'Conditions', 's.reg':'How to register', 's.tl':'Timeline',
        's.res':'Packages & resources', 's.train':'Training', 's.results':'Results',
@@ -247,7 +320,16 @@ TP.addDict({
        'th.prog':'Program', 'th.when':'When', 'th.place':'Place', 'th.coach':'Trainer', 'th.target':'Target group', 'th.link':'Link', open:'Open',
        'rs.funnel':'Our participation by year', 'rs.ach':'Our achievements', 'rs.none':'School results and achievements appear here once entered in the platform data sheet.',
        'fn.reg':'Registered', 'fn.qual':'Qualified', 'fn.fin':'Finalists', 'fn.win':'Winners',
-       sources:'Sources:', others:'Other competitions', nf:'We could not find this competition.', back:'Back to competitions' }
+       sources:'Sources:', others:'Other competitions', nf:'We could not find this competition.', back:'Back to competitions',
+       's.bank':'Past tests bank', 'px.intro':'Open the official question file, answer on the sheet here in the real test time, then mark it instantly with the official answer key and each question’s points. Your answers and results are saved in your browser only.',
+       'px.all':'All', 'px.jr':'Grades 7–8', 'px.sr':'Grades 9–10',
+       'px.nq':'{n} questions', 'px.pts':'100 points', 'px.min':'{m} min', 'px.q':'Questions (PDF)', 'px.a':'Answer key', 'px.sheet':'Answer sheet', 'px.soon':'Marking coming soon',
+       'px.last':'Last result:', 'px.best':'Best:', 'px.new':'Not tried yet', 'px.cont':'Continue',
+       'px.blk':'Questions {a}–{b} · {p} points each', 'px.done':'Answered {a} of {n}', 'px.grade':'Mark now', 'px.close':'Close',
+       'px.timeup':'Time is up', 'px.confirm':'You left {n} questions blank. Mark now?', 'px.yes':'Yes, mark it', 'px.no':'Keep going',
+       'px.score':'Your score', 'px.ok':'{n} correct', 'px.bad':'{n} wrong', 'px.skip':'{n} blank', 'px.right':'✓ Correct', 'px.wrong':'✗ Answer: {k}', 'px.empty':'— Answer: {k}',
+       'px.retry':'Redo the wrong ones only', 'px.reset':'Start again', 'px.hist':'Your previous attempts:', 'px.src':'Questions and answer keys: National Gifted Olympiad library on the Mawhiba website. Questions open from Mawhiba’s official files and are not copied to this platform.',
+       'px.byblk':'Questions {a}–{b}: {s} of {t}', 'px.type':'Type answer', 'px.notime':'Untimed' }
 });
 
 const COMPS = window.TP_COMPETITIONS, FIELDS = window.TP_FIELDS, STAGES = window.TP_STAGES;
@@ -255,10 +337,12 @@ const id = (new URLSearchParams(location.search).get('c') || '').toLowerCase();
 const C = COMPS.find(c => c.id === id);
 let DATA = null, SJ = null, FOLDER = { state: 'none', data: null }, folderReq = '';
 
+const PX = C && (window.TP_PRACTICE || {})[C.id];
 const SECTIONS = [
   ['about','info','s.about'], ['link','link','s.link'], ['conditions','check','s.cond'], ['register','list','s.reg'],
-  ['timeline','cal','s.tl'], ['resources','folder','s.res'], ['training','coach','s.train'], ['results','trophy','s.results']
+  ['timeline','cal','s.tl'], ['resources','folder','s.res'], ...(PX ? [['bank','target','s.bank']] : []), ['training','coach','s.train'], ['results','trophy','s.results']
 ];
+const secNo = sid => SECTIONS.findIndex(x => x[0] === sid);
 const host = u => { try { return new URL(u, location.href).host.replace(/^www\./, ''); } catch (e) { return u; } };
 const secHead = (i, ic, k) => `<div class="sec-h"><span class="gorb">${TP.icon(ic)}</span><div><div class="n">${String(i + 1).padStart(2, '0')}</div><h2>${TP.t(k)}</h2></div></div>`;
 const L = arr => (arr && (arr[TP.lang()] || arr.ar)) || [];
@@ -298,33 +382,33 @@ function render(){
 
   <nav class="tabs glass no-print" id="tabs">${SECTIONS.map(([sid, ic, k]) => `<a href="#${sid}" data-sec="${sid}">${TP.icon(ic)}<span>${TP.t(k)}</span></a>`).join('')}</nav>
 
-  <section class="sec" id="about">${secHead(0, 'info', 's.about')}
+  <section class="sec" id="about">${secHead(secNo('about'), 'info', 's.about')}
     <div class="panel glass about reveal">${L(C.about).map(p => `<p>${TP.esc(p)}</p>`).join('')}
       ${(C.tables || (C.table ? [C.table] : [])).map(tb => `<div class="minitable"><h3>${TP.esc(TP.tx(tb.title))}</h3><table><thead><tr>${L(tb.head).map(h => `<th>${TP.esc(h)}</th>`).join('')}</tr></thead><tbody>${tb.rows.map(r => `<tr>${L(r).map(c => `<td>${TP.esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`).join('')}
       ${(st.coordinator || st.note) ? `<div class="local">${st.coordinator ? `<span class="tag">${TP.icon('coach')}${TP.t('coordinator')}: ${TP.esc(st.coordinator)}</span>` : ''}${st.note ? `<span class="tag" style="--c:#E8A50A">${TP.esc(st.note)}</span>` : ''}</div>` : ''}
     </div>
   </section>
 
-  <section class="sec" id="link">${secHead(1, 'link', 's.link')}
+  <section class="sec" id="link">${secHead(secNo('link'), 'link', 's.link')}
     <div class="links">
       ${st.regLink ? linkCard({ ar: TP.t('regOverride'), en: TP.t('regOverride'), url: st.regLink, register: true }) : ''}
       ${C.links.map(linkCard).join('')}
     </div>
   </section>
 
-  <section class="sec" id="conditions">${secHead(2, 'check', 's.cond')}
+  <section class="sec" id="conditions">${secHead(secNo('conditions'), 'check', 's.cond')}
     <div class="panel glass reveal"><ul class="conds">${L(C.conditions).map(x => `<li><span class="gorb">${TP.icon('check')}</span><span>${TP.esc(x)}</span></li>`).join('')}</ul></div>
   </section>
 
-  <section class="sec" id="register">${secHead(3, 'list', 's.reg')}
+  <section class="sec" id="register">${secHead(secNo('register'), 'list', 's.reg')}
     <div class="panel glass reveal"><ol class="steps">${L(C.register).map((x, i) => `<li><span class="gorb"><b>${i + 1}</b></span><div class="txt">${TP.esc(x)}</div></li>`).join('')}</ol></div>
   </section>
 
-  <section class="sec" id="timeline">${secHead(4, 'cal', 's.tl')}
+  <section class="sec" id="timeline">${secHead(secNo('timeline'), 'cal', 's.tl')}
     <div class="panel glass reveal">${timelineHtml()}</div>
   </section>
 
-  <section class="sec" id="resources">${secHead(5, 'folder', 's.res')}
+  <section class="sec" id="resources">${secHead(secNo('resources'), 'folder', 's.res')}
     <div class="panel glass reveal">
       ${resourcesHtml()}
       ${C.papers ? `<div class="res-h">${TP.esc(TP.tx(C.papers.title))}</div><div id="papersBox">${papersHtml()}</div>` : ''}
@@ -333,7 +417,11 @@ function render(){
     </div>
   </section>
 
-  <section class="sec" id="training">${secHead(6, 'coach', 's.train')}
+  ${PX ? `<section class="sec" id="bank">${secHead(secNo('bank'), 'target', 's.bank')}
+    <div class="panel glass reveal" id="pxBox">${pxHtml()}</div>
+  </section>` : ''}
+
+  <section class="sec" id="training">${secHead(secNo('training'), 'coach', 's.train')}
     <div class="panel glass reveal">
       <div class="res-h">${TP.t('tr.plan')}</div>
       <ul class="plan">${planItems().map((x, i) => `<li><span class="gorb"><b>${i + 1}</b></span><span>${TP.esc(x)}</span></li>`).join('')}</ul>
@@ -342,7 +430,7 @@ function render(){
     </div>
   </section>
 
-  <section class="sec" id="results">${secHead(7, 'trophy', 's.results')}
+  <section class="sec" id="results">${secHead(secNo('results'), 'trophy', 's.results')}
     <div class="panel glass reveal">${resultsHtml()}</div>
   </section>
 
@@ -396,6 +484,129 @@ function resourcesHtml(){
   return (flat.length ? `<div class="res-h">${TP.t('res.official')}</div><div class="files">${flat.map(resCard).join('')}</div>` : '') +
     groups.map(g => `<div class="res-h">${TP.esc(TP.tx(g.group))}</div><div class="files">${g.items.map(resCard).join('')}</div>`).join('');
 }
+/* ---------- بنك الاختبارات السابقة التفاعلي ---------- */
+const PXF = (k, o) => TP.t(k).replace(/\{(\w+)\}/g, (m, x) => o && o[x] != null ? o[x] : m);
+const pxStore = { get: id => { try { return JSON.parse(localStorage.getItem('tp-px-' + id)) || { ans: {}, hist: [] }; } catch (e) { return { ans: {}, hist: [] }; } },
+                  set: (id, v) => { try { localStorage.setItem('tp-px-' + id, JSON.stringify(v)); } catch (e) {} } };
+/* كل سؤال: { id: 'جزء-رقم', p: الجزء, i: الرقم, k: الإجابة الصحيحة, pts, mc: اختيار من متعدد؟ } */
+const pxQs = t => t.parts.flatMap((p, pi) => p.blocks.flatMap(([a, b, pts]) => Array.from({ length: b - a + 1 }, (_, j) => {
+  const i = a + j, k = String(p.key[i - 1]); return { id: pi + '-' + i, p: pi, i, k, pts, mc: k.length === 1 && t.opts.includes(k) };
+})));
+const pxN = t => pxQs(t).length;
+const pxNorm = v => String(v == null ? '' : v).trim().toLowerCase().replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[−–—]/g, '-').replace(/\s+/g, '');
+const pxSubj = t => t.subj[TP.lang() === 'en' ? 1 : 0];
+let PX_GRP = '', PXR = null, PX_TIMER = null;
+function pxHtml(){
+  const tests = PX.tests.filter(t => !PX_GRP || t.grp === PX_GRP);
+  return `<div class="px-top"><p>${TP.esc(TP.t('px.intro'))}</p>
+    <div class="seg px-seg no-print">${[['', 'px.all'], ['jr', 'px.jr'], ['sr', 'px.sr']].map(([g, k]) => `<button type="button" class="${g === PX_GRP ? 'on' : ''}" data-pxg="${g}">${TP.t(k)}</button>`).join('')}</div></div>
+  <div class="res-h">${TP.esc(TP.tx(PX.title))}</div>
+  <div class="px-grid">${tests.map(t => {
+    const st = pxStore.get(t.id), last = st.hist[st.hist.length - 1], best = st.hist.length ? Math.max(...st.hist.map(h => h.s)) : null;
+    const answered = Object.keys(st.ans || {}).length, ready = t.parts.every(p => p.key && p.key.length === p.blocks[p.blocks.length - 1][1]);
+    return `<div class="px" style="--pc:${t.c}">
+      <div class="hd"><span class="gorb">${TP.icon(t.ic)}</span><div><b>${TP.esc(pxSubj(t))}</b><small>${TP.esc(TP.tx(PX.stage))}</small></div></div>
+      <div class="meta"><span>${TP.t('px.' + t.grp)}</span><span>${PXF('px.nq', { n: pxN(t) })}</span><span>${TP.t('px.pts')}</span><span>${PXF('px.min', { m: t.min })}</span></div>
+      <div class="last">${last ? `${TP.t('px.last')} <b>${last.s}/100</b> · ${TP.t('px.best')} <b>${best}/100</b>` : answered && !st.done ? PXF('px.done', { a: answered, n: pxN(t) }) : TP.t('px.new')}</div>
+      <div class="acts">
+        ${ready ? `<button type="button" class="btn tint" style="--c:${t.c}" data-pxo="${t.id}">${TP.icon('check')}<span>${answered && !st.done ? TP.t('px.cont') : TP.t('px.sheet')}</span></button>` : `<span class="btn ghost" aria-disabled="true">${TP.t('px.soon')}</span>`}
+        <a class="btn ghost" href="${TP.esc(t.q)}" target="_blank" rel="noopener">${TP.icon('pdf')}<span>${TP.t('px.q')}</span></a>
+        <a class="btn ghost" href="${TP.esc(t.a)}" target="_blank" rel="noopener">${TP.icon('file')}<span>${TP.t('px.a')}</span></a>
+      </div></div>`;
+  }).join('')}</div>
+  <p class="px-note">${TP.esc(TP.t('px.src'))} <a href="${TP.esc(PX.src)}" target="_blank" rel="noopener">mawhiba.sa</a></p>`;
+}
+function pxRefresh(){ const b = document.getElementById('pxBox'); if (b) b.innerHTML = pxHtml(); }
+function pxOpen(id){
+  const t = PX.tests.find(x => x.id === id); if (!t) return;
+  const st = pxStore.get(id);
+  if (st.done) { st.done = false; st.ans = {}; st.t0 = null; }
+  if (!st.t0) st.t0 = Date.now();
+  pxStore.set(id, st);
+  PXR = { t, st, graded: null, confirm: false };
+  let ov = document.getElementById('pxo');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'pxo'; ov.className = 'pxo'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); document.body.appendChild(ov); }
+  ov.classList.add('open'); document.body.style.overflow = 'hidden';
+  pxRender(); clearInterval(PX_TIMER); PX_TIMER = setInterval(pxTick, 1000);
+}
+function pxClose(){ const ov = document.getElementById('pxo'); if (ov) ov.classList.remove('open'); document.body.style.overflow = ''; clearInterval(PX_TIMER); PXR = null; pxRefresh(); }
+function pxLeft(){ return PXR.t.min * 60 - Math.floor((Date.now() - PXR.st.t0) / 1000); }
+function pxFmt(sec){ const a = Math.abs(sec), h = Math.floor(a / 3600), m = Math.floor(a % 3600 / 60), x = a % 60; return (sec < 0 ? '−' : '') + (h ? h + ':' : '') + String(m).padStart(2, '0') + ':' + String(x).padStart(2, '0'); }
+function pxTick(){
+  if (!PXR || PXR.graded) return;
+  const el = document.getElementById('pxTm'); if (!el) return;
+  const left = pxLeft(); el.textContent = left > 0 ? pxFmt(left) : TP.t('px.timeup'); el.classList.toggle('low', left < 600);
+}
+function pxGrade(){
+  const { t, st } = PXR; let s = 0; const res = {}, by = [];
+  t.parts.forEach((p, pi) => p.blocks.forEach(([a, b, pts]) => by.push({ pi, a, b, s: 0, t: (b - a + 1) * pts })));
+  pxQs(t).forEach(q => {
+    const v = st.ans[q.id];
+    res[q.id] = v == null || v === '' ? 'skip' : pxNorm(v) === pxNorm(q.k) ? 'ok' : 'bad';
+    if (res[q.id] === 'ok') { s += q.pts; by.find(x => x.pi === q.p && q.i >= x.a && q.i <= x.b).s += q.pts; }
+  });
+  st.done = true; st.hist = (st.hist || []).concat([{ s, d: Date.now(), ok: Object.values(res).filter(x => x === 'ok').length }]).slice(-10);
+  pxStore.set(t.id, st); PXR.graded = { s, res, by };
+}
+function pxRender(){
+  const { t, st, graded } = PXR, n = pxN(t), answered = Object.keys(st.ans).length, ov = document.getElementById('pxo');
+  const cnt = k => graded ? Object.values(graded.res).filter(x => x === k).length : 0;
+  let head = '';
+  if (graded) head = `<div class="score"><div class="big">${graded.s}<small>/100</small></div><div><div style="font-weight:600;margin-bottom:6px">${TP.t('px.score')}</div>
+      <div class="chips"><span style="background:#EFFAF5;color:#0B7A5B">${PXF('px.ok', { n: cnt('ok') })}</span><span style="background:#FDF0F3;color:#B4234F">${PXF('px.bad', { n: cnt('bad') })}</span><span style="background:#FFF8E9;color:#8A5D00">${PXF('px.skip', { n: cnt('skip') })}</span></div></div>
+      <div class="chips" style="flex-basis:100%">${graded.by.map(b => `<span>${t.parts.length > 1 ? TP.esc(t.parts[b.pi].t[TP.lang() === 'en' ? 1 : 0]) + ' · ' : ''}${PXF('px.byblk', b)}</span>`).join('')}</div></div>`;
+  else head = `<div class="bar"><span class="tm" id="pxTm"></span><div class="pg"><small>${PXF('px.done', { a: answered, n })}</small><i><b style="width:${answered / n * 100}%"></b></i></div>
+      <a class="btn ghost" href="${TP.esc(t.q)}" target="_blank" rel="noopener">${TP.icon('pdf')}<span>${TP.t('px.q')}</span></a>
+      <button type="button" class="btn tint" style="--c:${t.c}" data-pxa="grade">${TP.t('px.grade')}</button></div>
+      ${PXR.confirm ? `<div class="bar" style="position:static;background:#FFF8E9;border-color:#F3D69B"><span style="flex:1;font-weight:600">${PXF('px.confirm', { n: n - answered })}</span><button type="button" class="btn tint" style="--c:${t.c}" data-pxa="grade2">${TP.t('px.yes')}</button><button type="button" class="btn ghost" data-pxa="cancel">${TP.t('px.no')}</button></div>` : ''}`;
+  const QS = pxQs(t), multi = t.parts.length > 1;
+  const rows = t.parts.map((part, pi) => (multi ? `<div class="res-h" style="margin-top:16px">${TP.esc(part.t[TP.lang() === 'en' ? 1 : 0])}</div>` : '') + part.blocks.map(([a, b, p]) => {
+    let r = `<div class="blk">${PXF('px.blk', { a, b, p })}</div><div class="qs">`;
+    QS.filter(q => q.p === pi && q.i >= a && q.i <= b).forEach(q => {
+      const v = st.ans[q.id], g = graded && graded.res[q.id];
+      const input = q.mc ? `<span class="bb">${[...t.opts].map(L => `<button type="button" class="${v === L ? 'on' : ''}${g && g !== 'ok' && L === q.k ? ' key' : ''}" data-pxq="${q.id}" data-pxv="${L}" aria-label="${q.i} ${L}" aria-pressed="${v === L}"${graded ? ' disabled' : ''}>${L}</button>`).join('')}</span>`
+        : `<input class="tx" type="text" dir="ltr" autocomplete="off" data-pxt="${q.id}" value="${TP.esc(v || '')}" placeholder="${TP.t('px.type')}" aria-label="${q.i}"${graded ? ' disabled' : ''}>`;
+      r += `<div class="qr${g ? ' ' + g : ''}"><span class="n">${q.i}</span>${input}
+        ${g ? `<span class="rs">${g === 'ok' ? TP.t('px.right') : PXF(g === 'bad' ? 'px.wrong' : 'px.empty', { k: `<bdi dir="ltr">${TP.esc(q.k)}</bdi>` })}</span>` : ''}</div>`;
+    });
+    return r + '</div>';
+  }).join('')).join('');
+  const hist = (st.hist || []).slice(-5).reverse();
+  ov.innerHTML = `<div class="sheet" style="--pc:${t.c}">
+    <div class="sh-h"><span class="gorb">${TP.icon(t.ic)}</span><h3>${TP.esc(pxSubj(t))} — ${TP.t(graded ? 'px.score' : 'px.sheet')}</h3><button type="button" class="x" data-pxa="close" aria-label="${TP.t('px.close')}">×</button></div>
+    ${head}${rows}
+    ${graded ? `<div class="foot">${cnt('ok') < n ? `<button type="button" class="btn tint" style="--c:${t.c}" data-pxa="retry">${TP.t('px.retry')}</button>` : ''}<button type="button" class="btn ghost" data-pxa="reset">${TP.t('px.reset')}</button>
+      <a class="btn ghost" href="${TP.esc(t.q)}" target="_blank" rel="noopener">${TP.icon('pdf')}<span>${TP.t('px.q')}</span></a><a class="btn ghost" href="${TP.esc(t.a)}" target="_blank" rel="noopener">${TP.icon('file')}<span>${TP.t('px.a')}</span></a></div>` : ''}
+    ${hist.length ? `<div class="hist">${TP.t('px.hist')} ${hist.map(h => `<b>${h.s}</b>/100 <small>(${TP.fmtDate(new Date(h.d))})</small>`).join(' · ')}</div>` : ''}
+  </div>`;
+  pxTick();
+}
+document.addEventListener('click', e => {
+  const g = e.target.closest('[data-pxg]'); if (g) { PX_GRP = g.dataset.pxg; pxRefresh(); return; }
+  const o = e.target.closest('[data-pxo]'); if (o) { pxOpen(o.dataset.pxo); return; }
+  if (!PXR) return;
+  const q = e.target.closest('[data-pxq]');
+  if (q && !PXR.graded) { const i = q.dataset.pxq, v = q.dataset.pxv; if (PXR.st.ans[i] === v) delete PXR.st.ans[i]; else PXR.st.ans[i] = v; PXR.confirm = false; pxStore.set(PXR.t.id, PXR.st); pxRender(); return; }
+  const a = e.target.closest('[data-pxa]'); if (!a) { if (e.target.id === 'pxo') pxClose(); return; }
+  const act = a.dataset.pxa;
+  if (act === 'close') pxClose();
+  else if (act === 'grade') { if (Object.keys(PXR.st.ans).length < pxN(PXR.t)) { PXR.confirm = true; pxRender(); } else { pxGrade(); pxRender(); } }
+  else if (act === 'grade2') { pxGrade(); pxRender(); }
+  else if (act === 'cancel') { PXR.confirm = false; pxRender(); }
+  else if (act === 'retry') { const st = PXR.st; Object.keys(PXR.graded.res).forEach(i => { if (PXR.graded.res[i] !== 'ok') delete st.ans[i]; }); st.done = false; st.t0 = Date.now(); pxStore.set(PXR.t.id, st); PXR.graded = null; pxRender(); }
+  else if (act === 'reset') { const st = PXR.st; st.ans = {}; st.done = false; st.t0 = Date.now(); pxStore.set(PXR.t.id, st); PXR.graded = null; pxRender(); }
+  const ov = document.getElementById('pxo'); if (ov && act !== 'close') ov.scrollTop = act === 'grade2' || act === 'grade' ? 0 : ov.scrollTop;
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && PXR) pxClose(); });
+document.addEventListener('input', e => {
+  const x = e.target.closest('[data-pxt]'); if (!x || !PXR || PXR.graded) return;
+  const v = x.value.trim(); if (v) PXR.st.ans[x.dataset.pxt] = v; else delete PXR.st.ans[x.dataset.pxt];
+  pxStore.set(PXR.t.id, PXR.st); PXR.confirm = false;
+  const n = pxN(PXR.t), a = Object.keys(PXR.st.ans).length, sm = document.querySelector('#pxo .pg small'), bar = document.querySelector('#pxo .pg i b');
+  if (sm) sm.textContent = PXF('px.done', { a, n }); if (bar) bar.style.width = a / n * 100 + '%';
+});
+TP.onLang(() => { if (PXR) pxRender(); });
+
 /* مكتبة النماذج السابقة (سنة ← مستويات × أعمدة) */
 let PAPER_YEAR = null;
 function papersHtml(){
