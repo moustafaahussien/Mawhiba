@@ -228,6 +228,11 @@ html[dir=rtl] .res-h::after{background:linear-gradient(270deg,color-mix(in srgb,
 .pxo.pip .qr .tx{max-width:120px;padding:4px 8px;font-size:13px}
 .pxo.pip .blk{margin:10px 0 4px;font-size:13px}
 .pxo.pip .score .big{font-size:32px}
+.px-start{display:flex;align-items:center;gap:12px;padding:14px;margin-bottom:10px;border-radius:16px;color:#fff;background:linear-gradient(135deg,color-mix(in srgb,var(--pc) 70%,#fff),var(--pc));box-shadow:0 14px 26px -14px var(--pc);animation:pxPulse 1.6s ease-in-out infinite}
+.px-start svg{width:30px;height:30px;flex:none;stroke:#fff;fill:none;stroke-width:2}
+.px-start b{display:block;font-family:var(--display);font-weight:900;font-size:16px}
+.px-start small{display:block;font-size:12.5px;opacity:.9;line-height:1.6}
+@keyframes pxPulse{50%{transform:scale(1.02)}}
 @media(max-width:560px){.pxo{padding:0}.pxo .sheet{border-radius:0;min-height:100%}.pxo .bar{top:0}}
 @media print{.pxo{display:none!important}}
 
@@ -330,9 +335,9 @@ TP.addDict({
        'px.score':'درجتك', 'px.ok':'صحيحة {n}', 'px.bad':'خاطئة {n}', 'px.skip':'متروكة {n}', 'px.right':'✓ صحيحة', 'px.wrong':'✗ الصحيحة: {k}', 'px.empty':'— الصحيحة: {k}',
        'px.retry':'أعد حل الأسئلة الخاطئة فقط', 'px.reset':'ابدأ من جديد', 'px.hist':'محاولاتك السابقة:', 'px.src':'مصدر الأسئلة ومفاتيح الإجابة: مكتبة أولمبياد الموهبة الوطني على موقع موهبة. الأسئلة تُفتح من ملفات موهبة الرسمية ولا تُنسخ إلى المنصة.',
        'px.byblk':'الأسئلة {a}–{b}: {s} من {t}', 'px.type':'اكتب الإجابة',
-       'px.side':'الأسئلة وورقة الإجابة معاً', 'px.sideTip':'تفتح ورقة الإجابة في نافذة صغيرة عائمة تبقى ظاهرة فوق ملف الأسئلة',
+       'px.side':'الأسئلة وورقة الإجابة معاً', 'px.sideTip':'ورقة الإجابة عمود على يمين الشاشة، وملف الأسئلة بجانبها، وكلاهما بطول الشاشة', 'px.startTip':'يفتح ملف الأسئلة بجانب ورقة الإجابة بطول الشاشة',
        'px.howT':'كيف تحل الأسئلة وورقة الإجابة أمامك معاً؟',
-       'px.how':'اضغط «الأسئلة وورقة الإجابة معاً»: تظهر ورقة الإجابة في نافذة صغيرة عائمة تبقى فوق أي نافذة، ويفتح ملف الأسئلة في تبويب جديد خلفها (وإن لم يفتح تلقائياً فاضغط «افتح ملف الأسئلة» في الصفحة أو «الأسئلة (PDF)» في النافذة العائمة)، فتحل وأنت ترى الاثنين. (على الجوال أو الآيباد: افتح ورقة الإجابة والملف بتقسيم الشاشة.)',
+       'px.how':'اضغط «الأسئلة وورقة الإجابة معاً»: تفتح ورقة الإجابة عموداً على يمين الشاشة بطولها، ثم اضغط فيها «افتح ملف الأسئلة» فيفتح الملف في باقي الشاشة بجانبها، فترى الاثنين معاً دون أن يغطي أحدهما الآخر. (على الجوال أو الآيباد: افتح ورقة الإجابة والملف بتقسيم الشاشة.)',
        'px.pipOn':'ورقة إجابة «{s}» مفتوحة الآن في النافذة العائمة.', 'px.openQ':'افتح ملف الأسئلة', 'px.notime':'دون توقيت' },
   en:{ comps:'Competitions', register:'Register now', official:'Official website',
        's.about':'Overview', 's.link':'Competition links', 's.cond':'Conditions', 's.reg':'How to register', 's.tl':'Timeline',
@@ -357,9 +362,9 @@ TP.addDict({
        'px.score':'Your score', 'px.ok':'{n} correct', 'px.bad':'{n} wrong', 'px.skip':'{n} blank', 'px.right':'✓ Correct', 'px.wrong':'✗ Answer: {k}', 'px.empty':'— Answer: {k}',
        'px.retry':'Redo the wrong ones only', 'px.reset':'Start again', 'px.hist':'Your previous attempts:', 'px.src':'Questions and answer keys: National Gifted Olympiad library on the Mawhiba website. Questions open from Mawhiba’s official files and are not copied to this platform.',
        'px.byblk':'Questions {a}–{b}: {s} of {t}', 'px.type':'Type answer',
-       'px.side':'Questions + answer sheet', 'px.sideTip':'Opens the answer sheet in a small floating window that stays on top of the question file',
+       'px.side':'Questions + answer sheet', 'px.sideTip':'The answer sheet as a column on the right and the question file beside it, both full height', 'px.startTip':'Opens the question file beside the answer sheet, full height',
        'px.howT':'How do I see the questions and the answer sheet together?',
-       'px.how':'Click “Questions + answer sheet”: the answer sheet opens in a small floating window that stays on top of every other window. The question file opens in a new tab behind it (if it does not, click “Open the question file” on the page or “Questions (PDF)” in the floating window), so you answer while you see both. (On a phone or iPad, open the answer sheet and the file in split screen.)',
+       'px.how':'Click “Questions + answer sheet”: the answer sheet opens as a full-height column on the right of the screen. Then click “Open the question file” in it, and the file fills the rest of the screen beside it, so you see both without one covering the other. (On a phone or iPad, open the answer sheet and the file in split screen.)',
        'px.pipOn':'The “{s}” answer sheet is open in the floating window.', 'px.openQ':'Open the question file', 'px.notime':'Untimed' }
 });
 
@@ -588,37 +593,17 @@ function pxOpen(id){
   ov.classList.add('open'); document.body.style.overflow = 'hidden'; PXR.root = ov;
   pxRender(); clearInterval(PX_TIMER); PX_TIMER = setInterval(pxTick, 1000);
 }
-/* ورقة الإجابة بجانب الأسئلة: نافذة عائمة تبقى فوق ملف الأسئلة (كروم وإيدج على الكمبيوتر)،
-   وإلا نافذة صغيرة مستقلة على يمين الشاشة */
-async function pxSide(id){
+/* ورقة الإجابة بجانب الأسئلة: نافذتان متجاورتان بطول الشاشة — ورقة الإجابة عمود على اليمين،
+   وملف الأسئلة يملأ باقي الشاشة على اليسار (يُفتح من زر «افتح ملف الأسئلة» في ورقة الإجابة) */
+function pxSide(id){
   const t = PX.tests.find(x => x.id === id); if (!t) return;
   if (PXR && PXR.mode === 'modal') pxClose();
-  if ('documentPictureInPicture' in window) {
-    try {
-      if (PX_PIP) { try { PX_PIP.close(); } catch (e) {} }
-      const w = await documentPictureInPicture.requestWindow({ width: PIP_W, height: screen.availHeight - 40, preferInitialWindowPlacement: true });
-      PX_PIP = w;
-      [...document.querySelectorAll('link[rel="stylesheet"], style')].forEach(n => {
-        if (n.tagName === 'LINK') { const l = w.document.createElement('link'); l.rel = 'stylesheet'; l.href = n.href; w.document.head.appendChild(l); }
-        else w.document.head.appendChild(n.cloneNode(true));
-      });
-      const de = w.document.documentElement; de.lang = document.documentElement.lang; de.dir = document.documentElement.dir;
-      de.style.cssText = document.documentElement.style.cssText;
-      w.document.title = pxSubj(t);
-      w.document.body.innerHTML = '<div id="pxo" class="pxo open pip"></div>';
-      PXR = pxStart(id); PXR.mode = 'pip'; PXR.root = w.document.getElementById('pxo');
-      pxBind(w.document);
-      w.addEventListener('pagehide', () => { if (PXR && PXR.mode === 'pip') { clearInterval(PX_TIMER); PXR = null; } PX_PIP = null; pxRefresh(); });
-      pxRender(); clearInterval(PX_TIMER); PX_TIMER = setInterval(pxTick, 1000);
-      pxRefresh();
-      /* محاولة فتح ملف الأسئلة مباشرة؛ إن منعها المتصفح يبقى زر «افتح ملف الأسئلة» في الصفحة وفي النافذة العائمة */
-      pxOpenPdf(t.q);
-      return;
-    } catch (e) { /* يكمل إلى النافذة المستقلة */ }
-  }
-  const W = PIP_W + 20, url = location.pathname + '?c=' + encodeURIComponent(C.id) + '&sheet=' + encodeURIComponent(id);
-  const pop = window.open(url, 'pxsheet', `popup,width=${W},height=${screen.availHeight - 40},left=${screen.availWidth - W},top=0`);
-  if (!pop) location.href = url;
+  const W = PIP_W + 20, L = (screen.availLeft || 0) + screen.availWidth - W, T = screen.availTop || 0, H = screen.availHeight;
+  const url = location.pathname + '?c=' + encodeURIComponent(C.id) + '&sheet=' + encodeURIComponent(id) + '&side=1';
+  const pop = window.open(url, 'pxsheet', `popup,left=${L},top=${T},width=${W},height=${H}`);
+  if (!pop) { location.href = url; return; }
+  /* ضبط المقاس الخارجي بالضبط (النافذة من الموقع نفسه فيُسمح بذلك) */
+  try { pop.moveTo(L, T); pop.resizeTo(W, H); pop.focus(); } catch (e) {}
 }
 function pxClose(){
   if (PXR && PXR.mode === 'pip' && PX_PIP) { try { PX_PIP.close(); } catch (e) {} return; }
@@ -650,7 +635,7 @@ function pxRender(){
   if (graded) head = `<div class="score"><div class="big">${graded.s}<small>/100</small></div><div><div style="font-weight:600;margin-bottom:6px">${TP.t('px.score')}</div>
       <div class="chips"><span style="background:#EFFAF5;color:#0B7A5B">${PXF('px.ok', { n: cnt('ok') })}</span><span style="background:#FDF0F3;color:#B4234F">${PXF('px.bad', { n: cnt('bad') })}</span><span style="background:#FFF8E9;color:#8A5D00">${PXF('px.skip', { n: cnt('skip') })}</span></div></div>
       <div class="chips" style="flex-basis:100%">${graded.by.map(b => `<span>${t.parts.length > 1 ? TP.esc(t.parts[b.pi].t[TP.lang() === 'en' ? 1 : 0]) + ' · ' : ''}${PXF('px.byblk', b)}</span>`).join('')}</div></div>`;
-  else head = `<div class="bar"><span class="tm" id="pxTm"></span><div class="pg"><small>${PXF('px.done', { a: answered, n })}</small><i><b style="width:${answered / n * 100}%"></b></i></div>
+  else head = (PXR.needPdf ? `<a class="px-start" href="${TP.esc(t.q)}" target="_blank" rel="noopener" data-pxpdf="${TP.esc(t.q)}">${TP.icon('pdf')}<span><b>${TP.t('px.openQ')}</b><small>${TP.t('px.startTip')}</small></span></a>` : '') + `<div class="bar"><span class="tm" id="pxTm"></span><div class="pg"><small>${PXF('px.done', { a: answered, n })}</small><i><b style="width:${answered / n * 100}%"></b></i></div>
       <a class="btn ghost" href="${TP.esc(t.q)}" target="_blank" rel="noopener" data-pxpdf="${TP.esc(t.q)}">${TP.icon('pdf')}<span>${TP.t('px.q')}</span></a>
       <button type="button" class="btn tint" style="--c:${t.c}" data-pxa="grade">${TP.t('px.grade')}</button></div>
       ${PXR.confirm ? `<div class="bar" style="position:static;background:#FFF8E9;border-color:#F3D69B"><span style="flex:1;font-weight:600">${PXF('px.confirm', { n: n - answered })}</span><button type="button" class="btn tint" style="--c:${t.c}" data-pxa="grade2">${TP.t('px.yes')}</button><button type="button" class="btn ghost" data-pxa="cancel">${TP.t('px.no')}</button></div>` : ''}`;
@@ -678,7 +663,7 @@ function pxRender(){
 }
 function pxClick(e){
   const pdf = e.target.closest('[data-pxpdf]');
-  if (pdf && PXR && PXR.mode !== 'modal') { e.preventDefault(); pxOpenPdf(pdf.dataset.pxpdf, e.view); return; }
+  if (pdf && PXR && PXR.mode !== 'modal') { e.preventDefault(); pxOpenPdf(pdf.dataset.pxpdf, e.view); if (PXR.needPdf) { PXR.needPdf = false; pxRender(); } return; }
   const g = e.target.closest('[data-pxg]'); if (g) { PX_GRP = g.dataset.pxg; pxRefresh(); return; }
   const o = e.target.closest('[data-pxo]'); if (o) { pxOpen(o.dataset.pxo); return; }
   const sd = e.target.closest('[data-pxs]'); if (sd) { pxSide(sd.dataset.pxs); return; }
@@ -715,7 +700,7 @@ window.addEventListener('storage', e => { if (e.key && e.key.startsWith('tp-px-'
 const PX_SOLO = PX && new URLSearchParams(location.search).get('sheet');
 function pxSolo(){
   PXR = pxStart(PX_SOLO); if (!PXR) return false;
-  PXR.mode = 'solo';
+  PXR.mode = 'solo'; PXR.needPdf = new URLSearchParams(location.search).get('side') === '1';
   document.body.innerHTML = '<div id="pxo" class="pxo open pip"></div>';
   PXR.root = document.getElementById('pxo'); document.title = pxSubj(PXR.t);
   pxRender(); clearInterval(PX_TIMER); PX_TIMER = setInterval(pxTick, 1000);
