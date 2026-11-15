@@ -368,8 +368,8 @@ window.TP_COMPETITIONS = [
       { ar:'التسجيل عبر منسقي المدارس', en:'Registration through school coordinators', date:'2026-08-20', end:'2026-09-30' },
       { ar:'الاختبار الإلكتروني (المرحلة الأولى) عن بُعد', en:'Online test (Phase One), remote', date:'2026-10-18', time:'18:30', end:'2026-10-22',
         note:{ ar:'6:30–8:30 مساءً: الفيزياء والعلوم (الأحد 18)، الأحياء (الاثنين 19)، الكيمياء (الثلاثاء 20)، الرياضيات 1 و2 (الأربعاء 21)، المعلوماتية 1 و2 (الخميس 22)', en:'6:30–8:30 pm: Physics & Science (Sun 18), Biology (Mon 19), Chemistry (Tue 20), Math 1 & 2 (Wed 21), Informatics 1 & 2 (Thu 22)' } },
-      { ar:'اختبار الفرق الوطنية', en:'National teams test', when:{ar:'يُعلن موعده لاحقاً',en:'Date to be announced'},
-        note:{ ar:'للمرشحين من الاختبار الإلكتروني، ويُدرَّبون قبله حضورياً في المحافظات والمدن. النتائج حسب الجدول الزمني الذي تعلنه موهبة.', en:'For candidates from the online test, who are first trained in person in their governorates and cities. Results follow the timetable Mawhiba announces.' } },
+      { ar:'المرحلة الثانية: مسابقة الفرق الوطنية (حضوري)', en:'Phase Two: National teams competition (in person)', date:'2026-11-17', time:'09:00',
+        note:{ ar:'الثلاثاء 17 نوفمبر 2026، من 9 صباحاً إلى 12 ظهراً، حضورياً للمرشحين من الاختبار الإلكتروني. تُعلَن المقرات لاحقاً.', en:'Tuesday 17 November 2026, 9 am – 12 noon, in person, for candidates from the online test. Venues to be announced.' } },
       { ar:'التدريب والاختبارات المركزية', en:'Training & central tests', when:{ar:'يُعلن موعدها لاحقاً',en:'Dates to be announced'},
         note:{ ar:'تدريب حضوري للمرشحين في إدارات التعليم، والاختبارات حضورية.', en:'In-person training for candidates at education departments; tests are held in person.' } },
       { ar:'النهائيات في الرياض', en:'Finals in Riyadh', date:'2027-01-25', approx:true, when:{ar:'أواخر يناير 2027',en:'Late January 2027'} }
