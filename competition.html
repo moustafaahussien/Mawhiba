@@ -165,7 +165,9 @@ html[dir=rtl] .res-h::after{background:linear-gradient(270deg,color-mix(in srgb,
 .px-how{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;margin-bottom:16px;border-radius:18px;background:color-mix(in srgb,var(--c) 8%,#fff);border:1px solid color-mix(in srgb,var(--c) 22%,#fff);font-size:14px;line-height:1.85}
 .px-how .gorb{--sz:40px;flex:none}
 .px-how b{display:block;font-family:var(--display);font-weight:600}
-.px-live{display:flex;gap:8px;align-items:center;padding:10px 14px;margin-bottom:14px;border-radius:14px;background:#EFFAF5;border:1px solid #9FDCC6;color:#0B7A5B;font-weight:600;font-size:14px}
+.px-live{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px;margin-bottom:14px;border-radius:14px;background:#EFFAF5;border:1px solid #9FDCC6;color:#0B7A5B;font-weight:600;font-size:14px}
+.px-live .btn{padding:9px 16px;font-size:14px}
+.px-live .btn svg{width:18px;height:18px;stroke:currentColor}
 .px-live svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.2}
 .px-note{margin-top:14px;font-size:13px;color:var(--muted);line-height:1.8}
 .px-note a{color:color-mix(in srgb,var(--c) 70%,#1A1640);font-weight:600}
@@ -319,8 +321,8 @@ TP.addDict({
        'px.byblk':'الأسئلة {a}–{b}: {s} من {t}', 'px.type':'اكتب الإجابة',
        'px.side':'الأسئلة وورقة الإجابة معاً', 'px.sideTip':'تفتح ورقة الإجابة في نافذة صغيرة عائمة تبقى ظاهرة فوق ملف الأسئلة',
        'px.howT':'كيف تحل الأسئلة وورقة الإجابة أمامك معاً؟',
-       'px.how':'اضغط «الأسئلة وورقة الإجابة معاً»: تظهر ورقة الإجابة في نافذة صغيرة عائمة تبقى فوق أي نافذة، ثم اضغط فيها «الأسئلة (PDF)» فيفتح ملف الأسئلة خلفها، وتحل وأنت ترى الاثنين. (على الجوال أو الآيباد: افتح ورقة الإجابة والملف بتقسيم الشاشة.)',
-       'px.pipOn':'ورقة إجابة «{s}» مفتوحة الآن في النافذة العائمة.', 'px.notime':'دون توقيت' },
+       'px.how':'اضغط «الأسئلة وورقة الإجابة معاً»: تظهر ورقة الإجابة في نافذة صغيرة عائمة تبقى فوق أي نافذة، ويفتح ملف الأسئلة في تبويب جديد خلفها (وإن لم يفتح تلقائياً فاضغط «افتح ملف الأسئلة» في الصفحة أو «الأسئلة (PDF)» في النافذة العائمة)، فتحل وأنت ترى الاثنين. (على الجوال أو الآيباد: افتح ورقة الإجابة والملف بتقسيم الشاشة.)',
+       'px.pipOn':'ورقة إجابة «{s}» مفتوحة الآن في النافذة العائمة.', 'px.openQ':'افتح ملف الأسئلة', 'px.notime':'دون توقيت' },
   en:{ comps:'Competitions', register:'Register now', official:'Official website',
        's.about':'Overview', 's.link':'Competition links', 's.cond':'Conditions', 's.reg':'How to register', 's.tl':'Timeline',
        's.res':'Packages & resources', 's.train':'Training', 's.results':'Results',
@@ -346,8 +348,8 @@ TP.addDict({
        'px.byblk':'Questions {a}–{b}: {s} of {t}', 'px.type':'Type answer',
        'px.side':'Questions + answer sheet', 'px.sideTip':'Opens the answer sheet in a small floating window that stays on top of the question file',
        'px.howT':'How do I see the questions and the answer sheet together?',
-       'px.how':'Click “Questions + answer sheet”: the answer sheet opens in a small floating window that stays on top of every other window. Then click “Questions (PDF)” in it to open the question file behind it, and answer while you see both. (On a phone or iPad, open the answer sheet and the file in split screen.)',
-       'px.pipOn':'The “{s}” answer sheet is open in the floating window.', 'px.notime':'Untimed' }
+       'px.how':'Click “Questions + answer sheet”: the answer sheet opens in a small floating window that stays on top of every other window. The question file opens in a new tab behind it (if it does not, click “Open the question file” on the page or “Questions (PDF)” in the floating window), so you answer while you see both. (On a phone or iPad, open the answer sheet and the file in split screen.)',
+       'px.pipOn':'The “{s}” answer sheet is open in the floating window.', 'px.openQ':'Open the question file', 'px.notime':'Untimed' }
 });
 
 const COMPS = window.TP_COMPETITIONS, FIELDS = window.TP_FIELDS, STAGES = window.TP_STAGES;
@@ -521,7 +523,8 @@ function pxHtml(){
   return `<div class="px-top"><p>${TP.esc(TP.t('px.intro'))}</p>
     <div class="seg px-seg no-print">${[['', 'px.all'], ['jr', 'px.jr'], ['sr', 'px.sr']].map(([g, k]) => `<button type="button" class="${g === PX_GRP ? 'on' : ''}" data-pxg="${g}">${TP.t(k)}</button>`).join('')}</div></div>
   <div class="px-how"><span class="gorb">${TP.icon('layers')}</span><div><b>${TP.t('px.howT')}</b><span>${TP.t('px.how')}</span></div></div>
-  ${pipOn ? `<div class="px-live">${TP.icon('check')}<span>${PXF('px.pipOn', { s: TP.esc(pxSubj(PXR.t)) })}</span></div>` : ''}
+  ${pipOn ? `<div class="px-live">${TP.icon('check')}<span>${PXF('px.pipOn', { s: TP.esc(pxSubj(PXR.t)) })}</span>
+    <a class="btn tint" style="--c:${PXR.t.c};margin-inline-start:auto" href="${TP.esc(PXR.t.q)}" target="_blank" rel="noopener">${TP.icon('pdf')}<span>${TP.t('px.openQ')}</span></a></div>` : ''}
   <div class="res-h">${TP.esc(TP.tx(PX.title))}</div>
   <div class="px-grid">${tests.map(t => {
     const st = pxStore.get(t.id), last = st.hist[st.hist.length - 1], best = st.hist.length ? Math.max(...st.hist.map(h => h.s)) : null;
@@ -581,6 +584,8 @@ async function pxSide(id){
       w.addEventListener('pagehide', () => { if (PXR && PXR.mode === 'pip') { clearInterval(PX_TIMER); PXR = null; } PX_PIP = null; pxRefresh(); });
       pxRender(); clearInterval(PX_TIMER); PX_TIMER = setInterval(pxTick, 1000);
       pxRefresh();
+      /* محاولة فتح ملف الأسئلة مباشرة؛ إن منعها المتصفح يبقى زر «افتح ملف الأسئلة» في الصفحة وفي النافذة العائمة */
+      try { window.open(t.q, '_blank', 'noopener'); } catch (e) {}
       return;
     } catch (e) { /* يكمل إلى النافذة المستقلة */ }
   }
@@ -619,7 +624,7 @@ function pxRender(){
       <div class="chips"><span style="background:#EFFAF5;color:#0B7A5B">${PXF('px.ok', { n: cnt('ok') })}</span><span style="background:#FDF0F3;color:#B4234F">${PXF('px.bad', { n: cnt('bad') })}</span><span style="background:#FFF8E9;color:#8A5D00">${PXF('px.skip', { n: cnt('skip') })}</span></div></div>
       <div class="chips" style="flex-basis:100%">${graded.by.map(b => `<span>${t.parts.length > 1 ? TP.esc(t.parts[b.pi].t[TP.lang() === 'en' ? 1 : 0]) + ' · ' : ''}${PXF('px.byblk', b)}</span>`).join('')}</div></div>`;
   else head = `<div class="bar"><span class="tm" id="pxTm"></span><div class="pg"><small>${PXF('px.done', { a: answered, n })}</small><i><b style="width:${answered / n * 100}%"></b></i></div>
-      <a class="btn ghost" href="${TP.esc(t.q)}" target="_blank" rel="noopener">${TP.icon('pdf')}<span>${TP.t('px.q')}</span></a>
+      <a class="btn ghost" href="${TP.esc(t.q)}" target="_blank" rel="noopener" data-pxpdf="${TP.esc(t.q)}">${TP.icon('pdf')}<span>${TP.t('px.q')}</span></a>
       <button type="button" class="btn tint" style="--c:${t.c}" data-pxa="grade">${TP.t('px.grade')}</button></div>
       ${PXR.confirm ? `<div class="bar" style="position:static;background:#FFF8E9;border-color:#F3D69B"><span style="flex:1;font-weight:600">${PXF('px.confirm', { n: n - answered })}</span><button type="button" class="btn tint" style="--c:${t.c}" data-pxa="grade2">${TP.t('px.yes')}</button><button type="button" class="btn ghost" data-pxa="cancel">${TP.t('px.no')}</button></div>` : ''}`;
   const QS = pxQs(t), multi = t.parts.length > 1;
@@ -639,12 +644,20 @@ function pxRender(){
     <div class="sh-h"><span class="gorb">${TP.icon(t.ic)}</span><h3>${TP.esc(pxSubj(t))} — ${TP.t(graded ? 'px.score' : 'px.sheet')}</h3><button type="button" class="x" data-pxa="close" aria-label="${TP.t('px.close')}">×</button></div>
     ${head}${rows}
     ${graded ? `<div class="foot">${cnt('ok') < n ? `<button type="button" class="btn tint" style="--c:${t.c}" data-pxa="retry">${TP.t('px.retry')}</button>` : ''}<button type="button" class="btn ghost" data-pxa="reset">${TP.t('px.reset')}</button>
-      <a class="btn ghost" href="${TP.esc(t.q)}" target="_blank" rel="noopener">${TP.icon('pdf')}<span>${TP.t('px.q')}</span></a><a class="btn ghost" href="${TP.esc(t.a)}" target="_blank" rel="noopener">${TP.icon('file')}<span>${TP.t('px.a')}</span></a></div>` : ''}
+      <a class="btn ghost" href="${TP.esc(t.q)}" target="_blank" rel="noopener" data-pxpdf="${TP.esc(t.q)}">${TP.icon('pdf')}<span>${TP.t('px.q')}</span></a><a class="btn ghost" href="${TP.esc(t.a)}" target="_blank" rel="noopener" data-pxpdf="${TP.esc(t.a)}">${TP.icon('file')}<span>${TP.t('px.a')}</span></a></div>` : ''}
     ${hist.length ? `<div class="hist">${TP.t('px.hist')} ${hist.map(h => `<b>${h.s}</b>/100 <small>(${TP.fmtDate(new Date(h.d))})</small>`).join(' · ')}</div>` : ''}
   </div>`;
   pxTick();
 }
 function pxClick(e){
+  const pdf = e.target.closest('[data-pxpdf]');
+  if (pdf && PXR && PXR.mode === 'pip') {
+    e.preventDefault();
+    let w = null; try { w = window.open(pdf.dataset.pxpdf, '_blank', 'noopener'); } catch (er) {}
+    if (!w) { try { w = e.view.open(pdf.dataset.pxpdf, '_blank'); } catch (er) {} }
+    try { window.focus(); } catch (er) {}
+    return;
+  }
   const g = e.target.closest('[data-pxg]'); if (g) { PX_GRP = g.dataset.pxg; pxRefresh(); return; }
   const o = e.target.closest('[data-pxo]'); if (o) { pxOpen(o.dataset.pxo); return; }
   const sd = e.target.closest('[data-pxs]'); if (sd) { pxSide(sd.dataset.pxs); return; }
