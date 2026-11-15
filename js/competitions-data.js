@@ -369,11 +369,49 @@ window.TP_COMPETITIONS = [
       { ar:'الاختبار الإلكتروني (المرحلة الأولى) عن بُعد', en:'Online test (Phase One), remote', date:'2026-10-18', time:'18:30', end:'2026-10-22',
         note:{ ar:'6:30–8:30 مساءً: الفيزياء والعلوم (الأحد 18)، الأحياء (الاثنين 19)، الكيمياء (الثلاثاء 20)، الرياضيات 1 و2 (الأربعاء 21)، المعلوماتية 1 و2 (الخميس 22)', en:'6:30–8:30 pm: Physics & Science (Sun 18), Biology (Mon 19), Chemistry (Tue 20), Math 1 & 2 (Wed 21), Informatics 1 & 2 (Thu 22)' } },
       { ar:'المرحلة الثانية: مسابقة الفرق الوطنية (حضوري)', en:'Phase Two: National teams competition (in person)', date:'2026-11-17', time:'09:00',
-        note:{ ar:'الثلاثاء 17 نوفمبر 2026، من 9 صباحاً إلى 12 ظهراً، حضورياً للمرشحين من الاختبار الإلكتروني. تُعلَن المقرات لاحقاً.', en:'Tuesday 17 November 2026, 9 am – 12 noon, in person, for candidates from the online test. Venues to be announced.' } },
+        note:{ ar:'الثلاثاء 17 نوفمبر 2026، من 9 صباحاً إلى 12 ظهراً، حضورياً للمرشحين من الاختبار الإلكتروني. مقرات جدة في قسم «مقرات الاختبار».', en:'Tuesday 17 November 2026, 9 am – 12 noon, in person, for candidates from the online test. Jeddah venues are in the “Test venues” section.' } },
       { ar:'التدريب والاختبارات المركزية', en:'Training & central tests', when:{ar:'يُعلن موعدها لاحقاً',en:'Dates to be announced'},
         note:{ ar:'تدريب حضوري للمرشحين في إدارات التعليم، والاختبارات حضورية.', en:'In-person training for candidates at education departments; tests are held in person.' } },
       { ar:'النهائيات في الرياض', en:'Finals in Riyadh', date:'2027-01-25', approx:true, when:{ar:'أواخر يناير 2027',en:'Late January 2027'} }
     ]
+  },
+  /* مقرات اختبار المرحلة الثانية — المصدر: الإدارة العامة للتعليم بمحافظة جدة (assets/docs/nsmo-2027-phase2-jeddah.pdf) */
+  venues:{
+    title:{ ar:'مقرات اختبار المرحلة الثانية — جدة', en:'Phase Two test venues — Jeddah' },
+    when:{ ar:'الثلاثاء 17 نوفمبر 2026 · من 9:00 صباحاً إلى 12:00 ظهراً', en:'Tuesday 17 November 2026 · 9:00 am – 12:00 noon' },
+    date:'2026-11-17',
+    source:{ ar:'الإدارة العامة للتعليم بمحافظة جدة', en:'Jeddah Education Department' },
+    pdf:'assets/docs/nsmo-2027-phase2-jeddah.pdf',
+    rows:[
+      { ar:'الأحياء – العلوم', en:'Biology – Science', boys:['مجمع الأمير سلطان الابتدائي','https://maps.app.goo.gl/9EfA6Aa75tw6hCsW7'], girls:['الفيصلية الأهلية – فرع الفلاح','https://maps.app.goo.gl/7cnMwjd5hZjbHkyv9'] },
+      { ar:'الفيزياء', en:'Physics', boys:['مدارس الإخاء الأهلية','https://maps.app.goo.gl/xAojmtCHieZz26gZ7'], girls:['مدارس الأندلس الأهلية – الحمدانية','https://maps.app.goo.gl/KosAiVWoStFctn7D9'] },
+      { ar:'الكيمياء', en:'Chemistry', boys:['متوسطة الأمير فيصل بن فهد','https://maps.app.goo.gl/XLdymqEKEjiTWFP2A'], girls:['مدارس منارات جدة العالمية – بنات','https://maps.app.goo.gl/5KRBHQnLjmN86NGb6'] },
+      { ar:'الرياضيات 1 و2', en:'Mathematics 1 & 2', boys:['الثانوية التقنية للموهوبين – بنين','https://maps.app.goo.gl/BemyQmwjqM3q6FVo7'], girls:['مدارس الأندلس الأهلية – الشاطئ','https://maps.app.goo.gl/c56kAP9VDAimudh78'] },
+      { ar:'المعلوماتية 1', en:'Informatics 1', boys:['عمورية الثانوية','https://maps.app.goo.gl/9Dcf9fe9EyfZPdvQ9'], girls:['المدارس المتقدمة للتعلم الذكي','https://maps.app.goo.gl/83HeJ3CPMZrdVvUX7'] },
+      { ar:'المعلوماتية 2', en:'Informatics 2', boys:['مدرسة زهرة الصحراء العالمية','https://maps.app.goo.gl/EVKJtQFThPCm5RYe8'], girls:['مدرسة زهرة الصحراء العالمية','https://maps.app.goo.gl/EVKJtQFThPCm5RYe8'] }
+    ],
+    rules:{
+      ar:['إحضار أصل الهوية الوطنية (بطاقة الأحوال أو كرت العائلة) لدخول الاختبار.',
+          'الحضور الساعة 8:00 صباحاً، ودخول اللجان 8:45، وبداية الاختبار 9:00.',
+          'الالتزام بالزي المدرسي والثوب السعودي، والهدوء التام، واتباع تعليمات المنظمين.',
+          'إحضار الأدوات: قلم رصاص HB2، قلم أزرق جاف ثابت الحبر، ممحاة، مبراة.',
+          'الآلة الحاسبة مسموحة في جميع الاختبارات ما عدا الرياضيات 1 و2.',
+          'مدة الاختبار ساعتان لجميع التخصصات، وثلاث ساعات للمعلوماتية.',
+          'لا يُسمح بالدخول بعد مرور نصف وقت الاختبار.',
+          'يُمنع إدخال الجوالات والأجهزة اللوحية والسماعات والساعات الذكية إلى القاعة.',
+          'المعلوماتية: إحضار جهاز لابتوب الطالب مزوداً باتصال إنترنت.',
+          'عدم إحضار مقتنيات ثمينة، والانصراف بنهاية وقت الاختبار، والنوم الكافي ووجبة صحية قبل الاختبار.'],
+      en:['Bring the original national ID (ID card or family card) to enter the test.',
+          'Arrive at 8:00 am; committees open at 8:45; the test starts at 9:00.',
+          'School uniform / Saudi thobe; stay quiet and follow the organizers’ instructions.',
+          'Bring an HB2 pencil, a permanent blue ballpoint pen, an eraser and a sharpener.',
+          'Calculators are allowed in all tests except Mathematics 1 & 2.',
+          'Tests last two hours; Informatics lasts three hours.',
+          'No entry after half of the test time has passed.',
+          'Phones, tablets, earphones, headphones and smart watches are not allowed in the hall.',
+          'Informatics: bring the student’s own laptop with an internet connection.',
+          'Leave valuables at home, leave at the end of the test, and get enough sleep and a healthy meal beforehand.']
+    }
   },
   resources:[
     { ar:'حقائب المرحلة الأولى (الأحياء، الكيمياء، الفيزياء، العلوم، الرياضيات) – صفحة الأولمبياد', en:'Phase One study packages (Biology, Chemistry, Physics, Science, Math) – Olympiad page', url:'https://www.mawhiba.sa/discover-mawhiba/competitions/national-gifted-olympiad/', type:'link' },

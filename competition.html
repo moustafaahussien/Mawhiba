@@ -58,6 +58,19 @@
 @media(max-width:620px){.panel{padding:20px;border-radius:24px}}
 .about p{font-size:16.5px;line-height:2;margin-bottom:12px}
 .about p:last-child{margin-bottom:0}
+.vhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.vhead h3{font-family:var(--display);font-weight:900;font-size:19px}
+.vwhen{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;font-weight:700;font-size:14px;background:color-mix(in srgb,var(--c) 14%,#fff);color:color-mix(in srgb,var(--c) 70%,#0B2E22)}
+.vwhen svg,.vplace svg{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.vtable td{vertical-align:top}
+.vplace{display:inline-flex;align-items:flex-start;gap:6px;color:var(--ink);text-decoration:none;font-weight:600;line-height:1.5}
+.vplace svg{color:var(--c);margin-top:3px}
+.vplace:hover span{text-decoration:underline}
+.vrules-h{font-family:var(--display);font-weight:900;font-size:16px;margin:22px 0 8px}
+.vrules{margin:0;padding-inline-start:22px;display:grid;gap:6px;line-height:1.8;color:var(--ink2,#3E5A4F)}
+.vfoot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-top:18px}
+.vfoot .btn{display:inline-flex;align-items:center;gap:8px}.vfoot .btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+.vsrc{font-size:13px;color:var(--muted)}
 .minitable{margin-top:20px;border-radius:20px;overflow:auto;border:1px solid var(--glass-edge);background:rgba(255,255,255,.55)}
 .minitable h3{font-family:var(--display);font-weight:900;font-size:16px;padding:14px 18px 0}
 .minitable table{width:100%;border-collapse:collapse;font-size:14.5px;min-width:520px;margin-top:10px}
@@ -313,7 +326,7 @@ html[dir=rtl] .oth{padding:12px 12px 12px 18px}
 <script>
 TP.addDict({
   ar:{ comps:'المسابقات', register:'سجّل الآن', official:'الموقع الرسمي',
-       's.about':'التعريف', 's.link':'رابط المسابقة', 's.cond':'شروط المسابقة', 's.reg':'كيفية التسجيل', 's.tl':'المخطط الزمني',
+       's.about':'التعريف', 's.link':'رابط المسابقة', 's.cond':'شروط المسابقة', 's.reg':'كيفية التسجيل', 's.tl':'المخطط الزمني', 's.venues':'مقرات الاختبار', 'v.subj':'التخصص', 'v.boys':'مقر البنين', 'v.girls':'مقر البنات', 'v.rules':'تعليمات الاختبار', 'v.pdf':'الملف الرسمي (PDF)', 'v.map':'الموقع على الخريطة', 'v.src':'المصدر:',
        's.res':'الحقائب والمصادر', 's.train':'التدريب', 's.results':'النتائج',
        coordinator:'منسق المسابقة بالمدرسة', regOverride:'رابط التسجيل للعام الحالي',
        'tl.sheet':'مواعيد العام الحالي — محدَّثة من جدول بيانات المنصة', past:'انتهى', cur:'جارٍ الآن', next:'القادم',
@@ -340,7 +353,7 @@ TP.addDict({
        'px.how':'اضغط «الأسئلة وورقة الإجابة معاً»: تفتح ورقة الإجابة عموداً على يمين الشاشة بطولها، ثم اضغط فيها «افتح ملف الأسئلة» فيفتح الملف في باقي الشاشة بجانبها، فترى الاثنين معاً دون أن يغطي أحدهما الآخر. (على الجوال أو الآيباد: افتح ورقة الإجابة والملف بتقسيم الشاشة.)',
        'px.pipOn':'ورقة إجابة «{s}» مفتوحة الآن في النافذة العائمة.', 'px.openQ':'افتح ملف الأسئلة', 'px.notime':'دون توقيت' },
   en:{ comps:'Competitions', register:'Register now', official:'Official website',
-       's.about':'Overview', 's.link':'Competition links', 's.cond':'Conditions', 's.reg':'How to register', 's.tl':'Timeline',
+       's.about':'Overview', 's.link':'Competition links', 's.cond':'Conditions', 's.reg':'How to register', 's.tl':'Timeline', 's.venues':'Test venues', 'v.subj':'Field', 'v.boys':'Boys’ venue', 'v.girls':'Girls’ venue', 'v.rules':'Test instructions', 'v.pdf':'Official file (PDF)', 'v.map':'Open in Maps', 'v.src':'Source:',
        's.res':'Packages & resources', 's.train':'Training', 's.results':'Results',
        coordinator:'School coordinator', regOverride:'This year’s registration link',
        'tl.sheet':'This year’s dates — updated from the platform data sheet', past:'Done', cur:'Ongoing', next:'Next',
@@ -376,7 +389,7 @@ let DATA = null, SJ = null, FOLDER = { state: 'none', data: null }, folderReq = 
 const PX = C && (window.TP_PRACTICE || {})[C.id];
 const SECTIONS = [
   ['about','info','s.about'], ['link','link','s.link'], ['conditions','check','s.cond'], ['register','list','s.reg'],
-  ['timeline','cal','s.tl'], ['resources','folder','s.res'], ...(PX ? [['bank','target','s.bank']] : []), ['training','coach','s.train'], ['results','trophy','s.results']
+  ['timeline','cal','s.tl'], ...(C && C.venues ? [['venues','pin','s.venues']] : []), ['resources','folder','s.res'], ...(PX ? [['bank','target','s.bank']] : []), ['training','coach','s.train'], ['results','trophy','s.results']
 ];
 const secNo = sid => SECTIONS.findIndex(x => x[0] === sid);
 const host = u => { try { return new URL(u, location.href).host.replace(/^www\./, ''); } catch (e) { return u; } };
@@ -445,6 +458,8 @@ function render(){
     <div class="panel glass reveal">${timelineHtml()}</div>
   </section>
 
+  ${C.venues ? `<section class="sec" id="venues">${secHead(secNo('venues'), 'pin', 's.venues')}<div class="panel glass reveal">${venuesHtml()}</div></section>` : ''}
+
   <section class="sec" id="resources">${secHead(secNo('resources'), 'folder', 's.res')}
     <div class="panel glass reveal">
       ${resourcesHtml()}
@@ -491,6 +506,16 @@ function linkCard(l){
   return `<a class="lk glass reveal${l.register ? ' reg' : ''}" href="${TP.esc(url)}"${internal ? '' : ' target="_blank" rel="noopener"'}>
     <span class="gorb">${TP.icon(l.register ? 'check' : l.primary ? 'globe' : 'link')}</span>
     <span><b>${TP.esc(TP.tx(l))}</b><small>${TP.esc(internal ? TP.tx(C.short) : host(url))}</small></span>${TP.icon('ext', 'ext')}</a>`;
+}
+
+/* مقرات الاختبار: جدول التخصص ← مقر البنين / البنات مع رابط الخريطة، ثم التعليمات */
+function venuesHtml(){
+  const V = C.venues, place = p => p ? `<a class="vplace" href="${TP.esc(p[1])}" target="_blank" rel="noopener" title="${TP.t('v.map')}">${TP.icon('pin')}<span>${TP.esc(p[0])}</span></a>` : '—';
+  return `<div class="vhead"><h3>${TP.esc(TP.tx(V.title))}</h3><span class="vwhen">${TP.icon('cal')}${TP.esc(TP.tx(V.when))}</span></div>
+    <div class="minitable vtable"><table><thead><tr><th>${TP.t('v.subj')}</th><th>${TP.t('v.boys')}</th><th>${TP.t('v.girls')}</th></tr></thead><tbody>
+      ${V.rows.map(r => `<tr><td><b>${TP.esc(TP.tx(r))}</b></td><td>${place(r.boys)}</td><td>${place(r.girls)}</td></tr>`).join('')}</tbody></table></div>
+    <h3 class="vrules-h">${TP.t('v.rules')}</h3><ul class="vrules">${L(V.rules).map(x => `<li>${TP.esc(x)}</li>`).join('')}</ul>
+    <div class="vfoot">${V.pdf ? `<a class="btn ghost" href="${TP.esc(V.pdf)}" target="_blank" rel="noopener">${TP.icon('pdf')}<span>${TP.t('v.pdf')}</span></a>` : ''}<span class="vsrc">${TP.t('v.src')} ${TP.esc(TP.tx(V.source))}</span></div>`;
 }
 
 function timelineHtml(){
