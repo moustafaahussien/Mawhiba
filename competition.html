@@ -559,10 +559,16 @@ let PX_PIP = null;
 const PIP_W = 340;
 /* يفتح ملف الأسئلة في نافذة تملأ الشاشة إلا عمود ورقة الإجابة العائمة على اليمين، فلا تغطي إحداهما الأخرى */
 function pxOpenPdf(url, view){
-  const sw = screen.availWidth, sh = screen.availHeight, w = Math.max(480, sw - PIP_W - 24);
+  const L = screen.availLeft || 0, T = screen.availTop || 0, sh = screen.availHeight, w = Math.max(480, screen.availWidth - PIP_W - 24);
+  const feat = `popup,left=${L},top=${T},width=${w},height=${sh}`;
   let win = null;
-  try { win = window.open(url, 'pxpdf', `popup,left=${(screen.availLeft || 0)},top=${(screen.availTop || 0)},width=${w},height=${sh}`); } catch (e) {}
-  if (!win && view) { try { win = view.open(url, 'pxpdf', `popup,left=0,top=0,width=${w},height=${sh}`); } catch (e) {} }
+  /* نفتح نافذة فارغة أولاً (من الموقع نفسه) لنضبط مقاسها الخارجي بالضبط: كامل طول الشاشة، ثم ننقلها إلى ملف الأسئلة */
+  try { win = window.open('', 'pxpdf', feat); } catch (e) {}
+  if (!win && view) { try { win = view.open('', 'pxpdf', feat); } catch (e) {} }
+  if (win) {
+    try { win.moveTo(L, T); win.resizeTo(w, sh); } catch (e) {}
+    try { win.location.href = url; } catch (e) { win = null; }
+  }
   if (!win) { try { win = window.open(url, '_blank'); } catch (e) {} }
   return win;
 }
