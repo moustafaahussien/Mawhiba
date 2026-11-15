@@ -10,7 +10,7 @@
    - التواريخ هنا بصيغة YYYY-MM-DD، والوقت اختياري في الحقل time
      (مثل '17:00') — كل المواعيد بتوقيت الرياض.
    - مصدر المعلومات: المواقع الرسمية للمسابقات وموهبة
-     (راجع sources في كل مسابقة). آخر مراجعة: 21 أكتوبر 2026 (من المواقع الرسمية).
+     (راجع sources في كل مسابقة). آخر مراجعة: 21 أكتوبر 2026 (من المواقع الرسمية)، ومراحل نسمو: 15 نوفمبر 2026.
    ========================================================= */
 window.TP_FIELDS = {
   math:        { ar:'الرياضيات',        en:'Mathematics',       c:'#7B4DFF' },
@@ -363,13 +363,15 @@ window.TP_COMPETITIONS = [
         'The student sits Phase One tests on their field’s date.']
   },
   timeline:{
-    label:{ ar:'النسخة الأولى 2026–2027', en:'First edition 2026–2027' },
+    label:{ ar:'النسخة الأولى 2026–2027 — مراحل المسار العلمي الخمس كما في صفحة الأولمبياد الرسمية', en:'First edition 2026–2027 — the five scientific-track stages as listed on the official Olympiad page' },
     items:[
-      { ar:'التسجيل والترشيح عبر المدارس', en:'Registration & school nomination', date:'2026-08-20', end:'2026-09-30' },
-      { ar:'اختبارات المرحلة الأولى عن بُعد', en:'Phase One remote tests', date:'2026-10-18', time:'18:30', end:'2026-10-22',
+      { ar:'التسجيل عبر منسقي المدارس', en:'Registration through school coordinators', date:'2026-08-20', end:'2026-09-30' },
+      { ar:'الاختبار الإلكتروني (المرحلة الأولى) عن بُعد', en:'Online test (Phase One), remote', date:'2026-10-18', time:'18:30', end:'2026-10-22',
         note:{ ar:'6:30–8:30 مساءً: الفيزياء والعلوم (الأحد 18)، الأحياء (الاثنين 19)، الكيمياء (الثلاثاء 20)، الرياضيات 1 و2 (الأربعاء 21)، المعلوماتية 1 و2 (الخميس 22)', en:'6:30–8:30 pm: Physics & Science (Sun 18), Biology (Mon 19), Chemistry (Tue 20), Math 1 & 2 (Wed 21), Informatics 1 & 2 (Thu 22)' } },
-      { ar:'تقييم المنتخبات الوطنية', en:'National teams assessment', when:{ar:'بعد المرحلة الأولى',en:'After Phase One'} },
-      { ar:'التدريب والتقييمات المركزية', en:'Training & central assessments', when:{ar:'خلال الأشهر التالية',en:'Following months'} },
+      { ar:'اختبار الفرق الوطنية', en:'National teams test', when:{ar:'يُعلن موعده لاحقاً',en:'Date to be announced'},
+        note:{ ar:'للمرشحين من الاختبار الإلكتروني، ويُدرَّبون قبله حضورياً في المحافظات والمدن. النتائج حسب الجدول الزمني الذي تعلنه موهبة.', en:'For candidates from the online test, who are first trained in person in their governorates and cities. Results follow the timetable Mawhiba announces.' } },
+      { ar:'التدريب والاختبارات المركزية', en:'Training & central tests', when:{ar:'يُعلن موعدها لاحقاً',en:'Dates to be announced'},
+        note:{ ar:'تدريب حضوري للمرشحين في إدارات التعليم، والاختبارات حضورية.', en:'In-person training for candidates at education departments; tests are held in person.' } },
       { ar:'النهائيات في الرياض', en:'Finals in Riyadh', date:'2027-01-25', approx:true, when:{ar:'أواخر يناير 2027',en:'Late January 2027'} }
     ]
   },
