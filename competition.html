@@ -216,7 +216,18 @@ html[dir=rtl] .res-h::after{background:linear-gradient(270deg,color-mix(in srgb,
 .pxo.pip .sheet{width:100%;min-height:100vh;border-radius:0;box-shadow:none;padding:14px}
 .pxo.pip .bar{top:0}
 .pxo.pip .qs{grid-template-columns:1fr}
-.pxo.pip .sh-h h3{font-size:16px}
+.pxo.pip .sh-h h3{font-size:15px}
+.pxo.pip .sheet{padding:10px}
+.pxo.pip .sh-h .gorb{--sz:34px}
+.pxo.pip .bar{gap:6px;padding:8px;margin:0 0 8px}
+.pxo.pip .bar .tm{font-size:15px;min-width:70px}
+.pxo.pip .bar .btn{padding:7px 10px;font-size:12.5px}
+.pxo.pip .qr{padding:4px 8px;gap:6px}
+.pxo.pip .qr .bb{gap:4px}
+.pxo.pip .qr .bb button{width:28px;height:28px;font-size:12px}
+.pxo.pip .qr .tx{max-width:120px;padding:4px 8px;font-size:13px}
+.pxo.pip .blk{margin:10px 0 4px;font-size:13px}
+.pxo.pip .score .big{font-size:32px}
 @media(max-width:560px){.pxo{padding:0}.pxo .sheet{border-radius:0;min-height:100%}.pxo .bar{top:0}}
 @media print{.pxo{display:none!important}}
 
@@ -524,7 +535,7 @@ function pxHtml(){
     <div class="seg px-seg no-print">${[['', 'px.all'], ['jr', 'px.jr'], ['sr', 'px.sr']].map(([g, k]) => `<button type="button" class="${g === PX_GRP ? 'on' : ''}" data-pxg="${g}">${TP.t(k)}</button>`).join('')}</div></div>
   <div class="px-how"><span class="gorb">${TP.icon('layers')}</span><div><b>${TP.t('px.howT')}</b><span>${TP.t('px.how')}</span></div></div>
   ${pipOn ? `<div class="px-live">${TP.icon('check')}<span>${PXF('px.pipOn', { s: TP.esc(pxSubj(PXR.t)) })}</span>
-    <a class="btn tint" style="--c:${PXR.t.c};margin-inline-start:auto" href="${TP.esc(PXR.t.q)}" target="_blank" rel="noopener">${TP.icon('pdf')}<span>${TP.t('px.openQ')}</span></a></div>` : ''}
+    <a class="btn tint" style="--c:${PXR.t.c};margin-inline-start:auto" href="${TP.esc(PXR.t.q)}" target="_blank" rel="noopener" data-pxpdf="${TP.esc(PXR.t.q)}">${TP.icon('pdf')}<span>${TP.t('px.openQ')}</span></a></div>` : ''}
   <div class="res-h">${TP.esc(TP.tx(PX.title))}</div>
   <div class="px-grid">${tests.map(t => {
     const st = pxStore.get(t.id), last = st.hist[st.hist.length - 1], best = st.hist.length ? Math.max(...st.hist.map(h => h.s)) : null;
@@ -545,6 +556,16 @@ function pxHtml(){
 function pxRefresh(){ const b = document.getElementById('pxBox'); if (b) b.innerHTML = pxHtml(); }
 /* أوضاع ورقة الإجابة: 'modal' نافذة داخل الصفحة ، 'pip' نافذة عائمة فوق كل النوافذ ، 'solo' صفحة مستقلة (?sheet=) */
 let PX_PIP = null;
+const PIP_W = 340;
+/* يفتح ملف الأسئلة في نافذة تملأ الشاشة إلا عمود ورقة الإجابة العائمة على اليمين، فلا تغطي إحداهما الأخرى */
+function pxOpenPdf(url, view){
+  const sw = screen.availWidth, sh = screen.availHeight, w = Math.max(480, sw - PIP_W - 24);
+  let win = null;
+  try { win = window.open(url, 'pxpdf', `popup,left=${(screen.availLeft || 0)},top=${(screen.availTop || 0)},width=${w},height=${sh}`); } catch (e) {}
+  if (!win && view) { try { win = view.open(url, 'pxpdf', `popup,left=0,top=0,width=${w},height=${sh}`); } catch (e) {} }
+  if (!win) { try { win = window.open(url, '_blank'); } catch (e) {} }
+  return win;
+}
 function pxStart(id){
   const t = PX.tests.find(x => x.id === id); if (!t) return null;
   const st = pxStore.get(id);
@@ -569,7 +590,7 @@ async function pxSide(id){
   if ('documentPictureInPicture' in window) {
     try {
       if (PX_PIP) { try { PX_PIP.close(); } catch (e) {} }
-      const w = await documentPictureInPicture.requestWindow({ width: 440, height: Math.min(820, screen.availHeight - 80) });
+      const w = await documentPictureInPicture.requestWindow({ width: PIP_W, height: screen.availHeight - 40, preferInitialWindowPlacement: true });
       PX_PIP = w;
       [...document.querySelectorAll('link[rel="stylesheet"], style')].forEach(n => {
         if (n.tagName === 'LINK') { const l = w.document.createElement('link'); l.rel = 'stylesheet'; l.href = n.href; w.document.head.appendChild(l); }
@@ -585,11 +606,11 @@ async function pxSide(id){
       pxRender(); clearInterval(PX_TIMER); PX_TIMER = setInterval(pxTick, 1000);
       pxRefresh();
       /* محاولة فتح ملف الأسئلة مباشرة؛ إن منعها المتصفح يبقى زر «افتح ملف الأسئلة» في الصفحة وفي النافذة العائمة */
-      try { window.open(t.q, '_blank', 'noopener'); } catch (e) {}
+      pxOpenPdf(t.q);
       return;
     } catch (e) { /* يكمل إلى النافذة المستقلة */ }
   }
-  const W = 460, url = location.pathname + '?c=' + encodeURIComponent(C.id) + '&sheet=' + encodeURIComponent(id);
+  const W = PIP_W + 20, url = location.pathname + '?c=' + encodeURIComponent(C.id) + '&sheet=' + encodeURIComponent(id);
   const pop = window.open(url, 'pxsheet', `popup,width=${W},height=${screen.availHeight - 40},left=${screen.availWidth - W},top=0`);
   if (!pop) location.href = url;
 }
@@ -651,13 +672,7 @@ function pxRender(){
 }
 function pxClick(e){
   const pdf = e.target.closest('[data-pxpdf]');
-  if (pdf && PXR && PXR.mode === 'pip') {
-    e.preventDefault();
-    let w = null; try { w = window.open(pdf.dataset.pxpdf, '_blank', 'noopener'); } catch (er) {}
-    if (!w) { try { w = e.view.open(pdf.dataset.pxpdf, '_blank'); } catch (er) {} }
-    try { window.focus(); } catch (er) {}
-    return;
-  }
+  if (pdf && PXR && PXR.mode !== 'modal') { e.preventDefault(); pxOpenPdf(pdf.dataset.pxpdf, e.view); return; }
   const g = e.target.closest('[data-pxg]'); if (g) { PX_GRP = g.dataset.pxg; pxRefresh(); return; }
   const o = e.target.closest('[data-pxo]'); if (o) { pxOpen(o.dataset.pxo); return; }
   const sd = e.target.closest('[data-pxs]'); if (sd) { pxSide(sd.dataset.pxs); return; }
