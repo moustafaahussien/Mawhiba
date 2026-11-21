@@ -584,3 +584,9 @@ function giftedImport_(b) {
     return { ok: true, records: recs, updated: updated, students: newSt.length, programs: progAdded, skipped: progSkipped };
   } finally { lock.releaseLock(); }
 }
+
+/* شغّلها مرة واحدة من المحرر (اختر authorizeLms ثم «تشغيل» ثم وافق) لتسمح للسكربت بالتحقق من حساب المدرسة في المنصة */
+function authorizeLms() {
+  const r = UrlFetchApp.fetch(LMS_URL + '/rest/v1/', { headers: { apikey: LMS_KEY }, muteHttpExceptions: true });
+  Logger.log('الاتصال بالمنصة: ' + r.getResponseCode() + ' — تم ✓');
+}
