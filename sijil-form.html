@@ -24,6 +24,8 @@
 <script src="js/sijil/config.js"></script>
 <script src="js/sijil/forms.js"></script>
 <script src="js/sijil/thinking.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/sijil/lms.js"></script>
 <script src="js/sijil/common.js"></script>
 <script src="js/sijil/i18n.js"></script>
 <script>
@@ -94,7 +96,7 @@ function render() {
 
   API.students().then(list => {
     LS.set('tf_students_cache', list);
-    $('#studentsList').innerHTML = list.map(s => `<option value="${esc(s.name)}">${esc([s.id, s.grade, s.cls].filter(Boolean).join(' · '))}</option>`).join('');
+    $('#studentsList').innerHTML = list.map(s => `<option value="${esc(s.name)}">${esc([String(s.id).startsWith('lms:') ? '' : s.id, s.grade, s.cls].filter(Boolean).join(' · '))}</option>`).join('');
   });
   $('#sname').addEventListener('change', () => {
     const s = (LS.get('tf_students_cache', []) || []).find(x => x.name === $('#sname').value);

@@ -108,6 +108,8 @@ td.cls{color:var(--muted);font-family:'Sora',sans-serif;font-weight:600}
 <script src="js/config.js"></script>
 <script src="js/competitions-data.js"></script>
 <script src="js/sijil/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/sijil/lms.js"></script>
 <script src="js/sijil/common.js"></script>
 <script src="js/sijil/i18n.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
@@ -335,7 +337,7 @@ let FORM = null;
 
 function openForm(mode, row) {
   const comp = row ? row.comp : (COMP || $('#upComp').value), year = row ? row.year : (F.year || curYear);
-  FORM = { mode, orig: row ? { comp: row.comp, year: row.year, name: row.name } : null,
+  FORM = { mode, orig: row ? { comp: row.comp, year: row.year, name: row.name, sid: row.sid || '' } : null,
     row: Object.assign({ comp, year, name: '', school: F.school || '', level: F.level || '', grade: F.grade || '', cls: '', subject: F.subject || '', stage: 'مسجّل', date: '', note: '' }, row || {}) };
   renderForm(); $('#formBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -352,7 +354,7 @@ function renderForm() {
       <label class="field">المسابقة<select data-k="comp">${(window.TP_COMPETITIONS || []).map(c => o(c.id, row.comp, COMP_NAMES[c.id])).join('')}</select></label>
       <label class="field">العام<input data-k="year" value="${esc(row.year)}"></label>
       ${many ? `<label class="field wide">أسماء الطلاب (اسم في كل سطر) *<textarea data-k="names" placeholder="${document.documentElement.lang === 'en' ? 'One name per line' : 'اسم في كل سطر'}"></textarea></label>`
-        : `<label class="field wide">اسم الطالب *<input data-k="name" value="${esc(row.name)}"></label>`}
+        : `<label class="field wide">اسم الطالب *<input data-k="name" list="dlLmsStud" autocomplete="off" value="${esc(row.name)}"></label>`}
       <label class="field">المدرسة<input data-k="school" list="dlSchools" value="${esc(row.school)}"></label>
       <label class="field">الصف<select data-k="grade"><option value="">— اختر —</option>${usedGrades.length ? `<optgroup label="المستخدمة في القوائم">${usedGrades.map(g => o(g, row.grade)).join('')}</optgroup>` : ''}${gradeOptions(row.grade)}</select></label>
       <label class="field">المرحلة الدراسية<input data-k="level" list="dlLevels" value="${esc(row.level)}"></label>
@@ -362,12 +364,21 @@ function renderForm() {
       <label class="field">تاريخ التسجيل<input data-k="date" value="${esc(row.date)}" placeholder="اختياري"></label>
       <label class="field${many ? '' : ' wide'}">ملاحظة<input data-k="note" value="${esc(row.note)}" placeholder="مثل: اسم المدرب"></label>
     </div>
+    <datalist id="dlLmsStud">${((window.LMSLINK && LMSLINK.people && LMSLINK.people.students) || []).map(x => `<option value="${esc(x.name)}">${esc([x.grade, x.cls].filter(Boolean).join(' · '))}</option>`).join('')}</datalist>
     <datalist id="dlSchools">${uniqVals('school').map(x => `<option value="${esc(x)}">`).join('')}</datalist>
     <datalist id="dlLevels">${uniqVals('level', LEVELS).map(x => `<option value="${esc(x)}">`).join('')}</datalist>
     <datalist id="dlSubjects">${subjList.map(x => `<option value="${esc(x)}">`).join('')}</datalist>
     <div class="acts"><button type="button" class="btn" id="pSave">حفظ</button><button type="button" class="btn ghost" id="pCancel">إلغاء</button><span class="note" id="pCount"></span></div>
   </section>`;
   const g = $('#pform [data-k="grade"]'), lv = $('#pform [data-k="level"]');
+  /* اختيار الطالب من بيانات المدرسة يملأ الصف والفصل تلقائياً */
+  const nm = $('#pform [data-k="name"]');
+  if (nm && window.LMSLINK) {
+    if (!LMSLINK.people) LMSLINK.loadPeople().then(d => { const dl = $('#dlLmsStud'); if (d && dl) dl.innerHTML = (d.students || []).map(x => `<option value="${esc(x.name)}">${esc([x.grade, x.cls].filter(Boolean).join(' · '))}</option>`).join(''); });
+    nm.addEventListener('change', () => { const m = LMSLINK.matchStudent(nm.value); if (!m) return;
+      if (m.grade) { if (![...g.options].some(op => op.value === m.grade)) g.insertAdjacentHTML('beforeend', `<option>${esc(m.grade)}</option>`); g.value = m.grade; g.dispatchEvent(new Event('change')); }
+      const c = $('#pform [data-k="cls"]'); if (c && m.cls) c.value = m.cls; });
+  }
   g.onchange = () => { const l = levelOf(g.value); if (l && !lv.value) lv.value = l; };
   $('#pform [data-k="comp"]').onchange = e => { FORM.row = readForm(); renderForm(); };
   const ta = $('#pform [data-k="names"]');

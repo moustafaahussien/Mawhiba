@@ -44,6 +44,8 @@
 <script src="js/sijil/thinking.js"></script>
 <script src="js/sijil/records.js"></script>
 <script src="js/sijil/programs.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/sijil/lms.js"></script>
 <script src="js/sijil/common.js"></script>
 <script src="js/sijil/i18n.js"></script>
 <script>
@@ -82,6 +84,18 @@ $('#saveTeacher').onclick = async () => {
   LS.set('tf_teacher', v); $('#hdr').innerHTML = header('home'); noteTeacher(); toast('تم الدخول');
 };
 noteTeacher();
+/* الدخول بحساب المدرسة: لا حاجة لرمز المعلمين، والاسم من المنصة */
+function lmsLogin() {
+  if (!window.LMSLINK || !LMSLINK.linked()) {
+    if (!isDemo() && !$('#lmsGo')) $('#saveTeacher').insertAdjacentHTML('afterend', ' <a class="btn ghost" id="lmsGo" href="' + LMSLINK.loginUrl() + '">الدخول بحساب المدرسة</a>');
+    return;
+  }
+  $('#codeWrap').hidden = true; $('#saveTeacher').hidden = true; tInput.value = LMSLINK.who.name; tInput.readOnly = true;
+  const g = $('#lmsGo'); if (g) g.remove();
+  $('#hdr').innerHTML = header('home');
+  $('#teacherNote').textContent = 'أهلاً ' + LMSLINK.who.name + ' — دخلت بحساب المدرسة. اختر النموذج الذي تريد تعبئته.';
+}
+lmsLogin(); if (window.LMSLINK) LMSLINK.ready.then(lmsLogin);
 
 const mine = LS.get('tf_mine', {});
 let html = '';

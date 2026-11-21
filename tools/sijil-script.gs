@@ -24,6 +24,7 @@ const TEACHER_CODE = '';
 /* يعيد اسم المشرف إن كانت بيانات الدخول صحيحة، وإلا نصاً فارغاً. الصيغة المرسلة من الصفحات: «اسم المستخدم:كلمة المرور» */
 function adminOk_(k) {
   k = String(k || '');
+  if (k.indexOf('lms:') === 0) { const u = lmsUser_(k); return u.admin ? (u.name || 'المشرف') : ''; }
   const i = k.indexOf(':');
   if (i > 0) {
     const u = k.slice(0, i).trim().toLowerCase(), pw = k.slice(i + 1);
@@ -32,7 +33,28 @@ function adminOk_(k) {
   }
   return ADMIN_KEY && k === ADMIN_KEY ? 'المشرف' : '';
 }
-function codeOk_(c) { c = String(c || '').trim(); return c !== '' && (c === TEACHER_CODE || !!adminOk_(c)); }
+function codeOk_(c) { c = String(c || '').trim(); if (c.indexOf('lms:') === 0) return !!lmsUser_(c).staff; return c !== '' && (c === TEACHER_CODE || !!adminOk_(c)); }
+
+/* ---------- الدخول بحساب المدرسة (منصة دار الذكر التعليمية) ----------
+   الصفحات ترسل «lms:<رمز الجلسة>» بدل رمز المعلمين؛ نتحقق منه عند المنصة مباشرة،
+   والمشرف = مدير النظام أو القيادات أو منسق الموهبة في المنصة. النتيجة تُحفظ 10 دقائق. */
+const LMS_URL = 'https://zpbhzhpvpvehowxvlsgp.supabase.co';
+const LMS_KEY = 'sb_publishable_xPzQ55aK-_9OeBjIQwt5yw_DPAw3lC9';
+function lmsUser_(c) {
+  const tok = String(c || '').replace(/^lms:/, '').trim();
+  if (!tok || tok.length > 4000) return {};
+  const ck = 'lms_' + Utilities.base64EncodeWebSafe(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, tok)).slice(0, 40);
+  const cache = CacheService.getScriptCache(), hit = cache.get(ck);
+  if (hit) { try { return JSON.parse(hit); } catch (e) {} }
+  let u = {};
+  try {
+    const r = UrlFetchApp.fetch(LMS_URL + '/rest/v1/rpc/talent_whoami', { method: 'post', contentType: 'application/json', payload: '{}',
+      headers: { apikey: LMS_KEY, Authorization: 'Bearer ' + tok }, muteHttpExceptions: true });
+    if (r.getResponseCode() === 200) { const d = JSON.parse(r.getContentText()); if (d && d.ok) u = d; }
+  } catch (e) {}
+  cache.put(ck, JSON.stringify(u), u.ok ? 600 : 60);
+  return u;
+}
 
 /* سجل عمليات الحذف: من حذف، ومتى، وماذا */
 const ADMIN_LOG = 'سجل عمليات المشرفين';
@@ -47,7 +69,7 @@ const MASTER = 'السجل';
 const STUDENTS = 'الطلاب';
 /* قوائم المشاركين في المسابقات (بالأسماء) — تظهر للمعلمين فقط، وللجمهور الأعداد فقط */
 const PARTICIPANTS = 'المشاركون في المسابقات';
-const PARTICIPANTS_HEADERS = ['المسابقة', 'العام', 'اسم الطالب', 'المدرسة', 'المرحلة الدراسية', 'الصف', 'المرحلة في المسابقة', 'تاريخ التسجيل', 'ملاحظة', 'التخصص / المادة', 'الفصل'];
+const PARTICIPANTS_HEADERS = ['المسابقة', 'العام', 'اسم الطالب', 'المدرسة', 'المرحلة الدراسية', 'الصف', 'المرحلة في المسابقة', 'تاريخ التسجيل', 'ملاحظة', 'التخصص / المادة', 'الفصل', 'رقم الطالب في المنصة'];
 const COMP_STAGES = ['مسجّل', 'متأهل', 'نهائي', 'فائز'];
 /* إدارة برامج النموذج (المكونات 2 – 9): الفريق والمشاركون والجلسات — عمود «البرنامج» يحدد المكوّن */
 const PROG = {
@@ -67,7 +89,7 @@ const PROG = {
 };
 const EXEC_OPTS = ['نعم', 'لا'];
 /* رقم إصدار السكربت: تقارنه صفحة إدارة البرامج لتنبيهك إن كان المنشور أقدم من الملف */
-const SCRIPT_VER = 5;
+const SCRIPT_VER = 6;
 const PROG_IDS = ['general-enrichment', 'skills', 'clusters', 'specialty', 'projects', 'acceleration', 'mentorship', 'support'];
 const PERSON_STATUS = ['نشط', 'متوقف', 'أنهى البرنامج'];
 const SESSION_STATUS = ['مجدولة', 'منفذة', 'مؤجلة', 'ملغاة'];
@@ -246,7 +268,7 @@ function readParticipants_() {
     .filter(v => String(v[0]).trim() && String(v[2]).trim())
     .map(v => ({ comp: String(v[0]).trim().toLowerCase(), year: String(v[1]).trim(), name: String(v[2]).trim(), school: String(v[3]).trim(),
                  level: String(v[4]).trim(), grade: String(v[5]).trim(), stage: String(v[6]).trim() || 'مسجّل', date: v[7], note: v[8],
-                 subject: String(v[9] || '').trim(), cls: String(v[10] || '').trim() }));
+                 subject: String(v[9] || '').trim(), cls: String(v[10] || '').trim(), sid: String(v[11] || '').trim() }));
 }
 
 /* استيراد ملفات التسجيل المصدَّرة من موقع المسابقة (من صفحة «المشاركون في المسابقات»).
@@ -262,11 +284,11 @@ function importParticipants_(b) {
     ensureHeaders_(sh, PARTICIPANTS_HEADERS);
     const norm = x => String(x || '').trim().replace(/\s+/g, ' ');
     const have = {};
-    readParticipants_().forEach(r => { if (r.comp === comp && r.year === year) have[norm(r.name)] = 1; });
+    readParticipants_().forEach(r => { if (r.comp === comp && r.year === year) { have[norm(r.name)] = 1; if (r.sid) have[r.sid] = 1; } });
     const add = [];
     b.rows.forEach(r => {
-      const n = norm(r.name); if (!n || have[n]) return; have[n] = 1;
-      add.push([comp, year, n, norm(r.school), norm(r.level), norm(r.grade), 'مسجّل', norm(r.date), norm(r.note), norm(r.subject), norm(r.cls)]);
+      const n = norm(r.name), sid = norm(r.sid); if (!n || have[n] || (sid && have[sid])) return; have[n] = 1; if (sid) have[sid] = 1;
+      add.push([comp, year, n, norm(r.school), norm(r.level), norm(r.grade), 'مسجّل', norm(r.date), norm(r.note), norm(r.subject), norm(r.cls), sid]);
     });
     if (add.length) sh.getRange(sh.getLastRow() + 1, 1, add.length, PARTICIPANTS_HEADERS.length).setNumberFormat('@').setValues(add);
     return { ok: true, added: add.length, kept: b.rows.length - add.length, total: Object.keys(have).length };
@@ -291,10 +313,14 @@ function saveParticipants_(b) {
       const comp = String(r.comp || '').trim().toLowerCase(), year = norm(r.year), name = norm(r.name);
       if (!comp || !year || !name) return;
       const last = sh.getLastRow();
-      const keys = last > 1 ? sh.getRange(2, 1, last - 1, 3).getDisplayValues().map(v => key(v[0], v[1], v[2])) : [];
-      const row = [comp, year, name, norm(r.school), norm(r.level), norm(r.grade), norm(r.stage) || 'مسجّل', norm(r.date), norm(r.note), norm(r.subject), norm(r.cls)];
-      const at = r.orig ? keys.indexOf(key(r.orig.comp, r.orig.year, r.orig.name)) : -1;
-      const clash = keys.indexOf(key(comp, year, name));
+      const vals = last > 1 ? sh.getRange(2, 1, last - 1, W).getDisplayValues() : [];
+      const keys = vals.map(v => key(v[0], v[1], v[2])), skeys = vals.map(v => v[11] ? key(v[0], v[1], v[11]) : '');
+      const sid = norm(r.sid);
+      const row = [comp, year, name, norm(r.school), norm(r.level), norm(r.grade), norm(r.stage) || 'مسجّل', norm(r.date), norm(r.note), norm(r.subject), norm(r.cls), sid];
+      let at = r.orig ? keys.indexOf(key(r.orig.comp, r.orig.year, r.orig.name)) : -1;
+      if (at < 0 && r.orig && r.orig.sid) at = skeys.indexOf(key(r.orig.comp, r.orig.year, r.orig.sid));
+      let clash = keys.indexOf(key(comp, year, name));
+      if (clash < 0 && sid) clash = skeys.indexOf(key(comp, year, sid));
       if (at >= 0) {
         if (clash >= 0 && clash !== at) { dup++; return; }
         sh.getRange(at + 2, 1, 1, W).setNumberFormat('@').setValues([row]); updated++;
@@ -317,10 +343,13 @@ function deleteParticipants_(b) {
     if (!sh || sh.getLastRow() < 2) return { ok: true, deleted: 0 };
     const norm = x => String(x || '').trim().replace(/\s+/g, ' ');
     const key = (c, y, n) => [String(c || '').trim().toLowerCase(), norm(y), norm(n)].join('|');
-    const want = b.items.map(i => key(i.comp, i.year, i.name));
-    const keys = sh.getRange(2, 1, sh.getLastRow() - 1, 3).getDisplayValues().map(v => key(v[0], v[1], v[2]));
+    const want = b.items.map(i => key(i.comp, i.year, i.name)), wantS = b.items.filter(i => i.sid).map(i => key(i.comp, i.year, i.sid));
+    const vals = sh.getRange(2, 1, sh.getLastRow() - 1, 12).getDisplayValues();
     let n = 0;
-    for (let i = keys.length - 1; i >= 0; i--) if (want.indexOf(keys[i]) >= 0) { sh.deleteRow(i + 2); n++; }
+    for (let i = vals.length - 1; i >= 0; i--) {
+      const v = vals[i];
+      if (want.indexOf(key(v[0], v[1], v[2])) >= 0 || (v[11] && wantS.indexOf(key(v[0], v[1], v[11])) >= 0)) { sh.deleteRow(i + 2); n++; }
+    }
     return { ok: true, deleted: n };
   } finally { lock.releaseLock(); }
 }

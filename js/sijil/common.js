@@ -75,15 +75,24 @@ const API = {
   /* قائمة الطلاب (اختيارية) من ورقة «الطلاب» */
   async students() {
     if (isDemo()) return LS.get('tf_students', []);
+    // من منصة المدرسة مباشرة (بحساب المدرسة): المعرّف lms:... والاسم والصف والفصل الحالية
+    if (window.LMSLINK) { const d = await LMSLINK.loadPeople(); if (d) return (d.students || []).map(x => ({ id: x.id, name: x.name, grade: x.grade, cls: x.cls })); }
     try { const d = await jsonp({ mode: 'students', code: LS.get('tf_code', '') }); return (d && d.students) || []; } catch (e) { return []; }
   },
   /* قوائم المشاركين في المسابقات (تحتاج رمز المعلمين) */
   async participants() {
     if (isDemo()) return { ok: true, demo: true, rows: LS.get('tf_participants', []) };
-    return jsonp({ mode: 'participants', code: LS.get('tf_code', '') }, 40000);
+    const d = await jsonp({ mode: 'participants', code: LS.get('tf_code', '') }, 40000);
+    if (d && d.ok && window.LMSLINK) {
+      await LMSLINK.loadPeople();
+      (d.rows || []).forEach(r => LMSLINK.live(r, 'sid', { name: 'name', grade: 'grade', cls: 'cls' }));
+      LINK_CACHE.parts = {}; (d.rows || []).forEach(r => { LINK_CACHE.parts[[r.comp, r.year, normKey(r.name)].join('|')] = r.sid || ''; });
+    }
+    return d;
   },
   /* رفع أسماء المشاركين من ملفات التسجيل (تحتاج رمز المعلمين) */
   async importParticipants(comp, year, rows) {
+    rows = await linkRows(rows);
     if (isDemo()) {
       const all = LS.get('tf_participants', []), have = new Set(all.filter(r => r.comp === comp && r.year === year).map(r => normKey(r.name)));
       let added = 0;
@@ -100,6 +109,8 @@ const API = {
   },
   /* إضافة طالب أو أكثر يدوياً أو تعديله (تحتاج رمز المعلمين). للتعديل: orig = {comp, year, name} */
   async saveParticipants(rows) {
+    rows = await linkRows(rows);
+    rows.forEach(r => { if (r.orig && !r.orig.sid) r.orig = Object.assign({}, r.orig, { sid: LINK_CACHE.parts[[r.orig.comp, r.orig.year, normKey(r.orig.name)].join('|')] || '' }); });
     if (isDemo()) {
       const all = LS.get('tf_participants', []), K = (c, y, n) => [c, y, normKey(n)].join('|');
       let added = 0, updated = 0, dup = 0;
@@ -122,6 +133,7 @@ const API = {
   },
   /* حذف طلاب من القوائم — بمفتاح المشرف فقط. items = [{comp, year, name}] */
   async deleteParticipants(items, key) {
+    items = items.map(i => i.sid ? i : Object.assign({}, i, { sid: LINK_CACHE.parts[[i.comp, i.year, normKey(i.name)].join('|')] || '' }));
     if (isDemo()) {
       const K = x => [x.comp, x.year, normKey(x.name)].join('|'), want = new Set(items.map(K));
       const all = LS.get('tf_participants', []), left = all.filter(x => !want.has(K(x)));
@@ -136,10 +148,18 @@ const API = {
   /* إدارة البرامج: الفريق والمشاركون والجلسات لكل البرامج (تحتاج رمز المعلمين) */
   async programs() {
     if (isDemo()) { const d = LS.get('tf_programs', {}); return { ok: true, demo: true, staff: d.staff || [], people: d.people || [], sessions: d.sessions || [], plan: d.plan || [] }; }
-    return jsonp({ mode: 'programs', code: LS.get('tf_code', '') }, 40000);
+    const d = await jsonp({ mode: 'programs', code: LS.get('tf_code', '') }, 40000);
+    if (d && d.ok && window.LMSLINK && await LMSLINK.loadPeople()) (d.people || []).forEach(r => LMSLINK.live(r, 'sid', { name: 'name', grade: 'grade', cls: 'cls' }));
+    return d;
   },
   /* حفظ سطر أو أكثر: table = staff | people | sessions */
   async progSave(table, rows) {
+    if (!isDemo() && window.LMSLINK && await LMSLINK.loadPeople()) rows = rows.map(r => {
+      r = Object.assign({}, r);
+      if (table === 'people' && !String(r.sid || '').startsWith('lms:')) { const m = LMSLINK.matchStudent(r.name); if (m) { r.sid = m.id; if (!r.grade) r.grade = m.grade; if (!r.cls) r.cls = m.cls; } }
+      if (table === 'staff' && !r.email) { const m = LMSLINK.matchStaff(r.name); if (m) r.email = m.email; }
+      return r;
+    });
     if (isDemo()) {
       const d = LS.get('tf_programs', {}), list = d[table] = d[table] || [], ids = [];
       rows.forEach(r => { const id = r.id || Math.random().toString(36).slice(2, 10); const i = list.findIndex(x => x.id === id);
@@ -170,14 +190,32 @@ const API = {
   async student(key, s) {
     const norm = x => normKey(x);
     if (isDemo()) return { ok: true, records: LS.get('tf_records', []).filter(r => r.studentId === s || norm(r.studentName) === norm(s)) };
-    return jsonp({ mode: 'student', key, s }, 40000);
+    return liveRecords(await jsonp({ mode: 'student', key, s }, 40000));
   },
   /* كل السجلات للتقارير (تحتاج مفتاح المشرف) */
   async report(key) {
     if (isDemo()) return { ok: true, records: LS.get('tf_records', []) };
-    return jsonp({ mode: 'report', key }, 40000);
+    return liveRecords(await jsonp({ mode: 'report', key }, 40000));
   }
 };
+
+/* ---------- الربط بمنصة المدرسة ---------- */
+const LINK_CACHE = { parts: {} };
+/* يضيف معرّف الطالب في المنصة لكل سطر يطابق اسمه طالباً واحداً في المنصة */
+async function linkRows(rows) {
+  if (isDemo() || !window.LMSLINK || !(await LMSLINK.loadPeople())) return rows;
+  return rows.map(r => {
+    if (r.sid) return r;
+    const m = LMSLINK.matchStudent(r.name);
+    return m ? Object.assign({}, r, { sid: m.id, grade: r.grade || m.grade, cls: r.cls || m.cls }) : r;
+  });
+}
+/* السجلات: الاسم والصف والفصل الحالية من المنصة */
+async function liveRecords(d) {
+  if (d && d.ok && window.LMSLINK && await LMSLINK.loadPeople())
+    (d.records || []).forEach(r => LMSLINK.live(r, 'studentId', { studentName: 'name', grade: 'grade', classroom: 'cls' }));
+  return d;
+}
 
 /* طابور الإرسال عند انقطاع الاتصال */
 const Queue = {
@@ -198,7 +236,7 @@ function toast(msg, type = 'ok') {
 }
 
 function demoBanner() {
-  if (!isDemo()) return '';
+  if (!isDemo()) return window.LMSLINK ? LMSLINK.bar() : '';
   return `<div class="demo">وضع التجربة: البيانات تُحفظ في هذا المتصفح فقط. بعد ربط الجدول (ملف js/config.js) تُحفظ عندك في Google Sheet.</div>`;
 }
 
@@ -243,6 +281,7 @@ const ADMIN = {
   /* حقلا الدخول (لصقهما في أي نموذج) */
   fields(note) {
     const k = this.get(), i = k.indexOf(':');
+    if (k.indexOf('lms:') === 0) return `<div class="note">✓ صلاحية المشرف بحساب المدرسة${window.LMSLINK && LMSLINK.who ? ' (' + esc(LMSLINK.who.name) + ')' : ''}</div>`;
     return `<label class="field">اسم مستخدم المشرف<input id="admUser" autocomplete="username" dir="ltr" value="${esc(i > 0 ? k.slice(0, i) : '')}" placeholder="Admin"></label>
       <label class="field">كلمة المرور<input id="admPass" type="password" autocomplete="current-password" dir="ltr" value="${esc(i > 0 ? k.slice(i + 1) : '')}"${note ? ` placeholder="${esc(note)}"` : ''}></label>`;
   },
@@ -258,4 +297,4 @@ const ADMIN = {
 };
 
 /* رمز المعلمين مطلوب للحفظ (خارج وضع التجربة) */
-function needCode() { return !isDemo() && !LS.get('tf_code', ''); }
+function needCode() { return !isDemo() && !LS.get('tf_code', '') && !(window.LMSLINK && LMSLINK.linked()); }
