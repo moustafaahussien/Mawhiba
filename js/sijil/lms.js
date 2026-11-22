@@ -33,7 +33,7 @@
 
   const L = window.LMSLINK = {
     who: get('tf_lms_who', null),
-    linked() { return !!(this.who && this.who.staff && stored()); },
+    linked() { return !!(this.who && this.who.staff && !this.who.pending && stored()); },
     loginUrl() { return LMS_HOME + 'index.html?next=' + encodeURIComponent(location.pathname + location.search); },
     token() { const s = stored(); return s ? s.access_token : ''; },
     people: null, byId: {}, byName: {},
@@ -44,7 +44,7 @@
   (function () {
     const s = stored();
     if (!s) { clear(); L.who = null; return; }
-    if (L.who && L.who.staff && (s.expires_at || 0) * 1000 > Date.now() + 30000) apply(s.access_token, L.who);
+    if (L.who && L.who.staff && get('tf_lms_srv', false) && (s.expires_at || 0) * 1000 > Date.now() + 30000) apply(s.access_token, L.who);
   })();
 
   /* supabase-js يتولى تجديد الجلسة (ومشاركتها مع تبويبات المنصة) */
@@ -61,10 +61,15 @@
     if (!session) { clear(); L.who = null; set('tf_lms_who', null); return null; }
     try { const w = await rpc('talent_whoami'); L.who = w && w.ok ? w : null; set('tf_lms_who', L.who); }
     catch (e) { return null; }
-    if (L.who && L.who.staff) apply(session.access_token, L.who); else clear();
+    if (!(L.who && L.who.staff)) { clear(); return L.who; }
+    /* نتأكد أن سكربت السجل يقبل حساب المدرسة قبل استبدال رمز المعلمين (حتى لا يتعطل الدخول القديم) */
+    let srv = false;
+    try { if (typeof jsonp === 'function' && typeof CONFIG !== 'undefined' && CONFIG.API_URL) { const d = await jsonp({ mode: 'check', code: 'lms:' + session.access_token }); srv = !!(d && d.ok); } } catch (e) {}
+    set('tf_lms_srv', srv);
+    if (srv) apply(session.access_token, L.who); else { clear(); L.who = Object.assign({}, L.who, { pending: true }); }
     return L.who;
   }
-  if (sb) sb.auth.onAuthStateChange((ev, session) => { if (session && L.who) apply(session.access_token, L.who); if (ev === 'SIGNED_OUT') clear(); });
+  if (sb) sb.auth.onAuthStateChange((ev, session) => { if (session && L.who && !L.who.pending && get('tf_lms_srv', false)) apply(session.access_token, L.who); if (ev === 'SIGNED_OUT') clear(); });
   L.ready = refresh().then(w => { const b = document.getElementById('lmsBar'); if (b) b.outerHTML = L.bar(); return w; });
   setInterval(refresh, 10 * 60 * 1000);
 
@@ -94,6 +99,7 @@
 
   /* شريط صغير: داخل بحساب المدرسة / الدخول بحساب المدرسة */
   L.bar = function () {
+    if (L.who && L.who.pending) return '<span id="lmsBar"></span>';   // بانتظار تفعيل سكربت السجل لحساب المدرسة
     if (L.linked()) return '<div id="lmsBar" class="demo" style="background:rgba(14,159,118,.10);border-color:rgba(14,159,118,.35)">✓ دخلت بحساب المدرسة: <b>' + String(L.who.name).replace(/[<>&]/g, '') + '</b>' +
       (L.who.admin ? ' · صلاحية المشرف' : '') + ' — الطلاب والمعلمون يُقرؤون من منصة دار الذكر التعليمية مباشرة.</div>';
     return '<div id="lmsBar" class="demo">ادخل بحساب المدرسة لتعمل بدون رمز ولتختار الطلاب من بيانات المدرسة: <a href="' + L.loginUrl() + '"><b>الدخول بحساب المدرسة</b></a></div>';
