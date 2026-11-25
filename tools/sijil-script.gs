@@ -89,7 +89,7 @@ const PROG = {
 };
 const EXEC_OPTS = ['نعم', 'لا'];
 /* رقم إصدار السكربت: تقارنه صفحة إدارة البرامج لتنبيهك إن كان المنشور أقدم من الملف */
-const SCRIPT_VER = 6;
+const SCRIPT_VER = 7;
 const PROG_IDS = ['general-enrichment', 'skills', 'clusters', 'specialty', 'projects', 'acceleration', 'mentorship', 'support'];
 const PERSON_STATUS = ['نشط', 'متوقف', 'أنهى البرنامج'];
 const SESSION_STATUS = ['مجدولة', 'منفذة', 'مؤجلة', 'ملغاة'];
@@ -153,6 +153,8 @@ function doPost(e) {
     if (body.action === 'progSave') return out_(progSave_(body));
     if (body.action === 'progDelete') return out_(progDelete_(body));
     if (body.action === 'giftedImport') return out_(giftedImport_(body));
+    if (body.action === 'lmsPerson') return out_(lmsPerson_(body));
+    if (body.action === 'lmsStaffAll') return out_(lmsStaffAll_(body));
     return out_({ ok: false, error: 'طلب غير معروف' });
   } catch (err) { return out_({ ok: false, error: String(err.message || err) }); }
 }
@@ -583,6 +585,68 @@ function giftedImport_(b) {
     logAdmin_(who, 'استيراد من نظام الكشف (' + b.items.length + ' طالباً)', b.items.map(i => (i.student || {}).name + ' — ' + (i.programs || []).map(p => p.prog).join('/')).join('\n'));
     return { ok: true, records: recs, updated: updated, students: newSt.length, programs: progAdded, skipped: progSkipped };
   } finally { lock.releaseLock(); }
+}
+
+/* =====================================================================
+   عرض بيانات الموهبة في منصة المدرسة (ملف الطالب ودليل الموظفين) — قراءة فقط
+   منصة الموهبة تبقى المصدر الوحيد: المنصة تطلب، والسكربت يقرأ من هذا الجدول ويرد.
+   الطلب بحساب المدرسة (lms:<رمز الجلسة>)، ونتحقق من المنصة أن الطالب ضمن من يحق للمستخدم رؤيتهم.
+   ===================================================================== */
+function nameKey_(x) {
+  return String(x || '').replace(/[ً-ْـ]/g, '').replace(/[أإآٱ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي')
+    .replace(/(^|\s)عبد\s+/g, '$1عبد').replace(/\s+/g, ' ').trim().toLowerCase();
+}
+/* الاسم في الجدول يطابق اسم المنصة: تطابق تام، أو (3 أسماء فأكثر) كلها بالترتيب في بداية الاسم الكامل */
+function nameMatch_(sheetName, fullName) {
+  const a = nameKey_(sheetName), b = nameKey_(fullName); if (!a || !b) return false;
+  if (a === b) return true;
+  const aw = a.split(' '), bw = b.split(' ');
+  if (aw.length < 3 || aw.length > bw.length) return false;
+  return aw.every((w, i) => w === bw[i]);
+}
+function lmsRpc_(code, fn, args) {
+  const tok = String(code || '').replace(/^lms:/, '').trim();
+  const r = UrlFetchApp.fetch(LMS_URL + '/rest/v1/rpc/' + fn, { method: 'post', contentType: 'application/json', payload: JSON.stringify(args || {}),
+    headers: { apikey: LMS_KEY, Authorization: 'Bearer ' + tok }, muteHttpExceptions: true });
+  if (r.getResponseCode() !== 200) return null;
+  try { return JSON.parse(r.getContentText()); } catch (e) { return null; }
+}
+
+/* body: { code: 'lms:<token>', student: '<uuid>' } */
+function lmsPerson_(b) {
+  const code = String(b.code || '');
+  if (code.indexOf('lms:') !== 0 || !lmsUser_(code).staff) return { ok: false, auth: true, error: 'يحتاج حساب المدرسة' };
+  const sid = String(b.student || '').trim();
+  const who = lmsRpc_(code, 'talent_student_ref', { p_student: sid });
+  if (!who || !who.ok) return { ok: false, error: 'غير مصرح بهذا الطالب' };
+  const lid = 'lms:' + sid, full = who.name;
+  const mine = (id, name) => (id && String(id).trim() === lid) || (!String(id || '').startsWith('lms:') && nameMatch_(name, full));
+  const comps = readParticipants_().filter(r => mine(r.sid, r.name))
+    .map(r => ({ comp: r.comp, year: r.year, stage: r.stage, date: r.date, note: r.note, subject: r.subject, by_name: !(r.sid === lid) }));
+  const pRows = progRead_('people').filter(r => mine(r.sid, r.name));
+  const progs = pRows.map(r => ({ prog: r.prog, year: r.year, field: r.field, lead: r.lead, joined: r.joined, status: r.status, note: r.note, by_name: !(r.sid === lid) }));
+  const recs = readRecords_().filter(r => mine(r.studentId, r.studentName))
+    .map(r => ({ form: r.formTitle, formId: r.formId, date: r.date, year: r.year, teacher: r.teacher, summary: r.summary }));
+  // جلسات البرامج التي سُجّل فيها الطالب، وهل حضر (الجلسات تحفظ أسماء المشاركين والحاضرين كما في ورقة المشاركين)
+  const keys = {}; keys[nameKey_(full)] = 1; pRows.forEach(r => { keys[nameKey_(r.name)] = 1; });
+  const has = (list) => String(list || '').split(/[،,\n]+/).some(n => keys[nameKey_(n)]);
+  const sess = progRead_('sessions').filter(s => has(s.students) || has(s.attended))
+    .map(s => ({ prog: s.prog, year: s.year, date: s.date, title: s.title, lead: s.lead, status: s.status, attended: s.status === 'منفذة' ? has(s.attended) : null }));
+  return { ok: true, name: full, competitions: comps, programs: progs, records: recs, sessions: sess.slice(0, 100) };
+}
+
+/* أدوار كل المنسوبين في برامج الموهبة (لدليل الموظفين): الفريق + الجلسات التي نفّذوها + نماذج السجل التي عبّؤوها */
+function lmsStaffAll_(b) {
+  const code = String(b.code || '');
+  if (code.indexOf('lms:') !== 0 || !lmsUser_(code).staff) return { ok: false, auth: true, error: 'يحتاج حساب المدرسة' };
+  const out = {};
+  const get = (name, email) => { const k = (String(email || '').trim().toLowerCase()) || ('n:' + nameKey_(name)); if (!out[k]) out[k] = { name: String(name || '').trim(), email: String(email || '').trim().toLowerCase(), roles: [], sessions: {}, records: 0 }; return out[k]; };
+  progRead_('staff').forEach(r => { if (!r.name) return; get(r.name, r.email).roles.push({ prog: r.prog, year: r.year, role: r.role, spec: r.spec, field: r.field }); });
+  progRead_('sessions').forEach(s => { if (!s.lead) return; String(s.lead).split(/[،,]/).map(x => x.trim()).filter(Boolean).forEach(n => {
+    const o = get(n, ''); const k = s.prog + '|' + s.year; o.sessions[k] = o.sessions[k] || { prog: s.prog, year: s.year, done: 0, planned: 0 };
+    if (s.status === 'منفذة') o.sessions[k].done++; else o.sessions[k].planned++; }); });
+  readRecords_().forEach(r => { if (r.teacher && r.formId !== GIFTED_FORM.id) get(r.teacher, '').records++; });
+  return { ok: true, staff: Object.keys(out).map(k => { const o = out[k]; o.sessions = Object.keys(o.sessions).map(x => o.sessions[x]); o.key = nameKey_(o.name); return o; }) };
 }
 
 /* شغّلها مرة واحدة من المحرر (اختر authorizeLms ثم «تشغيل» ثم وافق) لتسمح للسكربت بالتحقق من حساب المدرسة في المنصة */
