@@ -604,6 +604,11 @@ function nameMatch_(sheetName, fullName) {
   if (aw.length < 3 || aw.length > bw.length) return false;
   return aw.every((w, i) => w === bw[i]);
 }
+/* اسم ثنائي (الأول + العائلة) — يُقبل فقط إن أكدت المنصة أنه لا يشترك فيه طالب آخر */
+function shortMatch_(sheetName, fullName) {
+  const aw = nameKey_(sheetName).split(' '), bw = nameKey_(fullName).split(' ');
+  return aw.length === 2 && bw.length >= 3 && aw[0] === bw[0] && aw[1] === bw[bw.length - 1];
+}
 function lmsRpc_(code, fn, args) {
   const tok = String(code || '').replace(/^lms:/, '').trim();
   const r = UrlFetchApp.fetch(LMS_URL + '/rest/v1/rpc/' + fn, { method: 'post', contentType: 'application/json', payload: JSON.stringify(args || {}),
@@ -620,7 +625,7 @@ function lmsPerson_(b) {
   const who = lmsRpc_(code, 'talent_student_ref', { p_student: sid });
   if (!who || !who.ok) return { ok: false, error: 'غير مصرح بهذا الطالب' };
   const lid = 'lms:' + sid, full = who.name;
-  const mine = (id, name) => (id && String(id).trim() === lid) || (!String(id || '').startsWith('lms:') && nameMatch_(name, full));
+  const mine = (id, name) => (id && String(id).trim() === lid) || (!String(id || '').startsWith('lms:') && (nameMatch_(name, full) || (who.short_unique && shortMatch_(name, full))));
   const comps = readParticipants_().filter(r => mine(r.sid, r.name))
     .map(r => ({ comp: r.comp, year: r.year, stage: r.stage, date: r.date, note: r.note, subject: r.subject, by_name: !(r.sid === lid) }));
   const pRows = progRead_('people').filter(r => mine(r.sid, r.name));
