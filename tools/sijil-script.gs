@@ -155,6 +155,7 @@ function doPost(e) {
     if (body.action === 'giftedImport') return out_(giftedImport_(body));
     if (body.action === 'lmsPerson') return out_(lmsPerson_(body));
     if (body.action === 'lmsStaffAll') return out_(lmsStaffAll_(body));
+    if (body.action === 'lmsSyncNames') return out_(lmsSyncNames_(body));
     return out_({ ok: false, error: 'طلب غير معروف' });
   } catch (err) { return out_({ ok: false, error: String(err.message || err) }); }
 }
@@ -652,6 +653,96 @@ function lmsStaffAll_(b) {
     if (s.status === 'منفذة') o.sessions[k].done++; else o.sessions[k].planned++; }); });
   readRecords_().forEach(r => { if (r.teacher && r.formId !== GIFTED_FORM.id) get(r.teacher, '').records++; });
   return { ok: true, staff: Object.keys(out).map(k => { const o = out[k]; o.sessions = Object.keys(o.sessions).map(x => o.sessions[x]); o.key = nameKey_(o.name); return o; }) };
+}
+
+/* =====================================================================
+   توحيد الأسماء مع منصة المدرسة: يستبدل الأسماء المختصرة بالأسماء الكاملة ويضيف معرّف الطالب (lms:...)
+   في كل الأوراق معًا (المشاركون، البرامج: المشاركون/الفريق/الجلسات، السجل، الطلاب، نتائج الكشف) حتى يبقى الربط بينها سليمًا.
+   - لا يُستبدل اسم إلا إذا طابق طالبًا/موظفًا واحدًا فقط في المنصة؛ وما لم يُطابق يبقى كما هو ويُذكر في التقرير.
+   - قبل التطبيق تُحفظ نسخة مخفية من كل ورقة تتغير. body: { code, apply: false (معاينة) | true }
+   ===================================================================== */
+function lmsSyncNames_(b) {
+  const who = adminOk_(b.code);
+  if (!who || String(b.code || '').indexOf('lms:') !== 0) return { ok: false, auth: true, error: 'للمشرف بحساب المدرسة فقط' };
+  const ppl = lmsRpc_(b.code, 'talent_people', {});
+  if (!ppl || !ppl.students) return { ok: false, error: 'تعذّرت قراءة الأسماء من منصة المدرسة' };
+  const S = ppl.students, T = ppl.staff || [];
+  const byId = {}; S.forEach(x => { byId[x.id] = x; });
+  const firstLast = n => { const w = nameKey_(n).split(' '); return w[0] + '|' + w[w.length - 1]; };
+  const flCount = {}; S.forEach(x => { const k = firstLast(x.name); flCount[k] = (flCount[k] || 0) + 1; });
+  const cacheS = {};
+  function stu(name, sid) {
+    sid = String(sid || '').trim();
+    if (sid.indexOf('lms:') === 0) return byId[sid] || null;
+    const k = nameKey_(name); if (!k) return null;
+    if (k in cacheS) return cacheS[k];
+    let c = S.filter(x => nameMatch_(name, x.name));
+    if (c.length !== 1 && k.split(' ').length === 2) { const fl = k.split(' ')[0] + '|' + k.split(' ')[1]; c = flCount[fl] === 1 ? S.filter(x => firstLast(x.name) === fl) : []; }
+    return (cacheS[k] = c.length === 1 ? c[0] : null);
+  }
+  // المنسوبون: نفس منطق المنصة (الاسم الكامل/البديل/الأول+العائلة إن تفرّد)
+  const staffNames = {};
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const rows = (name, n) => { const sh = ss.getSheetByName(name); if (!sh || sh.getLastRow() < 2) return { sh: sh, v: [] }; return { sh: sh, v: sh.getRange(2, 1, sh.getLastRow() - 1, n || sh.getLastColumn()).getDisplayValues() }; };
+  const P = rows(PARTICIPANTS, PARTICIPANTS_HEADERS.length), PP = rows(PROG.people.sheet, PROG.people.headers.length),
+        PS = rows(PROG.staff.sheet, PROG.staff.headers.length), SE = rows(PROG.sessions.sheet, PROG.sessions.headers.length),
+        M = rows(MASTER, MASTER_HEADERS.length), ST = rows(STUDENTS, 4), G = rows(GIFTED_SHEET, GIFTED_HEADERS.length);
+  const splitN = x => String(x || '').split(/[،,]+/).map(t => t.trim()).filter(Boolean);
+  PS.v.forEach(r => { if (r[3]) staffNames[r[3].trim()] = 1; });
+  PP.v.forEach(r => splitN(r[8]).forEach(n => staffNames[n] = 1));
+  SE.v.forEach(r => splitN(r[10]).forEach(n => staffNames[n] = 1));
+  M.v.forEach(r => { if (r[4] && r[7] !== GIFTED_FORM.id) staffNames[r[4].trim()] = 1; });
+  const em = lmsRpc_(b.code, 'staff_resolve', { p_names: Object.keys(staffNames) }) || {};
+  const byEmail = {}; T.forEach(x => { if (x.email) byEmail[String(x.email).toLowerCase()] = x; });
+  const staff = n => { const e = em[String(n || '').trim()]; return e && byEmail[e] ? byEmail[e] : null; };
+  const staffList = x => splitN(x).map(n => { const t = staff(n); return t ? t.name : n; }).join('، ');
+  const stuList = x => splitN(x).map(n => { const t = stu(n, ''); return t ? t.name : n; }).join('، ');
+
+  const rep = { students: 0, staff: 0, unmatchedStudents: {}, unmatchedStaff: {}, sample: [] , sheets: {} };
+  const changed = {};   // اسم الورقة → [{row, col, val}]
+  function set(sheet, ri, ci, oldV, newV) {
+    if (String(oldV) === String(newV)) return false;
+    (changed[sheet] = changed[sheet] || []).push({ r: ri + 2, c: ci + 1, v: newV });
+    if (rep.sample.length < 25) rep.sample.push(sheet + ': ' + oldV + ' ← ' + newV);
+    return true;
+  }
+  function doStu(sheet, v, ni, ii) {
+    v.forEach((r, i) => { const n = r[ni]; if (!String(n).trim()) return; const t = stu(n, ii >= 0 ? r[ii] : '');
+      if (!t) { rep.unmatchedStudents[String(n).trim()] = 1; return; }
+      if (set(sheet, i, ni, n, t.name)) rep.students++;
+      if (ii >= 0) set(sheet, i, ii, r[ii], t.id); });
+  }
+  function doStaff(sheet, v, ci, list) {
+    v.forEach((r, i) => { const n = r[ci]; if (!String(n).trim()) return;
+      if (list) { const nv = staffList(n); splitN(n).forEach(x => { if (!staff(x)) rep.unmatchedStaff[x] = 1; }); if (set(sheet, i, ci, n, nv)) rep.staff++; return; }
+      const t = staff(n); if (!t) { rep.unmatchedStaff[String(n).trim()] = 1; return; } if (set(sheet, i, ci, n, t.name)) rep.staff++; });
+  }
+  doStu(PARTICIPANTS, P.v, 2, 11);
+  doStu(PROG.people.sheet, PP.v, 3, 4); doStaff(PROG.people.sheet, PP.v, 8, true);
+  doStaff(PROG.staff.sheet, PS.v, 3, false);
+  PS.v.forEach((r, i) => { const t = staff(r[3]); if (t && t.email && !String(r[8]).trim()) set(PROG.staff.sheet, i, 8, r[8], t.email); });
+  SE.v.forEach((r, i) => { [12, 14].forEach(ci => { const nv = stuList(r[ci]); splitN(r[ci]).forEach(x => { if (!stu(x, '')) rep.unmatchedStudents[x] = 1; }); set(PROG.sessions.sheet, i, ci, r[ci], nv); }); });
+  doStaff(PROG.sessions.sheet, SE.v, 10, true);
+  doStu(MASTER, M.v, 9, 8);
+  M.v.forEach((r, i) => { if (r[7] === GIFTED_FORM.id || !String(r[4]).trim()) return; const t = staff(r[4]); if (t) { if (set(MASTER, i, 4, r[4], t.name)) rep.staff++; } else rep.unmatchedStaff[String(r[4]).trim()] = 1; });
+  doStu(STUDENTS, ST.v, 1, 0);
+  doStu(GIFTED_SHEET, G.v, 4, 3);
+
+  Object.keys(changed).forEach(k => rep.sheets[k] = changed[k].length);
+  rep.unmatchedStudents = Object.keys(rep.unmatchedStudents); rep.unmatchedStaff = Object.keys(rep.unmatchedStaff);
+  if (!b.apply) return Object.assign({ ok: true, preview: true }, rep);
+
+  const lock = LockService.getScriptLock(); lock.waitLock(30000);
+  try {
+    const stamp = Utilities.formatDate(new Date(), 'Asia/Riyadh', 'yyyy-MM-dd HHmm');
+    Object.keys(changed).forEach(name => {
+      const sh = ss.getSheetByName(name);
+      const bak = sh.copyTo(ss).setName(('نسخة قبل توحيد الأسماء ' + stamp + ' — ' + name).slice(0, 99)); bak.hideSheet();
+      changed[name].forEach(c => sh.getRange(c.r, c.c).setNumberFormat('@').setValue(c.v));
+    });
+    logAdmin_(who, 'توحيد الأسماء مع منصة المدرسة', JSON.stringify(rep.sheets));
+  } finally { lock.releaseLock(); }
+  return Object.assign({ ok: true, applied: true }, rep);
 }
 
 /* شغّلها مرة واحدة من المحرر (اختر authorizeLms ثم «تشغيل» ثم وافق) لتسمح للسكربت بالتحقق من حساب المدرسة في المنصة */
