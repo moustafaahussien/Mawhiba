@@ -675,9 +675,14 @@ function lmsSyncNames_(b) {
   const firstLast = n => { const w = nameWords_(n); return w[0] + '|' + w[w.length - 1]; };
   const flCount = {}; S.forEach(x => { const k = firstLast(x.name); flCount[k] = (flCount[k] || 0) + 1; });
   const cacheS = {};
+  // تصحيحات يدوية من المشرف: { students: { "الاسم في الجدول": "lms:<id>" }, staff: { "الاسم في الجدول": "البريد" } }
+  const OV = b.overrides || {}, ovS = {}, ovT = {};
+  Object.keys(OV.students || {}).forEach(k => { ovS[nameKey_(k)] = String(OV.students[k]); });
+  Object.keys(OV.staff || {}).forEach(k => { ovT[nameKey_(k)] = String(OV.staff[k]).toLowerCase(); });
   function stu(name, sid) {
     sid = String(sid || '').trim();
     if (sid.indexOf('lms:') === 0) return byId[sid] || null;
+    if (ovS[nameKey_(name)]) return byId[ovS[nameKey_(name)]] || null;
     const k = nameKey_(name); if (!k) return null;
     if (k in cacheS) return cacheS[k];
     let c = S.filter(x => nameMatch_(name, x.name));
@@ -698,7 +703,7 @@ function lmsSyncNames_(b) {
   M.v.forEach(r => { if (r[4] && r[7] !== GIFTED_FORM.id) staffNames[r[4].trim()] = 1; });
   const em = lmsRpc_(b.code, 'staff_resolve', { p_names: Object.keys(staffNames) }) || {};
   const byEmail = {}; T.forEach(x => { if (x.email) byEmail[String(x.email).toLowerCase()] = x; });
-  const staff = n => { const e = em[String(n || '').trim()]; return e && byEmail[e] ? byEmail[e] : null; };
+  const staff = n => { const e = ovT[nameKey_(n)] || em[String(n || '').trim()]; return e && byEmail[e] ? byEmail[e] : null; };
   const staffList = x => splitN(x).map(n => { const t = staff(n); return t ? t.name : n; }).join('، ');
   const stuList = x => splitN(x).map(n => { const t = stu(n, ''); return t ? t.name : n; }).join('، ');
 
