@@ -597,17 +597,21 @@ function nameKey_(x) {
   return String(x || '').replace(/[ً-ْـ]/g, '').replace(/[أإآٱ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي')
     .replace(/(^|\s)عبد\s+/g, '$1عبد').replace(/\s+/g, ' ').trim().toLowerCase();
 }
-/* الاسم في الجدول يطابق اسم المنصة: تطابق تام، أو (3 أسماء فأكثر) كلها بالترتيب في بداية الاسم الكامل */
+/* الاسم في الجدول يطابق اسم المنصة: تطابق تام (بعد حذف «بن/ابن/بنت»)، أو (3 أسماء فأكثر) كلها بالترتيب في بداية الاسم الكامل،
+   أو أحدهما متضمَّن في الآخر بنفس الترتيب مع تطابق الاسم الأول والأخير (مثل: «أنور فهد بن صالح آل هادي الغامدي» = «أنور فهد صالح الغامدي») */
+function nameWords_(x) { return nameKey_(x).split(' ').filter(w => w && ['بن', 'ابن', 'بنت'].indexOf(w) < 0); }
+function subseq_(small, big) { let j = 0; for (let i = 0; i < big.length && j < small.length; i++) if (big[i] === small[j]) j++; return j === small.length; }
 function nameMatch_(sheetName, fullName) {
-  const a = nameKey_(sheetName), b = nameKey_(fullName); if (!a || !b) return false;
-  if (a === b) return true;
-  const aw = a.split(' '), bw = b.split(' ');
-  if (aw.length < 3 || aw.length > bw.length) return false;
-  return aw.every((w, i) => w === bw[i]);
+  const aw = nameWords_(sheetName), bw = nameWords_(fullName); if (!aw.length || !bw.length) return false;
+  if (aw.join(' ') === bw.join(' ')) return true;
+  if (aw.length >= 3 && aw.length <= bw.length && aw.every((w, i) => w === bw[i])) return true;
+  if (aw.length >= 3 && bw.length >= 3 && aw[0] === bw[0] && aw[aw.length - 1] === bw[bw.length - 1])
+    return aw.length <= bw.length ? subseq_(aw, bw) : subseq_(bw, aw);
+  return false;
 }
 /* اسم ثنائي (الأول + العائلة) — يُقبل فقط إن أكدت المنصة أنه لا يشترك فيه طالب آخر */
 function shortMatch_(sheetName, fullName) {
-  const aw = nameKey_(sheetName).split(' '), bw = nameKey_(fullName).split(' ');
+  const aw = nameWords_(sheetName), bw = nameWords_(fullName);
   return aw.length === 2 && bw.length >= 3 && aw[0] === bw[0] && aw[1] === bw[bw.length - 1];
 }
 function lmsRpc_(code, fn, args) {
@@ -668,7 +672,7 @@ function lmsSyncNames_(b) {
   if (!ppl || !ppl.students) return { ok: false, error: 'تعذّرت قراءة الأسماء من منصة المدرسة' };
   const S = ppl.students, T = ppl.staff || [];
   const byId = {}; S.forEach(x => { byId[x.id] = x; });
-  const firstLast = n => { const w = nameKey_(n).split(' '); return w[0] + '|' + w[w.length - 1]; };
+  const firstLast = n => { const w = nameWords_(n); return w[0] + '|' + w[w.length - 1]; };
   const flCount = {}; S.forEach(x => { const k = firstLast(x.name); flCount[k] = (flCount[k] || 0) + 1; });
   const cacheS = {};
   function stu(name, sid) {
@@ -677,7 +681,7 @@ function lmsSyncNames_(b) {
     const k = nameKey_(name); if (!k) return null;
     if (k in cacheS) return cacheS[k];
     let c = S.filter(x => nameMatch_(name, x.name));
-    if (c.length !== 1 && k.split(' ').length === 2) { const fl = k.split(' ')[0] + '|' + k.split(' ')[1]; c = flCount[fl] === 1 ? S.filter(x => firstLast(x.name) === fl) : []; }
+    if (c.length !== 1 && nameWords_(name).length === 2) { const fl = firstLast(name); c = flCount[fl] === 1 ? S.filter(x => firstLast(x.name) === fl) : []; }
     return (cacheS[k] = c.length === 1 ? c[0] : null);
   }
   // المنسوبون: نفس منطق المنصة (الاسم الكامل/البديل/الأول+العائلة إن تفرّد)
